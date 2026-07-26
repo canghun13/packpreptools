@@ -37,39 +37,30 @@
 
 ## 2. 현재 저장소 상태
 
-2026-07-26 사용자가 제공한 GitHub 저장소 화면 기준으로 확인된 루트 파일:
+2026-07-26 Phase 1 — Foundation Build 완료 기준:
 
-- `CNAME`
-- `README.md`
-- `handover.md`
-
-현재 확인되지 않은 파일:
-
-- `index.html`
-- CSS
-- JavaScript
-- Header / Footer
-- 계산기 페이지
-- Guides
-- Reference
-- About
-- Contact
-- Privacy
-- robots.txt
-- sitemap.xml
-- llms.txt
-- 404.html
-- QA 스크립트
+- 실제 공개 HTML 26개
+- 기본 페이지 8개
+- 계산기 10개
+- Guides 4개
+- Reference 4개
+- 공통 스타일: `assets/styles.css`
+- 공통 UI 동작: `assets/site.js`
+- 계산 로직: `assets/calculators.js`
+- 정적 페이지 생성기: `scripts/generate-site.js`
+- 자동 QA: `scripts/qa.js`
+- 계산 검증: `scripts/verify-calculators.js`
+- 검색·크롤링 파일: `robots.txt`, `sitemap.xml`, `llms.txt`
+- 유지 파일: `CNAME`, `README.md`, `handover.md`
 
 ### 현재 상태 판정
 
-- GitHub 저장소 생성 완료
-- `CNAME` 존재
-- 프로젝트 기준 문서 업로드 완료
-- 실제 사이트 페이지는 아직 생성되지 않음
-- `index.html`이 없으므로 기본 사이트 화면이 존재한다고 간주하지 않음
-- GitHub Pages와 Cloudflare의 실제 배포 응답은 첫 개발 작업에서 확인
-- 기존 사이트 코드가 있다고 가정하거나 덮어쓰지 않음
+- 실제 `index.html`과 Phase 1 전체 페이지 생성 완료
+- GitHub `main`에 Phase 1 구현 push 완료
+- GitHub Pages / Cloudflare 실도메인에서 Homepage와 대표 계산기 응답 및 동작 확인 완료
+- 모든 공개 HTML에 고유 SEO 메타데이터, Open Graph, favicon, GA4, 정적 JSON-LD 적용
+- 자동 QA, 계산 검증, 5개 반응형 폭 브라우저 QA 통과
+- HIGH 위험 0
 
 ---
 
@@ -528,7 +519,7 @@ Guide / Reference:
 
 ### 작업
 
-Phase 1 — Foundation Build
+Phase 1 — Foundation Build 완료
 
 ### 권장 모델
 
@@ -540,21 +531,21 @@ Sol
 
 ### 완료 조건
 
-- 실제 `index.html` 생성
-- 기본 페이지 8개
-- 계산기 10개
-- Guides 4개
-- Reference 4개
-- 독립 디자인 시스템
-- 공통 Header / Footer
-- GA4 / SEO / JSON-LD
-- robots / sitemap / llms / 404
-- 자동 QA PASS
-- 계산 검증 PASS
-- 1440 / 1280 / 1024 / 768 / 390 브라우저 QA PASS
-- HIGH 위험 0
-- handover.md 갱신
-- commit 및 가능한 경우 push
+- [x] 실제 `index.html` 생성
+- [x] 기본 페이지 8개
+- [x] 계산기 10개
+- [x] Guides 4개
+- [x] Reference 4개
+- [x] 독립 디자인 시스템
+- [x] 공통 Header / Footer
+- [x] GA4 / SEO / JSON-LD
+- [x] robots / sitemap / llms / 404
+- [x] 자동 QA PASS
+- [x] 계산 검증 PASS
+- [x] 1440 / 1280 / 1024 / 768 / 390 브라우저 QA PASS
+- [x] HIGH 위험 0
+- [x] handover.md 갱신
+- [x] commit 및 push
 
 ---
 
@@ -564,33 +555,37 @@ Sol
 
 ### 최근 완료 내역
 
-- 날짜:
-- 작업 환경:
-- 사용 모델:
-- 추론 강도:
-- 작업 범위:
-- 변경 파일:
-- 공개 HTML 수:
-- 계산기 수:
-- Guides 수:
-- Reference 수:
-- 자동 QA:
-- 계산 검증:
-- 브라우저 QA:
-- 커밋:
-- push:
-- 실배포 확인:
-- 남은 문제:
+- 날짜: 2026-07-26
+- 작업 환경: Windows / PowerShell / Codex Desktop
+- 사용 모델: Sol
+- 추론 강도: 중간
+- 작업 범위: Phase 1 — Foundation Build 전체
+- 변경 파일: 공개 HTML 26개, 공통 CSS/JS, favicon, robots, sitemap, llms, 페이지 생성기, 자동 QA, 계산 검증
+- 공개 HTML 수: 26
+- 계산기 수: 10
+- Guides 수: 4
+- Reference 수: 4
+- 자동 QA: PASS — 26 HTML, 25 sitemap URL, JavaScript 5개 문법 및 구조 검증
+- 계산 검증: PASS — 계산기 10개, 독립 검사 50개
+- 브라우저 QA: PASS — 필수 22페이지 × 1440/1280/1024/768/390 = 110 렌더 검사, 가로 넘침·H1·Header·Footer·콘솔 오류 0; 계산기 버튼 10개 통과; 모바일 메뉴·오류 처리·Reset 통과
+- 커밋: `0562df1` — Build Pack Prep Tools Phase 1 foundation
+- push: `origin/main` push 완료
+- 실배포 확인: https://packpreptools.com/ 에서 새 Homepage title/H1, canonical, GA4, 도구 10개 노출 확인; https://packpreptools.com/tools/dimensional-weight.html 에서 Calculate 결과 `6.91 lb` 및 콘솔 오류 0 확인
+- 남은 문제: HIGH 없음, MEDIUM 없음. LOW — 운송사 DIM divisor와 포장재 yield는 시점·계약·작업 방식에 따라 달라지므로 콘텐츠 주기 검토와 현장 보정 필요
 
 ### 다음 작업
 
-- 작업:
-- 권장 모델:
-- 추론 강도:
-- 완료 조건:
+- 작업: Phase 1 운영 관찰 후 Phase 2 범위 우선순위 확정
+- 권장 모델: Sol
+- 추론 강도: 중간
+- 완료 조건: GA4 수집·검색 색인·404 유입·계산기 피드백 확인, 최신 carrier divisor 및 포장재 가정 검토, Phase 2 범위를 별도 승인 후 시작
 
 ### 최근 검증 명령
 
 ```bash
-# 실제 실행한 명령으로 교체
+node scripts/generate-site.js
+node scripts/qa.js
+node scripts/verify-calculators.js
+git diff --check
+git status
 ```
