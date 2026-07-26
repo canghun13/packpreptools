@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tape Usage Calculator | Pack Prep Tools</title>
+  <meta name="description" content="Estimate tape use per carton and across a batch using center-seam or H-seal patterns.">
+  
+  <link rel="canonical" href="https://packpreptools.com/tools/tape-usage.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pack Prep Tools">
+  <meta property="og:title" content="Tape Usage Calculator">
+  <meta property="og:description" content="Estimate tape use per carton and across a batch using center-seam or H-seal patterns.">
+  <meta property="og:url" content="https://packpreptools.com/tools/tape-usage.html">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XR7JWJ36CD');
+  </script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Tape Usage Calculator","applicationCategory":"BusinessApplication","operatingSystem":"Any","url":"https://packpreptools.com/tools/tape-usage.html","description":"Estimate tape use per carton and across a batch using center-seam or H-seal patterns.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://packpreptools.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://packpreptools.com/tools.html"},{"@type":"ListItem","position":3,"name":"Tape Usage Calculator","item":"https://packpreptools.com/tools/tape-usage.html"}]}]}</script>
+</head><body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="Pack Prep Tools home"><span class="brand-mark" aria-hidden="true"></span><span>Pack Prep Tools</span></a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-button>Menu</button>
+    <nav class="site-nav" id="site-nav" aria-label="Primary" data-site-nav>
+      <a href="/">Home</a><a href="/tools.html" aria-current="page">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <header class="page-hero"><div class="page-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/tools.html">Tools</a> <span aria-hidden="true">/</span> <span>Tape Usage Calculator</span></nav><p class="eyebrow">Packing worksheet</p><h1>Tape Usage Calculator</h1><p class="lede">Estimate tape use per carton and across a batch using center-seam or H-seal patterns.</p></div></header>
+  <section class="section"><div class="page-shell calculator-layout">
+    <div class="worksheet"><div class="worksheet-head"><span>Input specification</span><span>Units stay visible</span></div>
+      <form class="calculator-form" data-calculator="tape-usage" novalidate><div class="field-grid"><div class="field"><label for="unit">Measurement unit</label><select id="unit" name="unit"><option value="in">Inches (in)</option><option value="cm">Centimeters (cm)</option></select></div><div class="field"><label for="length">Box length</label><div class="input-shell"><input id="length" name="length" type="number" inputmode="decimal" min="0" step="any" value="14" required aria-describedby="length-unit"><span class="suffix" id="length-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="width">Box width</label><div class="input-shell"><input id="width" name="width" type="number" inputmode="decimal" min="0" step="any" value="10" required aria-describedby="width-unit"><span class="suffix" id="width-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="overhang">End overhang</label><div class="input-shell"><input id="overhang" name="overhang" type="number" inputmode="decimal" min="0" step="any" value="2" required aria-describedby="overhang-unit"><span class="suffix" id="overhang-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="cartons">Carton count</label><div class="input-shell"><input id="cartons" name="cartons" type="number" inputmode="decimal" min="0" step="any" value="100" required aria-describedby="cartons-unit"><span class="suffix" id="cartons-unit">count</span></div></div><div class="field field-wide"><label for="pattern">Seal pattern</label><select id="pattern" name="pattern"><option value="center">Center seam — top and bottom</option><option value="h">H-seal — top and bottom</option></select></div></div><div class="form-actions"><button class="button button-primary" type="submit">Calculate</button><button class="button button-quiet" type="reset">Reset</button></div><p class="form-error" data-error role="alert" aria-live="polite"></p></form>
+    </div>
+    <section class="result-sheet" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="result-head"><span>Pack specification</span><span>Estimate</span></div><div class="result-body"><p class="result-kicker">Calculated result</p><p class="result-primary" data-result-primary>Enter your package details to begin.</p><dl class="result-values" data-result-values></dl></div></section>
+  </div></section>
+  <section class="section"><div class="page-shell content-grid"><article class="prose">
+    <h2>Calculation method</h2><p>This worksheet uses the following planning method:</p><div class="formula">Center seam = 2 × (length + 2 × overhang); H-seal adds 4 × (width + 2 × overhang)</div>
+    <h2>Worked example</h2><p>For 100 cartons measuring 14 × 10 in with 2 in overhang, a center seam uses 3,600 in, or 300 ft, of tape.</p>
+    <h2>How to interpret the result</h2><p>Compare the total with roll length and add a shop-specific setup and waste allowance before ordering.</p>
+    <h2>Assumptions and limitations</h2><p>The model covers top and bottom seals. Reinforcement, poor adhesion, rework, tabs, and dispenser losses are excluded.</p>
+    <div class="note"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
+    <p class="meta-line">Last reviewed: July 26, 2026</p>
+  </article><aside class="side-links"><h2>Continue the pack plan</h2><ul><li><a href="/tools/packaging-cost.html">Packaging Cost per Order Calculator</a></li><li><a href="/tools/box-size.html">Box Size Calculator</a></li><li><a href="/guides/reduce-packaging-cost.html">Read the related guide or reference</a></li><li><a href="/tools.html">View all calculators</a></li></ul></aside></div></section>
+</main><script src="/assets/calculators.js" defer></script><footer class="site-footer">
+  <div class="footer-inner">
+    <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span>Pack Prep Tools</span></a><p class="footer-copy">Practical measurements, material estimates, and packing-cost worksheets for small shipping operations.</p></div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="/tools.html">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a>
+    </nav>
+    <div class="footer-bottom">© 2026 Pack Prep Tools. Planning estimates only; verify fit, protection, and current carrier rules.</div>
+  </div>
+</footer>
+<script src="/assets/site.js" defer></script>
+</body>
+</html>

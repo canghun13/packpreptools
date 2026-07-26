@@ -1,0 +1,20 @@
+# Pack Prep Tools
+
+> Practical packaging calculators, guides, and reference sheets for online sellers and small packing operations.
+
+Canonical site: https://packpreptools.com/
+Language: English
+Contact: canghun13@naver.com
+
+## Main sections
+
+- [Homepage](https://packpreptools.com/): Site overview and packing workflow.
+- [Tools](https://packpreptools.com/tools.html): Ten calculators for dimensions, materials, and cost.
+- [Guides](https://packpreptools.com/guides.html): Four practical packaging guides.
+- [Reference](https://packpreptools.com/reference.html): Four concise packaging reference sheets.
+- [About](https://packpreptools.com/about.html): Scope and intended use.
+- [Privacy](https://packpreptools.com/privacy.html): Analytics and calculator input practices.
+
+## Use and limitations
+
+Calculator results are planning estimates. Pack Prep Tools does not provide live shipping quotes, buy labels, store orders, or guarantee carrier or regulatory compliance. Users should verify physical fit, protection, and current supplier or carrier rules.

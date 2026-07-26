@@ -1,0 +1,12 @@
+{
+  "name": "pack-prep-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static packaging calculators and reference pages for small sellers.",
+  "scripts": {
+    "build": "node scripts/generate-site.js",
+    "qa": "node scripts/qa.js",
+    "test:calculators": "node scripts/verify-calculators.js",
+    "test": "npm run qa && npm run test:calculators"
+  }
+}
