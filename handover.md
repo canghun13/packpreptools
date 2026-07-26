@@ -526,7 +526,7 @@ Guide / Reference:
 
 ### 작업
 
-Phase 2 + Phase 3 — Pack Prep Tools 1차 완성 완료
+62개 공개 HTML 전수 콘텐츠 감사 및 콘텐츠 포함 1차 완성
 
 ### 권장 모델
 
@@ -538,29 +538,23 @@ Sol
 
 ### 완료 조건
 
-- [x] 실제 `index.html` 생성
-- [x] 기본 페이지 8개
-- [x] 계산기 32개
-- [x] Guides 12개
-- [x] Reference 10개
-- [x] 독립 디자인 시스템
-- [x] 공통 Header / Footer
-- [x] GA4 / SEO / JSON-LD
-- [x] robots / sitemap / llms / 404
-- [x] 자동 QA PASS
+- [x] 공개 HTML 62개 유지
+- [x] 계산기 32개 고유 본문 보강
+- [x] Guides 12개 독립 실무 문서 수준으로 보강
+- [x] Reference 10개 정의·구분·예제·사용 절차 보강
+- [x] 새 페이지·URL 변경 없음
+- [x] 범용 긴 문장·문단 반복 0
+- [x] 자동 QA 및 콘텐츠 QA PASS
 - [x] 계산 검증 160개 PASS
 - [x] 공개 HTML 62개 × 1440 / 1280 / 1024 / 768 / 390 브라우저 QA PASS
-- [x] Tabletop Maker Lab 비교 Quality Gate PASS
-- [x] 자산 버전 키 적용 및 캐시 혼합 방지
+- [x] Calculate / Reset / 오류 처리 32개 PASS
+- [x] 기존 디자인·공식·입출력 ID·SEO·GA4 보존
 - [x] HIGH 위험 0
-- [x] handover.md 갱신
-- [x] commit 및 push
+- [x] commit, push, 실배포 확인
 
 ---
 
 ## 14. 작업 기록
-
-작업 완료 전 아래를 갱신한다.
 
 ### 최근 완료 내역
 
@@ -568,39 +562,44 @@ Sol
 - 작업 환경: Windows / PowerShell / Codex Desktop
 - 사용 모델: Sol
 - 추론 강도: 중간
-- 작업 범위: Phase 2 + Phase 3 연속 구현, Pack Prep Tools 1차 완성
-- 변경 파일: 총 69개 — 신규 공개 HTML 36개, 기존 HTML/생성기/계산·QA/검색 파일 갱신 32개, handover 1개
-- 공개 HTML 수: 62
-- 계산기 수: 32
-- Guides 수: 12
-- Reference 수: 10
-- 신규 계산기 22개: Carton Count, Case Pack, Box Utilization, Multi-item Box Fit, Packaging Material Budget, Monthly Packaging Spend, Label Cost, Insert Quantity, Packaging Waste Allowance, Packaging Supply Reorder Point, Order Packing Time, Labor Capacity per Shift, Prep Batch Time, Kitting Cost, Bundle Packing Cost, Master Carton Dimensions, Master Carton Weight, Carton Cube, Cases per Pallet, Pallet Layer Count, Pallet Height, Pallet Utilization
-- 신규 Guides 8개: Box vs Poly Mailer, How to Choose Void Fill, Packing Station Workflow, Packaging Inventory Basics, Tape Types and Seal Patterns, Packaging Cost Reduction Checklist, Master Carton Planning, Pallet Planning Basics
-- 신규 Reference 6개: Packaging Unit Conversion, Packaging Cost Components, Box Style and Closure Glossary, Void Fill Yield Factors, Master Carton Terms, Pallet and Unit Load Terms
-- 제외 또는 교체한 계산기: 없음. 요청된 22개 모두 기존 도구와 다른 운영 출력을 제공한다고 판정해 구현함
-- Multi-item Box Fit 범위: 6개 직교 방향의 단순 격자 용량 추정이며 3D bin-packing 최적화로 주장하지 않음
-- Pallet 범위: 팔레트 크기·최대 높이·레이어를 사용자 입력으로 받고 안정성·압축 강도·무게 중심·장비·규제 적합성을 보증하지 않음
-- 자동 QA: PASS — 62 HTML, 61 sitemap URL, JavaScript 5개, 고유 title/description/canonical/H1, GA4, JSON-LD, 중복 ID, 내부 링크, 허브 도달성, robots/sitemap/llms, 404 noindex 검증
-- 계산 검증: PASS — 계산기 32개, 독립 검사 160개. 기존 10개 50건 회귀 검사와 신규 22개 110건 정상·경계·오류·재입력 결정성 검사
-- 브라우저 QA: PASS — 공개 HTML 62개 × 1440/1280/1024/768/390 = 310 렌더 검사. 가로 넘침, Header·로고·Footer, 테이블, H1, NaN/Infinity 실패 0
-- 계산기 UI QA: PASS — Calculate 32개, Reset 32개, 모바일 suffix 32개, 모바일 메뉴, 물리적 불가 입력 오류 3종, 콘솔 오류 0
-- 디자인 일관성: PASS — Shipping operations console / packing manifest / dispatch control sheet 유지. 밝은 2단 Header, 전폭 Hero, Quick Start 4개, workflow, 운영 테이블, 문서 인덱스, 전폭 manifest와 summary strip 보존
-- 기존 기능 회귀: PASS — 기존 URL, 기존 계산기 10개 공식과 입력/결과 ID, GA4, canonical, JSON-LD, 내부 링크 보존
-- 검색 파일: sitemap 61개 색인 URL, 404 제외; robots와 llms를 32/12/10 최종 구조로 재생성
-- 캐시 대응: favicon/CSS/site.js/calculators.js 자산 버전을 `20260726-complete`로 갱신
-- 구현 커밋: `bb9732e9cb84842cf1feaf5fde20eb63bac040bd` — Complete Pack Prep Tools phases 2 and 3
+- 작업 범위: 기존 62개 공개 HTML의 콘텐츠 전수 감사와 계산기·Guide·Reference 심화. 새 페이지 및 기능 추가 없음
+- 수정 전 감사: 충분 8개 — Homepage, Tools, Guides, Reference, About, Contact, Privacy, 404; 보강 필요 0개; 얇음 54개 — 계산기 32개, Guides 12개, Reference 10개
+- 수정 후 감사: 충분 62개; 보강 필요 0개; 얇음 0개
+- 보강한 계산기: 32개
+- 보강한 Guides: 12개
+- 보강한 Reference: 10개
+- 계산기 콘텐츠: 계산 목적, 입력 선택법, 단계별 계산 흐름, 현실적인 worked example, 결과 해석, 고유한 common mistakes, 가정과 한계, 전후 workflow 링크를 각 도구별로 작성
+- Guide 콘텐츠: 작업 준비, 순서, 판단표, 현실적인 scenario, 흔한 실수, close-out, 증거·소유권·재검토 조건, 체크리스트를 각 문서별로 작성
+- Reference 콘텐츠: 운영상 의미, 정의, 적용 예제, 유사 용어 구분표, 사용 절차, 기록 유지, 검증 주의를 각 주제별로 작성
+- 본문 분량: 계산기 471–707단어, 평균 573.2; Guides 712–858단어, 평균 775.0; Reference 532–602단어, 평균 571.3
+- 반복 문구 제거: 기존 범용 템플릿 3종이 쓰인 43개 문단 인스턴스에서 원본 외 중복 40건을 제거. 최종 긴 본문 문단 반복 0, 긴 본문 문장 반복 0
+- 콘텐츠 UI: 입력 선택표, 단계 목록, 예제 블록, 체크리스트, 공식 블록을 기존 shipping operations console 디자인 안에 추가. 680px 이하에서 표를 행 단위 레이아웃으로 전환
+- 콘텐츠 QA: PASS — 빈 H2/무의미 섹션, placeholder/TODO/lorem ipsum, 짧은 본문 경고, worked example·assumptions·common mistakes·input guidance·related workflow·Last reviewed 누락 모두 0
+- 자동 QA: PASS — 62 HTML, 61 sitemap URL, JavaScript 5개, 고유 title/description/canonical/H1, GA4 `G-XR7JWJ36CD`, JSON-LD, 중복 ID, 내부 링크, orphan page, 허브 도달성, robots/sitemap/llms, 404 noindex 검증
+- 계산 검증: PASS — 계산기 32개, 독립 검사 160개
+- 브라우저 QA: PASS — 공개 HTML 62개 × 1440/1280/1024/768/390 = 310 렌더 검사. 본문·표·공식·예제·체크리스트·관련 링크, Header/Footer, H1, 가로 넘침, 잘림, NaN/Infinity 실패 0
+- 계산기 UI QA: PASS — Calculate 32개, Reset 32개, 오류 처리 32개, 모바일 suffix 32개, 모바일 메뉴, 콘솔 오류 0
+- 기존 기능 회귀: PASS — `assets/calculators.js`와 `assets/site.js` 변경 없음. 공개 URL, 계산 공식, 단위 변환, 입력/결과 ID, manifest 입력, 전폭 결과, 네이비·블루 디자인, GA4, canonical, title/description 검색 의도, JSON-LD, 내부 링크 보존
+- 최종 공개 HTML: 62
+- 최종 계산기: 32
+- 최종 Guides: 12
+- 최종 Reference: 10
+- 검색 파일: sitemap 61개 색인 URL과 404 제외 유지; robots와 llms를 동일 32/12/10 구조로 재생성
+- 캐시 대응: favicon/CSS/site.js/calculators.js 자산 버전을 `20260726-content`로 갱신
+- 변경 파일: 구현·생성 결과 65개와 handover 1개
+- 구현 커밋: `acce90bf913e4d2c3759556156fb4ad63b5e218b` — Deepen calculator and document content
 - push: `origin/main` push 완료
-- 실배포 확인: GitHub Pages run `30196409094` build/deploy 성공. 기본 https://packpreptools.com/ 응답에서 32 calculators·22 documents·Quick Start 4개와 `20260726-complete` CSS 확인. Tools hub 32행·6개 카테고리 확인. Master Carton Dimensions 실계산 결과 `25.5 × 11.25 × 7.25 in`, 콘솔 오류 0, 가로 넘침 0 확인
-- 남은 문제: HIGH 없음, MEDIUM 없음. LOW — 운송사 divisor, 포장재 yield, 공급 리드타임, 작업 속도는 운영 데이터에 맞춰 주기 보정 필요. Cloudflare HTML 캐시는 배포 직후 TTL 전파 차이가 날 수 있음
-- 1차 완성 판정: 가능 — 수량·기능·콘텐츠·SEO·QA·배포 기준 충족
+- 실배포 확인: GitHub Pages run `30198789151` build/deploy 성공. `https://packpreptools.com/`과 대표 계산기·Guide·Reference가 `20260726-content` 자산을 반환함. Dimensional Weight Calculator는 심화 섹션 8개와 576단어 본문, 기본 입력 계산 결과 `6.91 lb`, 콘솔 오류 0, 가로 넘침 0 확인. Master Carton Planning Guide는 748단어와 evidence 섹션, Pallet and Unit Load Terms는 578단어와 maintenance 섹션 확인
+- 남은 문제: HIGH 없음, MEDIUM 없음. LOW — 운송사 divisor, 포장재 yield, 공급 리드타임, 작업 속도와 단가는 운영 데이터 및 최신 공식 조건에 맞춰 주기 보정 필요. Cloudflare HTML 캐시는 배포 직후 TTL 전파 차이가 날 수 있음
+- 콘텐츠 포함 1차 완성 판정: 가능 — 수량, 고유성, 실무 깊이, 기능 회귀, SEO, 반응형 QA, 배포 기준 충족
 
 ### 다음 작업
 
-- 작업: 1차 완성 운영 관찰과 실제 입력 가정 보정
+- 작업: 콘텐츠 포함 1차 완성 운영 관찰과 실제 입력 가정 보정
 - 권장 모델: Sol
 - 추론 강도: 중간
-- 일정: 배포 후 7일에 기본 URL 캐시·404·콘솔·모바일 확인, 30일에 GA4·검색 색인·도구 사용 분포 확인, 이후 분기마다 divisor·yield·lead time·labor pace 검토
-- 완료 조건: 운영 데이터로 가정값과 문서 검토일을 갱신하고, 기능 확장은 별도 승인된 범위에서만 시작
+- 일정: 배포 후 7일에 기본 URL 캐시·404·콘솔·모바일 확인, 30일에 GA4·검색 색인·도구 사용 분포 확인, 이후 분기마다 divisor·yield·lead time·labor pace·단가 검토
+- 완료 조건: 운영 데이터와 최신 공식 조건으로 가정값 및 문서 검토일을 갱신하고, 기능 확장은 별도 승인된 범위에서만 시작
 
 ### 최근 검증 명령
 
