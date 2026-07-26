@@ -1,20 +1,65 @@
 # Pack Prep Tools
 
-> Practical packaging calculators, guides, and reference sheets for online sellers and small packing operations.
+Packaging calculations and operating references for repeatable shipment preparation.
 
-Canonical site: https://packpreptools.com/
-Language: English
-Contact: canghun13@naver.com
+## Calculators (32)
+- [Dimensional Weight Calculator](https://packpreptools.com/tools/dimensional-weight.html): Calculate dimensional weight in pounds or kilograms from package dimensions and a carrier divisor.
+- [Length + Girth Calculator](https://packpreptools.com/tools/length-girth.html): Calculate package length plus girth in inches or centimeters for shipping size checks.
+- [Box Size Calculator](https://packpreptools.com/tools/box-size.html): Estimate minimum internal box dimensions from product size, cushioning thickness, and clearance.
+- [Box Volume Calculator](https://packpreptools.com/tools/box-volume.html): Calculate rectangular box volume in cubic inches or cubic centimeters, liters, and cubic feet.
+- [Void Fill Calculator](https://packpreptools.com/tools/void-fill.html): Estimate package void volume and cushioning fill needs from box size, product size, quantity, and a fill factor.
+- [Bubble Wrap Calculator](https://packpreptools.com/tools/bubble-wrap.html): Estimate bubble wrap area for a rectangular product using layers and overlap allowance.
+- [Packing Paper Calculator](https://packpreptools.com/tools/packing-paper.html): Estimate packing paper sheet count from box void and an operator-tested crumpled yield depth.
+- [Tape Usage Calculator](https://packpreptools.com/tools/tape-usage.html): Estimate tape use per carton and across a batch using center-seam or H-seal patterns.
+- [Poly Mailer Size Calculator](https://packpreptools.com/tools/poly-mailer-size.html): Estimate minimum internal poly mailer width and length for a rectangular soft or boxed product.
+- [Packaging Cost per Order Calculator](https://packpreptools.com/tools/packaging-cost.html): Calculate packaging cost per order from supplies, waste percentage, labor minutes, and hourly labor rate.
+- [Carton Count Calculator](https://packpreptools.com/tools/carton-count.html): Calculate cartons required from unit demand and units per carton.
+- [Case Pack Calculator](https://packpreptools.com/tools/case-pack.html): Convert case quantities and loose reserve units into a total unit plan.
+- [Box Utilization Calculator](https://packpreptools.com/tools/box-utilization.html): Compare total rectangular item volume with internal box volume.
+- [Multi-item Box Fit Calculator](https://packpreptools.com/tools/multi-item-box-fit.html): Estimate orthogonal grid capacity across six item orientations.
+- [Packaging Material Budget Calculator](https://packpreptools.com/tools/packaging-material-budget.html): Budget variable packaging materials with waste and contingency allowances.
+- [Monthly Packaging Spend Calculator](https://packpreptools.com/tools/monthly-packaging-spend.html): Project monthly and planning-period packaging spend.
+- [Label Cost Calculator](https://packpreptools.com/tools/label-cost.html): Estimate label quantity and cost with a changeable waste allowance.
+- [Insert Quantity Calculator](https://packpreptools.com/tools/insert-quantity.html): Plan cards, leaflets, and instructions with a spoilage allowance.
+- [Packaging Waste Allowance Calculator](https://packpreptools.com/tools/packaging-waste-allowance.html): Add an adjustable waste percentage to a base supply requirement.
+- [Packaging Supply Reorder Point Calculator](https://packpreptools.com/tools/packaging-supply-reorder-point.html): Set a packaging supply reorder trigger from use, lead time, and safety stock.
+- [Order Packing Time Calculator](https://packpreptools.com/tools/order-packing-time.html): Estimate batch duration from setup time and minutes per order.
+- [Labor Capacity per Shift Calculator](https://packpreptools.com/tools/labor-capacity-per-shift.html): Estimate completed orders from staffing, shift time, utilization, and pack time.
+- [Prep Batch Time Calculator](https://packpreptools.com/tools/prep-batch-time.html): Combine setup, per-unit preparation, and quality-check time.
+- [Kitting Cost Calculator](https://packpreptools.com/tools/kitting-cost.html): Estimate component, packaging, waste, and assembly labor cost per kit.
+- [Bundle Packing Cost Calculator](https://packpreptools.com/tools/bundle-packing-cost.html): Estimate item handling, bundle materials, and packing labor per bundle.
+- [Master Carton Dimensions Calculator](https://packpreptools.com/tools/master-carton-dimensions.html): Estimate minimum internal master carton dimensions from a row, column, and layer layout.
+- [Master Carton Weight Calculator](https://packpreptools.com/tools/master-carton-weight.html): Check estimated packed carton weight against a user-entered planning maximum.
+- [Carton Cube Calculator](https://packpreptools.com/tools/carton-cube.html): Calculate cube per carton and total shipment cube.
+- [Cases per Pallet Calculator](https://packpreptools.com/tools/cases-per-pallet.html): Estimate straight-grid cases per pallet across a user-entered layer count.
+- [Pallet Layer Count Calculator](https://packpreptools.com/tools/pallet-layer-count.html): Calculate required pallet layers within a user-entered maximum.
+- [Pallet Height Calculator](https://packpreptools.com/tools/pallet-height.html): Check pallet, load, and top allowance against a user-entered height maximum.
+- [Pallet Utilization Calculator](https://packpreptools.com/tools/pallet-utilization.html): Estimate pallet footprint utilization from case footprint and cases per layer.
 
-## Main sections
+## Guides (12)
+- [How to Measure a Box Correctly](https://packpreptools.com/guides/how-to-measure-a-box.html): Measure package length, width, and height consistently and understand internal versus external dimensions.
+- [Dimensional Weight Explained for Small Sellers](https://packpreptools.com/guides/dimensional-weight-explained.html): Understand why dimensional weight matters, how divisors work, and what small sellers should verify.
+- [How Much Clearance Should Packaging Have?](https://packpreptools.com/guides/how-much-packaging-clearance.html): Plan product clearance for insertion, protective material, movement control, and a practical pack test.
+- [How to Reduce Packaging Cost per Order](https://packpreptools.com/guides/reduce-packaging-cost.html): Break packaging cost into materials, waste, and labor before changing a pack method.
+- [Box vs Poly Mailer: How to Choose](https://packpreptools.com/guides/box-vs-poly-mailer.html): Choose a box or flexible mailer from protection, shape, closure, and handling needs.
+- [How to Choose Void Fill](https://packpreptools.com/guides/how-to-choose-void-fill.html): Select and calibrate void fill by movement control, yield, pack speed, and recovery.
+- [Packing Station Workflow for Small Sellers](https://packpreptools.com/guides/packing-station-workflow.html): Build a repeatable dispatch workflow from staging through verification and release.
+- [Packaging Inventory Basics](https://packpreptools.com/guides/packaging-inventory-basics.html): Plan packaging supply demand, safety stock, reorder points, and cycle checks.
+- [Tape Types and Common Seal Patterns](https://packpreptools.com/guides/tape-types-and-seal-patterns.html): Compare carton tape considerations and document center-seam and H-seal usage.
+- [Packaging Cost Reduction Checklist](https://packpreptools.com/guides/packaging-cost-reduction-checklist.html): Audit material, labor, waste, inventory, and shipment-size changes without weakening the pack.
+- [Master Carton Planning Guide](https://packpreptools.com/guides/master-carton-planning.html): Plan unit layout, internal dimensions, packed weight, closure, and verification for master cartons.
+- [Pallet Planning Basics for Small Shipments](https://packpreptools.com/guides/pallet-planning-basics.html): Estimate layers, height, footprint use, and load limits before physical pallet verification.
 
-- [Homepage](https://packpreptools.com/): Site overview and packing workflow.
-- [Tools](https://packpreptools.com/tools.html): Ten calculators for dimensions, materials, and cost.
-- [Guides](https://packpreptools.com/guides.html): Four practical packaging guides.
-- [Reference](https://packpreptools.com/reference.html): Four concise packaging reference sheets.
-- [About](https://packpreptools.com/about.html): Scope and intended use.
-- [Privacy](https://packpreptools.com/privacy.html): Analytics and calculator input practices.
+## Reference (10)
+- [Package Measurement Terms](https://packpreptools.com/reference/package-measurement-terms.html): A practical glossary of package dimensions, girth, volume, clearance, and billable weight.
+- [Common Packaging Materials and Uses](https://packpreptools.com/reference/common-packaging-materials.html): Compare common boxes, mailers, cushioning, paper, bubble wrap, and closure materials.
+- [Dimensional Weight Divisors](https://packpreptools.com/reference/dimensional-weight-divisors.html): Understand dimensional weight divisors, units, and why current carrier confirmation is essential.
+- [Box Dimensions: Internal vs External](https://packpreptools.com/reference/internal-vs-external-box-dimensions.html): Know when to use internal carton dimensions and when finished external dimensions are required.
+- [Packaging Unit Conversion Reference](https://packpreptools.com/reference/packaging-unit-conversion.html): Convert common packaging length, area, volume, and weight units consistently.
+- [Packaging Cost Components](https://packpreptools.com/reference/packaging-cost-components.html): Build a complete packaging cost record from materials, labor, waste, and operating overhead.
+- [Box Style and Closure Glossary](https://packpreptools.com/reference/box-style-and-closure-glossary.html): Understand common corrugated box structures, flaps, seams, and closure terms.
+- [Void Fill Yield Factors](https://packpreptools.com/reference/void-fill-yield-factors.html): Calibrate paper, pillows, and other void-fill planning factors with production samples.
+- [Master Carton Terms](https://packpreptools.com/reference/master-carton-terms.html): Define case pack, master carton layout, tare, cube, and packed-carton measurements.
+- [Pallet and Unit Load Terms](https://packpreptools.com/reference/pallet-and-unit-load-terms.html): Define pallet footprint, layers, utilization, overhang, containment, and load limits.
 
-## Use and limitations
-
-Calculator results are planning estimates. Pack Prep Tools does not provide live shipping quotes, buy labels, store orders, or guarantee carrier or regulatory compliance. Users should verify physical fit, protection, and current supplier or carrier rules.
+All calculator outputs are planning estimates. Verify physical packs and current supplier, marketplace, carrier, facility, and regulatory requirements.

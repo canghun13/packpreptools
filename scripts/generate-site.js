@@ -103,7 +103,7 @@ const tools = [
     ],
     formula: "Estimated fill = (box volume − total product volume) × fill factor",
     example: "A 14 × 10 × 8 in box around one 10 × 6 × 4 in product leaves 880 in³. At a 1.0 fill factor, estimate 880 in³ of loose filled volume.",
-    interpretation: "Use the empty-space share to spot oversized cartons. Convert the estimate into bags, paper, or dispensing settings with a bench trial.",
+    interpretation: "Use the empty-space share to spot oversized cartons. Convert the estimate into bags, paper, or dispensing settings with a production trial.",
     assumptions: "Product volume is simplified to a rectangular block. The fill factor is an operational adjustment, not a material density specification.",
     related: ["packing-paper", "box-volume"],
     doc: "/guides/how-much-packaging-clearance.html"
@@ -148,7 +148,7 @@ const tools = [
     formula: "Sheets = round up [void volume ÷ (sheet length × sheet width × tested yield depth)]",
     example: "An 880 in³ void divided by an estimated 864 in³ crumpled yield per 24 × 18 in sheet rounds up to 2 sheets.",
     interpretation: "Calibrate yield depth by packing several real orders with your paper weight and operator method.",
-    assumptions: "Paper does not fill space like a solid block. This planning estimate must be calibrated with repeatable bench tests.",
+    assumptions: "Paper does not fill space like a solid block. This planning estimate must be calibrated with repeatable packing trials.",
     related: ["void-fill", "bubble-wrap"],
     doc: "/reference/common-packaging-materials.html"
   },
@@ -217,18 +217,78 @@ const tools = [
   }
 ];
 
+const phaseTools = [
+  ["carton-count", "Carton Count Calculator", "Calculate cartons required from unit demand and units per carton.", [["units","Units required","125","count"],["perCarton","Units per carton","24","count"]], "Cartons = round up (units required ÷ units per carton)", "For 125 units at 24 units per carton, plan 6 cartons with 19 units in the final carton.", ["case-pack","master-carton-dimensions"], "/guides/master-carton-planning.html"],
+  ["case-pack", "Case Pack Calculator", "Convert case quantities and loose reserve units into a total unit plan.", [["cases","Sealed case quantity","12","count"],["unitsPerCase","Units per case","24","count"],["reserve","Loose reserve units","6","count"]], "Total units = cases × units per case + reserve units", "Twelve cases of 24 plus 6 reserve units produce a 294-unit availability plan.", ["carton-count","insert-quantity"], "/reference/master-carton-terms.html"],
+  ["box-utilization", "Box Utilization Calculator", "Compare total rectangular item volume with internal box volume.", [["boxLength","Box internal length","16","length"],["boxWidth","Box internal width","12","length"],["boxHeight","Box internal height","10","length"],["itemLength","Item length","7","length"],["itemWidth","Item width","5","length"],["itemHeight","Item height","3","length"],["quantity","Item quantity","4","count"]], "Utilization = total item volume ÷ internal box volume × 100", "Four 7 × 5 × 3 in item blocks occupy 420 in³ of a 1,920 in³ box, or 21.9%.", ["multi-item-box-fit","void-fill"], "/guides/how-to-choose-void-fill.html"],
+  ["multi-item-box-fit", "Multi-item Box Fit Calculator", "Estimate orthogonal grid capacity across six item orientations.", [["boxLength","Box internal length","16","length"],["boxWidth","Box internal width","12","length"],["boxHeight","Box internal height","10","length"],["itemLength","Item length","7","length"],["itemWidth","Item width","5","length"],["itemHeight","Item height","3","length"],["quantity","Required quantity","8","count"]], "Grid capacity = maximum of floor(box side ÷ rotated item side) products", "A 7 × 5 × 3 in item is checked in six orthogonal orientations inside a 16 × 12 × 10 in box.", ["box-utilization","master-carton-dimensions"], "/guides/master-carton-planning.html"],
+  ["packaging-material-budget", "Packaging Material Budget Calculator", "Budget variable packaging materials with waste and contingency allowances.", [["orders","Planned orders","1000","count"],["materialCost","Material cost per order","1.35","currency"],["waste","Waste allowance","5","percent"],["contingency","Contingency reserve","3","percent"]], "Budget = orders × material cost × (1 + waste % + contingency %)", "One thousand orders at $1.35 each with 5% waste and 3% contingency require a $1,458 budget.", ["monthly-packaging-spend","packaging-cost"], "/reference/packaging-cost-components.html"],
+  ["monthly-packaging-spend", "Monthly Packaging Spend Calculator", "Project monthly and planning-period packaging spend.", [["orders","Monthly orders","1500","count"],["costPerOrder","Variable cost per order","1.45","currency"],["fixedCost","Monthly fixed packaging cost","250","currency"],["months","Planning months","3","count"]], "Monthly spend = monthly orders × cost per order + fixed packaging cost", "At 1,500 orders, $1.45 variable cost, and $250 fixed cost, monthly spend is $2,425.", ["packaging-material-budget","packaging-cost"], "/guides/packaging-cost-reduction-checklist.html"],
+  ["label-cost", "Label Cost Calculator", "Estimate label quantity and cost with a changeable waste allowance.", [["orders","Order count","1000","count"],["labelsPerOrder","Labels per order","2","count"],["unitCost","Cost per label","0.04","currency"],["waste","Waste allowance","3","percent"]], "Label cost = round up [orders × labels per order × (1 + waste %)] × unit cost", "One thousand orders using two $0.04 labels with 3% waste require 2,060 labels costing $82.40.", ["insert-quantity","packaging-material-budget"], "/reference/packaging-cost-components.html"],
+  ["insert-quantity", "Insert Quantity Calculator", "Plan cards, leaflets, and instructions with a spoilage allowance.", [["orders","Order count","1200","count"],["insertsPerOrder","Inserts per order","1","count"],["spoilage","Spoilage allowance","4","percent"]], "Inserts = round up [orders × inserts per order × (1 + spoilage %)]", "For 1,200 orders and 4% spoilage, plan 1,248 single inserts.", ["label-cost","packaging-waste-allowance"], "/guides/packaging-inventory-basics.html"],
+  ["packaging-waste-allowance", "Packaging Waste Allowance Calculator", "Add an adjustable waste percentage to a base supply requirement.", [["baseQuantity","Base material quantity","1000","count"],["waste","Waste allowance","7","percent"]], "Planned quantity = round up [base quantity × (1 + waste %)]", "A base requirement of 1,000 units with 7% waste becomes 1,070 units.", ["packaging-supply-reorder-point","insert-quantity"], "/reference/void-fill-yield-factors.html"],
+  ["packaging-supply-reorder-point", "Packaging Supply Reorder Point Calculator", "Set a packaging supply reorder trigger from use, lead time, and safety stock.", [["dailyUse","Average daily use","80","count"],["leadDays","Supplier lead time","10","count"],["safetyStock","Safety stock","300","count"],["onHand","Current stock","950","count"]], "Reorder point = average daily use × lead days + safety stock", "Using 80 units daily, 10 lead days, and 300 safety units produces a 1,100-unit reorder point.", ["packaging-waste-allowance","monthly-packaging-spend"], "/guides/packaging-inventory-basics.html"],
+  ["order-packing-time", "Order Packing Time Calculator", "Estimate batch duration from setup time and minutes per order.", [["orders","Orders to pack","120","count"],["minutesPerOrder","Minutes per order","3.5","minutes"],["setupMinutes","Setup minutes","20","minutes"]], "Total time = setup minutes + orders × minutes per order", "A 120-order run at 3.5 minutes each plus 20 minutes setup takes 440 minutes.", ["labor-capacity-per-shift","prep-batch-time"], "/guides/packing-station-workflow.html"],
+  ["labor-capacity-per-shift", "Labor Capacity per Shift Calculator", "Estimate completed orders from staffing, shift time, utilization, and pack time.", [["workers","Packing workers","3","count"],["shiftHours","Shift hours","8","hours"],["utilization","Productive utilization","80","percent"],["minutesPerOrder","Minutes per order","4","minutes"]], "Capacity = workers × shift hours × 60 × utilization % ÷ minutes per order", "Three workers on an eight-hour shift at 80% utilization and four minutes per order can plan 288 orders.", ["order-packing-time","prep-batch-time"], "/guides/packing-station-workflow.html"],
+  ["prep-batch-time", "Prep Batch Time Calculator", "Combine setup, per-unit preparation, and quality-check time.", [["units","Batch units","250","count"],["secondsPerUnit","Seconds per unit","35","seconds"],["setupMinutes","Setup minutes","15","minutes"],["checkMinutes","Quality check minutes","20","minutes"]], "Batch time = setup + checks + units × seconds per unit ÷ 60", "Preparing 250 units at 35 seconds each plus 35 minutes of setup and checks takes about 180.8 minutes.", ["order-packing-time","kitting-cost"], "/guides/packing-station-workflow.html"],
+  ["kitting-cost", "Kitting Cost Calculator", "Estimate component, packaging, waste, and assembly labor cost per kit.", [["componentCost","Average component cost","1.20","currency"],["components","Components per kit","3","count"],["packaging","Kit packaging cost","0.65","currency"],["minutes","Assembly minutes","4","minutes"],["hourly","Hourly labor rate","18","currency-hour"],["waste","Material waste allowance","2","percent"]], "Kit cost = (components × component cost + packaging) × (1 + waste %) + assembly labor", "Three $1.20 components, $0.65 packaging, 2% waste, and four minutes at $18/hour cost about $5.54 per kit.", ["bundle-packing-cost","prep-batch-time"], "/reference/packaging-cost-components.html"],
+  ["bundle-packing-cost", "Bundle Packing Cost Calculator", "Estimate item handling, bundle materials, and packing labor per bundle.", [["items","Items per bundle","4","count"],["handlingCost","Handling cost per item","0.18","currency"],["bundleMaterials","Bundle materials","0.55","currency"],["minutes","Packing minutes","3","minutes"],["hourly","Hourly labor rate","18","currency-hour"]], "Bundle packing cost = items × handling cost + materials + packing labor", "Four items at $0.18 handling, $0.55 materials, and three minutes at $18/hour cost $2.17 per bundle.", ["kitting-cost","packaging-cost"], "/guides/packaging-cost-reduction-checklist.html"],
+  ["master-carton-dimensions", "Master Carton Dimensions Calculator", "Estimate minimum internal master carton dimensions from a row, column, and layer layout.", [["itemLength","Packed unit length","8","length"],["itemWidth","Packed unit width","5","length"],["itemHeight","Packed unit height","3","length"],["columns","Layout columns","3","count"],["rows","Layout rows","2","count"],["layers","Layout layers","2","count"],["clearance","Outer clearance per side","0.5","length"],["gap","Gap between units","0.25","length"]], "Master dimension = unit dimension × layout count + internal gaps + two outer clearances", "A 3 × 2 × 2 layout of 8 × 5 × 3 in units with 0.25 in gaps and 0.5 in clearance needs 25.5 × 11.25 × 7.25 in internally.", ["master-carton-weight","carton-count"], "/guides/master-carton-planning.html"],
+  ["master-carton-weight", "Master Carton Weight Calculator", "Check estimated packed carton weight against a user-entered planning maximum.", [["units","Units per carton","12","count"],["unitWeight","Weight per unit","1.8","weight"],["tareWeight","Carton and packing weight","2.4","weight"],["maxWeight","Maximum planned weight","30","weight"]], "Packed carton weight = units × unit weight + carton and packing tare", "Twelve 1.8 lb units plus 2.4 lb tare produce a 24 lb master carton, leaving 6 lb to a 30 lb planning maximum.", ["master-carton-dimensions","cases-per-pallet"], "/reference/master-carton-terms.html"],
+  ["carton-cube", "Carton Cube Calculator", "Calculate cube per carton and total shipment cube.", [["length","Carton external length","24","length"],["width","Carton external width","16","length"],["height","Carton external height","12","length"],["cartons","Carton count","20","count"]], "Total cube = length × width × height × carton count", "Twenty 24 × 16 × 12 in cartons total about 1.51 m³ or 53.33 ft³.", ["box-volume","cases-per-pallet"], "/reference/master-carton-terms.html"],
+  ["cases-per-pallet", "Cases per Pallet Calculator", "Estimate straight-grid cases per pallet across a user-entered layer count.", [["palletLength","Pallet length","48","length"],["palletWidth","Pallet width","40","length"],["caseLength","Case length","16","length"],["caseWidth","Case width","12","length"],["layers","Layer count","5","count"]], "Cases per pallet = best straight or rotated grid per layer × layers", "A 48 × 40 in pallet with 16 × 12 in cases fits 9 cases per layer and 45 across five layers in a single-orientation grid.", ["pallet-layer-count","pallet-utilization"], "/guides/pallet-planning-basics.html"],
+  ["pallet-layer-count", "Pallet Layer Count Calculator", "Calculate required pallet layers within a user-entered maximum.", [["cases","Case quantity","86","count"],["casesPerLayer","Cases per layer","10","count"],["maxLayers","Maximum layers","10","count"]], "Layers = round up (case quantity ÷ cases per layer)", "Eighty-six cases at 10 per layer require nine layers, with six cases on the top layer.", ["cases-per-pallet","pallet-height"], "/guides/pallet-planning-basics.html"],
+  ["pallet-height", "Pallet Height Calculator", "Check pallet, load, and top allowance against a user-entered height maximum.", [["palletHeight","Empty pallet height","6","length"],["caseHeight","Case height","10","length"],["layers","Layer count","6","count"],["topAllowance","Top cap allowance","2","length"],["maxHeight","Maximum planned height","72","length"]], "Total height = empty pallet height + case height × layers + top allowance", "A 6 in pallet with six 10 in layers and 2 in top allowance totals 68 in, below a 72 in planning maximum.", ["pallet-layer-count","pallet-utilization"], "/reference/pallet-and-unit-load-terms.html"],
+  ["pallet-utilization", "Pallet Utilization Calculator", "Estimate pallet footprint utilization from case footprint and cases per layer.", [["palletLength","Pallet length","48","length"],["palletWidth","Pallet width","40","length"],["caseLength","Case length","16","length"],["caseWidth","Case width","12","length"],["casesPerLayer","Cases per layer","10","count"]], "Footprint utilization = case footprint × cases per layer ÷ pallet footprint × 100", "Ten 16 × 12 in case footprints use 100% of a 48 × 40 in pallet footprint by area.", ["cases-per-pallet","pallet-height"], "/reference/pallet-and-unit-load-terms.html"]
+].map(([slug,title,description,fields,formula,example,related,doc]) => ({
+  slug, title, short: description, description, unit: fields.some((field) => field[3] === "length"), currency: fields.some((field) => field[3] === "currency"),
+  fields, formula, example,
+  interpretation: "Use the result as an operating plan, compare it with the relevant capacity or budget, and record the assumptions used for the batch.",
+  assumptions: slug === "multi-item-box-fit"
+    ? "This is an orthogonal grid estimate, not a complete 3D bin-packing optimizer. It excludes nesting, irregular shapes, cushioning, loading sequence, compression, and orientation restrictions."
+    : slug.includes("pallet")
+      ? "This planning estimate does not verify load stability, overhang, compression strength, weight distribution, equipment clearance, or regulatory compliance. Confirm the physical unit load."
+      : "Inputs describe a simplified repeatable process. Validate yields, labor pace, fit, supplier lead time, and operating limits with current production data.",
+  related, doc
+}));
+tools.push(...phaseTools);
+
 const toolOperations = {
-  "dimensional-weight": { category: "Shipment size", output: "DIM weight", useWhen: "A light package may rate by volume." },
-  "length-girth": { category: "Shipment size", output: "Length + girth", useWhen: "Checking a published package-size limit." },
-  "box-size": { category: "Container fit", output: "Minimum internal size", useWhen: "Selecting a carton around a protected product." },
-  "box-volume": { category: "Container fit", output: "Cubic capacity", useWhen: "Comparing carton capacity or usable space." },
-  "void-fill": { category: "Protection", output: "Empty volume", useWhen: "Estimating headspace and cushioning demand." },
-  "bubble-wrap": { category: "Protection", output: "Wrap area", useWhen: "Planning layers and overlap for a product." },
-  "packing-paper": { category: "Protection", output: "Paper sheets", useWhen: "Converting empty volume into a paper plan." },
-  "tape-usage": { category: "Closure", output: "Tape length", useWhen: "Planning tape for a carton batch." },
-  "poly-mailer-size": { category: "Container fit", output: "Mailer size", useWhen: "Sizing a flexible mailer around thickness." },
-  "packaging-cost": { category: "Cost control", output: "Cost per order", useWhen: "Combining materials, waste, and labor." }
+  "dimensional-weight": { category: "Package size and fit", output: "DIM weight", useWhen: "A light package may rate by volume." },
+  "length-girth": { category: "Package size and fit", output: "Length + girth", useWhen: "Checking a published package-size limit." },
+  "box-size": { category: "Package size and fit", output: "Minimum internal size", useWhen: "Selecting a carton around a protected product." },
+  "box-volume": { category: "Package size and fit", output: "Cubic capacity", useWhen: "Comparing carton capacity or usable space." },
+  "void-fill": { category: "Materials and usage", output: "Empty volume", useWhen: "Estimating headspace and cushioning demand." },
+  "bubble-wrap": { category: "Materials and usage", output: "Wrap area", useWhen: "Planning layers and overlap for a product." },
+  "packing-paper": { category: "Materials and usage", output: "Paper sheets", useWhen: "Converting empty volume into a paper plan." },
+  "tape-usage": { category: "Materials and usage", output: "Tape length", useWhen: "Planning tape for a carton batch." },
+  "poly-mailer-size": { category: "Package size and fit", output: "Mailer size", useWhen: "Sizing a flexible mailer around thickness." },
+  "packaging-cost": { category: "Cost and inventory", output: "Cost per order", useWhen: "Combining materials, waste, and labor." }
 };
+Object.assign(toolOperations, {
+  "carton-count": { category: "Cost and inventory", output: "Cartons required", useWhen: "Converting unit demand into cartons." },
+  "case-pack": { category: "Cost and inventory", output: "Total available units", useWhen: "Combining sealed cases and reserves." },
+  "box-utilization": { category: "Package size and fit", output: "Volume utilization", useWhen: "Checking unused rectangular volume." },
+  "multi-item-box-fit": { category: "Package size and fit", output: "Grid-fit capacity", useWhen: "Testing simple orthogonal arrangements." },
+  "packaging-material-budget": { category: "Cost and inventory", output: "Material budget", useWhen: "Funding a planned order volume." },
+  "monthly-packaging-spend": { category: "Cost and inventory", output: "Monthly spend", useWhen: "Forecasting packaging cash needs." },
+  "label-cost": { category: "Cost and inventory", output: "Label quantity and cost", useWhen: "Planning label stock and waste." },
+  "insert-quantity": { category: "Cost and inventory", output: "Insert quantity", useWhen: "Ordering cards or instructions." },
+  "packaging-waste-allowance": { category: "Cost and inventory", output: "Quantity with waste", useWhen: "Adding an adjustable loss factor." },
+  "packaging-supply-reorder-point": { category: "Cost and inventory", output: "Reorder point", useWhen: "Setting a supply replenishment trigger." },
+  "order-packing-time": { category: "Labor and workflow", output: "Batch duration", useWhen: "Scheduling an order run." },
+  "labor-capacity-per-shift": { category: "Labor and workflow", output: "Orders per shift", useWhen: "Planning staffing capacity." },
+  "prep-batch-time": { category: "Labor and workflow", output: "Preparation time", useWhen: "Timing setup, run, and checks." },
+  "kitting-cost": { category: "Labor and workflow", output: "Cost per kit", useWhen: "Pricing component assembly work." },
+  "bundle-packing-cost": { category: "Labor and workflow", output: "Cost per bundle", useWhen: "Combining handling, materials, and labor." },
+  "master-carton-dimensions": { category: "Master cartons", output: "Minimum internal size", useWhen: "Laying packed units in rows and layers." },
+  "master-carton-weight": { category: "Master cartons", output: "Packed carton weight", useWhen: "Checking a user-set weight ceiling." },
+  "carton-cube": { category: "Master cartons", output: "Shipment cube", useWhen: "Planning space across multiple cartons." },
+  "cases-per-pallet": { category: "Pallet planning", output: "Cases per pallet", useWhen: "Estimating a straight-grid unit load." },
+  "pallet-layer-count": { category: "Pallet planning", output: "Layers required", useWhen: "Converting case demand into layers." },
+  "pallet-height": { category: "Pallet planning", output: "Loaded height", useWhen: "Checking a user-entered height ceiling." },
+  "pallet-utilization": { category: "Pallet planning", output: "Footprint utilization", useWhen: "Comparing case area with pallet area." }
+});
 
 const documentRelations = {
   "how-to-measure-a-box": "Length + Girth Calculator",
@@ -240,6 +300,22 @@ const documentRelations = {
   "dimensional-weight-divisors": "DIM Weight Calculator",
   "internal-vs-external-box-dimensions": "Box Size Calculator"
 };
+Object.assign(documentRelations, {
+  "box-vs-poly-mailer": "Poly Mailer Size Calculator",
+  "how-to-choose-void-fill": "Void Fill Calculator",
+  "packing-station-workflow": "Order Packing Time Calculator",
+  "packaging-inventory-basics": "Supply Reorder Point Calculator",
+  "tape-types-and-seal-patterns": "Tape Usage Calculator",
+  "packaging-cost-reduction-checklist": "Monthly Packaging Spend Calculator",
+  "master-carton-planning": "Master Carton Dimensions Calculator",
+  "pallet-planning-basics": "Cases per Pallet Calculator",
+  "packaging-unit-conversion": "Measurement and cube tools",
+  "packaging-cost-components": "Cost and budget tools",
+  "box-style-and-closure-glossary": "Tape Usage Calculator",
+  "void-fill-yield-factors": "Void Fill Calculator",
+  "master-carton-terms": "Master carton tools",
+  "pallet-and-unit-load-terms": "Pallet planning tools"
+});
 
 const guides = [
   {
@@ -250,7 +326,7 @@ const guides = [
     sections: [
       ["Start with the measurement purpose", "Use external dimensions for shipping size and dimensional weight. Use internal dimensions for product fit, clearance, and void-fill planning. A carton supplier may list either set, so read the specification label."],
       ["Identify length, width, and height", "For shipping measurements, length is normally the longest side. Width is the next longest side and height is the remaining side. Measure at the maximum finished points after the carton is closed."],
-      ["Measure the packed package", "Tape, overfilled flaps, corner protectors, and flexible mailers can change the final dimensions. Place the package on a flat bench, keep the measuring tool square, and record any outward bow."],
+      ["Measure the packed package", "Tape, overfilled flaps, corner protectors, and flexible mailers can change the final dimensions. Place the package on a flat surface, keep the measuring tool square, and record any outward bow."],
       ["Use a repeatable worksheet", "Record the unit, whether dimensions are internal or external, the package state, and who measured it. Repeat the measurement when packaging materials or the pack method changes."]
     ],
     checklist: ["Use one unit throughout the calculation.", "Measure maximum finished dimensions.", "Do not substitute nominal carton size for a packed measurement.", "Confirm carrier-specific rounding and measurement rules."],
@@ -299,6 +375,49 @@ const guides = [
     related: "/tools/packaging-cost.html"
   }
 ];
+
+guides.push(
+  {
+    slug: "box-vs-poly-mailer", title: "Box vs Poly Mailer: How to Choose", description: "Choose a box or flexible mailer from protection, shape, closure, and handling needs.", intro: "Container choice starts with product risk and finished-package behavior, not material price alone.",
+    sections: [["Screen the product", "Use a box when the item needs crush resistance, edge protection, stacking support, or structured cushioning. Consider a mailer when the item is flexible or already boxed, non-fragile, and tolerant of pressure."],["Compare finished size", "Measure the protected product and estimate both options. A mailer can reduce empty volume, but seams, flap depth, stiffness, and product thickness reduce usable space."],["Check the operating process", "Compare insertion effort, sealing time, label surface, storage footprint, and the number of stocked sizes. Run a representative batch rather than judging one ideal pack."],["Approve the choice", "Inspect closure, movement, presentation, and damage after realistic handling. Record the selected size, orientation, protection, and exceptions in the pack instruction."]],
+    checklist: ["Classify crush and edge risk.", "Use published usable dimensions.", "Compare final external size.", "Test the production closure."], related: "/tools/poly-mailer-size.html"
+  },
+  {
+    slug: "how-to-choose-void-fill", title: "How to Choose Void Fill", description: "Select and calibrate void fill by movement control, yield, pack speed, and recovery.", intro: "Void fill should control movement without pretending to provide structural support it cannot deliver.",
+    sections: [["Define the job", "Separate blocking, bracing, wrapping, surface protection, and presentation. Loose fill may occupy space while a heavy or fragile product still needs engineered support."],["Compare materials", "Paper, air pillows, foam systems, and other fills differ in recovery, compression, dust, storage, equipment, and operator technique. Use supplier data as a starting point."],["Calibrate yield", "Pack a measured sample, record the dispensing or sheet quantity, and divide output by filled void. Use a conservative adjustable factor in planning."],["Verify the pack", "Check movement, corners, closure, compression after storage, and final dimensions. Repeat after material, equipment, carton, or operator changes."]],
+    checklist: ["Calculate the approximate void.", "Identify protection function.", "Measure real yield.", "Document the approved quantity range."], related: "/tools/void-fill.html"
+  },
+  {
+    slug: "packing-station-workflow", title: "Packing Station Workflow for Small Sellers", description: "Build a repeatable dispatch workflow from staging through verification and release.", intro: "A stable packing workflow reduces searching, decisions, rework, and variation without sacrificing protection.",
+    sections: [["Map the sequence", "Use a clear flow: stage order and product, select container, protect, close, label, verify, and release. Keep exceptions out of the standard lane."],["Stage materials", "Place high-use supplies within safe reach, replenish to visible minimums, and keep approved alternatives identified. Avoid overstock that hides shortages."],["Measure time correctly", "Separate setup, run time, checks, and interruptions. Sample several normal batches and retain the range instead of one fastest observation."],["Control quality", "Define checks for SKU, quantity, protection, closure, label readability, weight, and exception handling. Record recurring defects and update instructions."]],
+    checklist: ["Document the standard sequence.", "Separate setup from run time.", "Set replenishment triggers.", "Audit completed packs."], related: "/tools/order-packing-time.html"
+  },
+  {
+    slug: "packaging-inventory-basics", title: "Packaging Inventory Basics", description: "Plan packaging supply demand, safety stock, reorder points, and cycle checks.", intro: "Packaging inventory protects dispatch continuity but consumes cash and storage when assumptions are not reviewed.",
+    sections: [["Create the item list", "Assign a unique record to each carton, mailer, label, insert, roll, and consumable. Record supplier pack size, usable quantity, lead time, storage requirement, and approved substitute."],["Measure demand", "Use shipped-order history by pack method, then adjust for promotions, seasonality, waste, and minimum order quantities. Do not assume every order uses one unit."],["Set the trigger", "A simple reorder point combines lead-time demand with safety stock. Compare it with on-hand usable stock, open purchase orders, and known changes."],["Count and review", "Cycle-count critical supplies, investigate differences, and update yields and lead times. Keep damaged or obsolete stock out of available quantity."]],
+    checklist: ["Track usable units.", "Review daily usage and lead time.", "Set safety stock deliberately.", "Count critical items routinely."], related: "/tools/packaging-supply-reorder-point.html"
+  },
+  {
+    slug: "tape-types-and-seal-patterns", title: "Tape Types and Common Seal Patterns", description: "Compare carton tape considerations and document center-seam and H-seal usage.", intro: "Tape performance depends on carton surface, load, environment, application, and seal geometry.",
+    sections: [["Match tape to conditions", "Review backing, adhesive, width, thickness, application temperature, storage, and carton recycled content with supplier specifications. A familiar tape is not automatically suitable for every carton."],["Understand patterns", "A center seam closes the major flap joint. An H-seal adds the two edge seams on top and bottom, increasing tape length and closure coverage."],["Set application controls", "Define overhang, wipe-down pressure, cut length, dispenser condition, and where labels may cross. Inspect lifting edges and poor adhesion."],["Validate and record", "Test the packed carton under expected storage and handling. Record tape product, width, pattern, overhang, and permitted alternatives."]],
+    checklist: ["Confirm carton and environment.", "Choose the seal pattern.", "Measure overhang and total length.", "Inspect adhesion after conditioning."], related: "/tools/tape-usage.html"
+  },
+  {
+    slug: "packaging-cost-reduction-checklist", title: "Packaging Cost Reduction Checklist", description: "Audit material, labor, waste, inventory, and shipment-size changes without weakening the pack.", intro: "Cost reduction works best as a controlled comparison with protection and service outcomes held visible.",
+    sections: [["Establish the baseline", "Record material quantity, price, waste, pack time, finished dimensions, damage, and rework for the same SKU and order mix."],["Find the constraint", "Look for excess size, too many variants, overuse, slow retrieval, repeated decisions, avoidable setup, and obsolete stock. Rank by annual impact."],["Run a controlled trial", "Change one pack method, define the sample and acceptance checks, and compare total cost. Include training, equipment, storage, and transition waste."],["Release and monitor", "Update instructions, inventory parameters, and calculators only after approval. Watch damage, returns, throughput, and supplier variation."]],
+    checklist: ["Use a comparable baseline.", "Include labor and waste.", "Retest finished dimensions.", "Monitor protection outcomes."], related: "/tools/monthly-packaging-spend.html"
+  },
+  {
+    slug: "master-carton-planning", title: "Master Carton Planning Guide", description: "Plan unit layout, internal dimensions, packed weight, closure, and verification for master cartons.", intro: "A master carton plan connects the packed unit, repeatable layout, carton strength, weight, and downstream handling.",
+    sections: [["Define the packed unit", "Measure the finished retail or inner pack, including protrusions and protective materials. Record orientation restrictions and whether units can carry load."],["Choose rows and layers", "Set columns, rows, layers, gaps, and outer clearance explicitly. Compare alternative orientations without claiming a complete packing optimization."],["Check weight and cube", "Calculate product weight plus carton and packing tare. Compare the result with a user-approved handling limit and record external cube for storage and pallet planning."],["Build and test", "Pack a full carton, check insertion, compression, movement, closure, label area, lifting, and final external dimensions. Validate stacking and transport separately."]],
+    checklist: ["Measure the packed unit.", "Record row-column-layer layout.", "Check packed weight.", "Test a full production carton."], related: "/tools/master-carton-dimensions.html"
+  },
+  {
+    slug: "pallet-planning-basics", title: "Pallet Planning Basics for Small Shipments", description: "Estimate layers, height, footprint use, and load limits before physical pallet verification.", intro: "Pallet calculations create a planning layout; they do not prove that a unit load is stable or compliant.",
+    sections: [["Collect limits", "Enter the actual pallet footprint and height, case dimensions and weight, user-approved maximum height and weight, equipment clearances, and orientation constraints."],["Plan each layer", "Compare straight and rotated grids, avoid unsupported overhang unless specifically approved, and identify partial top layers. Area utilization alone does not show stability."],["Build the vertical plan", "Add pallet base, case layers, top protection, and wrap or cap allowance. Check total case count and estimated weight against user-entered limits."],["Verify the unit load", "Build a representative load and assess compression, column alignment, interlock, center of gravity, containment, fork access, and handling route with qualified personnel."]],
+    checklist: ["Use actual pallet and case dimensions.", "Set maximums as inputs.", "Review partial layers.", "Physically validate stability."], related: "/tools/cases-per-pallet.html"
+  }
+);
 
 const references = [
   {
@@ -367,6 +486,33 @@ const references = [
   }
 ];
 
+references.push(
+  {
+    slug: "packaging-unit-conversion", title: "Packaging Unit Conversion Reference", description: "Convert common packaging length, area, volume, and weight units consistently.", intro: "Convert every related input before calculating and retain enough precision until the final displayed result.",
+    rows: [["Length", "1 inch = 2.54 centimeters exactly; 1 foot = 12 inches."],["Area", "1 square inch = 6.4516 square centimeters; 1 square foot = 144 square inches."],["Volume", "1 cubic inch = 16.387064 milliliters; 1 cubic foot = 1,728 cubic inches."],["Mass", "1 pound = 0.45359237 kilograms; 1 kilogram is approximately 2.20462262 pounds."],["Liters", "1 liter = 1,000 cubic centimeters and approximately 61.023744 cubic inches."],["Rounding", "Convert first, calculate with unrounded values, and round only the displayed planning result."],["Use when", "Use for carton dimensions, cube, material area, weight, and unit-system comparison."],["Caution", "Dimensional-weight divisors are unit-specific; converting dimensions does not convert a divisor automatically."]]
+  },
+  {
+    slug: "packaging-cost-components", title: "Packaging Cost Components", description: "Build a complete packaging cost record from materials, labor, waste, and operating overhead.", intro: "Use a consistent cost boundary so SKU, pack method, and monthly comparisons remain meaningful.",
+    rows: [["Container", "Box, mailer, envelope, tray, or other primary shipping container."],["Protection", "Wrap, paper, air pillows, pads, dividers, corner protection, and liners."],["Closure", "Tape, adhesive, straps, staples, seals, and dispenser losses."],["Identification", "Shipping labels, product labels, inserts, documents, and printer consumables."],["Labor", "Hands-on setup, assembly, packing, checking, and rework at a chosen loaded hourly rate."],["Waste", "Damaged, misprinted, trimmed, expired, or otherwise unusable material expressed as quantity or allowance."],["Overhead boundary", "Storage, equipment, depreciation, rent, and supervision may be separate or allocated; document the choice."],["Excluded shipping cost", "Postage and carrier charges should remain separate unless the analysis explicitly includes them."]]
+  },
+  {
+    slug: "box-style-and-closure-glossary", title: "Box Style and Closure Glossary", description: "Understand common corrugated box structures, flaps, seams, and closure terms.", intro: "Names vary by supplier, so confirm drawings, board specification, and usable dimensions before ordering.",
+    rows: [["Regular slotted container", "A common slotted carton whose outer flaps meet near the center when closed."],["Full overlap carton", "Outer flaps overlap substantially, providing a different closure and stacking surface."],["Die-cut mailer", "A folded self-locking style made from a cut blank; details vary by design."],["Manufacturer joint", "The joined seam that forms the carton body, commonly glued, stitched, or taped."],["Major flaps", "The larger top or bottom flaps, normally associated with the carton length."],["Minor flaps", "The smaller flaps that close before the major flaps."],["Center-seam seal", "Tape applied along the meeting line of the major flaps, typically top and bottom."],["H-seal", "Center seams plus the two edge seams on top and bottom, forming an H-shaped pattern."]]
+  },
+  {
+    slug: "void-fill-yield-factors", title: "Void Fill Yield Factors", description: "Calibrate paper, pillows, and other void-fill planning factors with production samples.", intro: "Yield is an operating measurement, not a universal material constant.",
+    rows: [["Void volume", "Internal container volume minus simplified packed-product volume; geometry can make usable void different."],["Fill factor", "A user-set multiplier applied to estimated void to reflect compression, gaps, and method."],["Paper sheet yield", "A measured filled volume per sheet under a documented crumpling and placement method."],["Dispensed volume", "Supplier-rated or operator-measured output from a machine setting; verify after material changes."],["Recovery", "How well a fill maintains volume after compression and handling."],["Waste allowance", "Additional quantity for setup, trimming, damage, misfeeds, and normal process loss."],["Calibration batch", "A representative set of packs used to compare predicted quantity with actual use."],["Review trigger", "Recalibrate after material, carton, equipment, product, or operator-method changes."]]
+  },
+  {
+    slug: "master-carton-terms", title: "Master Carton Terms", description: "Define case pack, master carton layout, tare, cube, and packed-carton measurements.", intro: "Use the same master-carton terms across purchasing, packing, storage, and pallet planning.",
+    rows: [["Packed unit", "The finished inner item or retail pack placed into the master carton."],["Case pack", "The standard number of saleable units assigned to a sealed case or carton."],["Columns, rows, layers", "The explicit orthogonal arrangement used for the dimension estimate."],["Internal dimensions", "Usable carton space for the planned layout, gaps, dividers, and clearance."],["External dimensions", "Finished outside dimensions used for cube, storage, and unit-load planning."],["Tare weight", "Carton, dividers, liners, closure, and other packing weight without product."],["Gross packed weight", "Product weight plus tare weight for the completed carton."],["Carton cube", "External length × width × height, stated in a consistent cubic unit."]]
+  },
+  {
+    slug: "pallet-and-unit-load-terms", title: "Pallet and Unit Load Terms", description: "Define pallet footprint, layers, utilization, overhang, containment, and load limits.", intro: "A calculated pallet pattern is only the first step in physical unit-load design.",
+    rows: [["Pallet footprint", "Usable plan-view length and width entered for the pallet or platform."],["Case footprint", "Case length × width in the selected load orientation."],["Cases per layer", "Whole case positions placed on one layer by the chosen pattern."],["Layer count", "Number of vertical case tiers, including a partial top layer when present."],["Footprint utilization", "Total case footprint area divided by pallet footprint area; it does not measure stability."],["Overhang", "Any case extension beyond the supporting pallet edge; avoid unless specifically engineered and approved."],["Containment", "Wrap, straps, caps, corner boards, or other systems used to hold the unit load together."],["Maximum planned height or weight", "A user-entered operating constraint that must be confirmed for equipment, facility, transport, and applicable rules."]]
+  }
+);
+
 const basicPages = [
   {
     file: "about.html",
@@ -375,7 +521,7 @@ const basicPages = [
     eyebrow: "About the service",
     body: `<p>Pack Prep Tools is a focused set of practical calculators and reference notes for people who pack finished products for shipment. It is built for online sellers, small brands, marketplace shops, and compact fulfillment teams.</p>
       <h2>What the site covers</h2><p>The tools address carton and mailer size, dimensional weight, length plus girth, empty space, cushioning, tape, material cost, and packing labor. They do not buy labels, quote live rates, store orders, or promise regulatory compliance.</p>
-      <h2>How to use the estimates</h2><p>Start with accurate package measurements, use the calculator to create a planning estimate, then verify the result with your actual materials and current carrier or supplier rules. Packaging is physical work: a bench test is the final fit check.</p>
+      <h2>How to use the estimates</h2><p>Start with accurate package measurements, use the calculator to create a planning estimate, then verify the result with your actual materials and current carrier or supplier rules. Packaging is physical work: a production pack trial is the final fit check.</p>
       <h2>Independent by design</h2><p>The site uses no account system and does not send calculator input values to analytics. It is intentionally lightweight, readable, and usable at a packing station.</p>`
   },
   {
@@ -442,8 +588,8 @@ function head({ file, title, description, type = "website", noindex = false, sch
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${canonical}">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-dispatch">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-dispatch">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
   ${ga()}
   <script type="application/ld+json">${JSON.stringify(schema)}</script>
 </head>`;
@@ -475,7 +621,7 @@ function footer() {
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-dispatch" defer></script>
+<script src="/assets/site.js?v=20260726-complete" defer></script>
 </body>
 </html>`;
 }
@@ -496,9 +642,11 @@ function breadcrumbs(parts) {
 }
 
 function operationsTable(items) {
+  const categoryOrder = ["Package size and fit", "Materials and usage", "Cost and inventory", "Labor and workflow", "Master cartons", "Pallet planning"];
+  const orderedItems = [...items].sort((a, b) => categoryOrder.indexOf(toolOperations[a.slug].category) - categoryOrder.indexOf(toolOperations[b.slug].category));
   return `<table class="operations-table">
     <thead><tr><th>Category</th><th>Tool</th><th>Primary output</th><th>Use when</th></tr></thead>
-    <tbody>${items.map((tool) => {
+    <tbody>${orderedItems.map((tool) => {
       const operation = toolOperations[tool.slug];
       return `<tr><td data-label="Category"><span class="category">${operation.category}</span></td><td data-label="Tool"><a href="/tools/${tool.slug}.html">${tool.title}</a></td><td data-label="Primary output">${operation.output}</td><td data-label="Use when">${operation.useWhen}</td></tr>`;
     }).join("")}</tbody>
@@ -539,7 +687,7 @@ function homepage() {
   return `${head({ file, title, description, schema })}${header("Home")}
 <main id="main">
   <section class="dispatch-hero"><div class="page-shell dispatch-hero-inner">
-    <p class="dispatch-meta"><span>10 live calculators</span><span>No sign-in</span><span>Browser-based results</span></p>
+    <p class="dispatch-meta"><span>${tools.length} live calculators</span><span>${guides.length + references.length} controlled documents</span><span>Browser-based results</span></p>
     <h1>Packaging decisions, ready for dispatch.</h1>
     <p class="hero-copy">Size the shipment, plan protection, estimate closure materials, and understand cost before an order leaves your operation.</p>
     <div class="button-row"><a class="button button-primary" href="/tools.html">Open packaging tools</a><a class="button button-secondary" href="/guides/how-to-measure-a-box.html">Review measurement procedure</a></div>
@@ -556,8 +704,9 @@ function homepage() {
     <div class="process-track"><div class="process-step"><b>01</b><h3>Measure</h3><p>Capture final external size for shipping and internal size for fit.</p></div><div class="process-step"><b>02</b><h3>Protect</h3><p>Allow for wrap, clearance, void fill, and handling conditions.</p></div><div class="process-step"><b>03</b><h3>Close</h3><p>Size the mailer or estimate tape for the selected seal pattern.</p></div><div class="process-step"><b>04</b><h3>Cost</h3><p>Combine material use, waste allowance, and packing labor.</p></div></div>
   </div></section>
   <section class="content-section content-section-muted"><div class="page-shell">
-    <div class="section-title"><span class="section-code">Tool register / 10 active</span><h2>Packaging operations register</h2><p>Choose by the output required for the shipment record.</p></div>
-    ${operationsTable(tools)}
+    <div class="section-title"><span class="section-code">Featured operations / 12 routes</span><h2>Packaging operations register</h2><p>Start with a common decision, or open the complete register for all ${tools.length} calculators.</p></div>
+    ${operationsTable(["box-size","void-fill","tape-usage","packaging-cost","packaging-supply-reorder-point","order-packing-time","kitting-cost","master-carton-dimensions","master-carton-weight","cases-per-pallet","pallet-height","pallet-utilization"].map((slug) => tools.find((tool) => tool.slug === slug)))}
+    <div class="button-row"><a class="button button-primary" href="/tools.html">View all ${tools.length} calculators</a><a class="button button-quiet" href="/guides/master-carton-planning.html">Plan master cartons</a><a class="button button-quiet" href="/guides/pallet-planning-basics.html">Plan pallet loads</a></div>
   </div></section>
   <section class="content-section"><div class="page-shell">
     <div class="section-title"><span class="section-code">Controlled documents</span><h2>Procedures and reference data</h2><p>Measurement procedures explain what to do. Reference sheets define the terms and assumptions used in calculations.</p></div>
@@ -584,7 +733,10 @@ function suffix(type) {
     percent: "%",
     currency: "currency",
     minutes: "min",
-    "currency-hour": "per hr"
+    "currency-hour": "per hr",
+    hours: "hr",
+    seconds: "sec",
+    weight: "lb"
   };
   return labels[type] || "";
 }
@@ -628,18 +780,37 @@ function calculatorPage(tool) {
     <ul class="related-register">${related}<li><a href="${tool.doc}">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: ${REVIEWED}</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-dispatch" defer></script>${footer()}`;
+</main><script src="/assets/calculators.js?v=20260726-complete" defer></script>${footer()}`;
 }
 
 function indexPage(kind, items) {
   const isTools = kind === "Tools";
   const file = `${kind.toLowerCase()}.html`;
   const title = isTools ? "Packaging Calculators" : kind === "Guides" ? "Packaging Guides" : "Packaging Reference";
-  const description = isTools ? "Browse ten practical calculators for package dimensions, materials, and cost." : kind === "Guides" ? "Read practical guides for measuring, sizing, and controlling packaging cost." : "Use concise reference notes for packaging terms, materials, dimensions, and DIM divisors.";
+  const description = isTools ? `Browse ${tools.length} practical calculators for package fit, materials, cost, labor, master cartons, and pallet planning.` : kind === "Guides" ? `Read ${guides.length} practical guides for repeatable packaging and dispatch work.` : `Use ${references.length} detailed reference records for packaging terms, units, materials, costs, cartons, and pallet loads.`;
   return `${head({ file, title, description, schema: websiteSchema(file, title, description) })}${header(kind)}
 <main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: kind }])}<p class="dispatch-meta"><span>${isTools ? "Operations register" : "Controlled documents"}</span><span>${items.length} active records</span></p><h1>${title}</h1><p class="lede">${description}</p></div></header>
 <section class="content-section"><div class="page-shell">${isTools ? operationsTable(items) : documentTable(items, kind)}</div></section></main>${footer()}`;
 }
+
+const guideReferences = {
+  "box-vs-poly-mailer": "/reference/common-packaging-materials.html",
+  "how-to-choose-void-fill": "/reference/void-fill-yield-factors.html",
+  "packing-station-workflow": "/reference/packaging-cost-components.html",
+  "packaging-inventory-basics": "/reference/packaging-cost-components.html",
+  "tape-types-and-seal-patterns": "/reference/box-style-and-closure-glossary.html",
+  "packaging-cost-reduction-checklist": "/reference/packaging-cost-components.html",
+  "master-carton-planning": "/reference/master-carton-terms.html",
+  "pallet-planning-basics": "/reference/pallet-and-unit-load-terms.html"
+};
+const referenceGuides = {
+  "packaging-unit-conversion": "/guides/how-to-measure-a-box.html",
+  "packaging-cost-components": "/guides/packaging-cost-reduction-checklist.html",
+  "box-style-and-closure-glossary": "/guides/tape-types-and-seal-patterns.html",
+  "void-fill-yield-factors": "/guides/how-to-choose-void-fill.html",
+  "master-carton-terms": "/guides/master-carton-planning.html",
+  "pallet-and-unit-load-terms": "/guides/pallet-planning-basics.html"
+};
 
 function articlePage(item, kind) {
   const folder = kind.toLowerCase();
@@ -660,9 +831,10 @@ function articlePage(item, kind) {
     ? `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul>${item.sections.map(([heading], index) => `<li><a href="#section-${index + 1}">${heading}</a></li>`).join("")}<li><a href="#checklist">Checklist</a></li></ul></nav>${item.sections.map(([heading, text], index) => `<h2 id="section-${index + 1}">${heading}</h2><p>${text}</p>`).join("")}<h2 id="checklist">Dispatch checklist</h2><ul>${item.checklist.map((x) => `<li>${x}</li>`).join("")}</ul><div class="caution"><strong>Planning note.</strong> Packaging performance depends on the product, materials, handling environment, and current shipping requirements. Test the finished pack.</div>`
     : `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#definitions">Definitions and operating notes</a></li><li><a href="#verification">Verification</a></li></ul></nav><h2 id="definitions">Definitions and operating notes</h2><dl class="reference-ledger">${item.rows.map(([term, text]) => `<div><dt>${term}</dt><dd>${text}</dd></div>`).join("")}</dl><div class="caution" id="verification"><strong>Reference note.</strong> Confirm current supplier and carrier specifications before using a term or value operationally.</div>`;
   const related = kind === "Guides" ? item.related : item.slug.includes("dimensional") ? "/tools/dimensional-weight.html" : item.slug.includes("internal") ? "/tools/box-size.html" : "/tools.html";
+  const crossDocument = kind === "Guides" ? (guideReferences[item.slug] || "/reference.html") : (referenceGuides[item.slug] || "/guides.html");
   return `${head({ file, title, description: item.description, type: "article", schema })}${header(kind)}
 <main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: kind, href: `/${folder}.html` }, { label: title }])}<p class="dispatch-meta"><span>${kind === "Guides" ? "Procedure" : "Reference record"}</span><span>Reviewed July 2026</span></p><h1>${title}</h1></div></header>
-<section class="article-zone"><div class="page-shell article-shell"><article class="article-body">${body}<ul class="related-register"><li><a href="${related}">Related calculator</a></li><li><a href="/${folder}.html">All ${folder}</a></li></ul><p class="meta-line">Last reviewed: ${REVIEWED}</p></article></div></section></main>${footer()}`;
+<section class="article-zone"><div class="page-shell article-shell"><article class="article-body">${body}<ul class="related-register"><li><a href="${related}">Related calculator</a></li><li><a href="${crossDocument}">Related ${kind === "Guides" ? "reference" : "guide"}</a></li><li><a href="/${folder}.html">All ${folder}</a></li></ul><p class="meta-line">Last reviewed: ${REVIEWED}</p></article></div></section></main>${footer()}`;
 }
 
 function basicPage(page) {
@@ -723,6 +895,22 @@ function favicon() {
   ]);
 }
 
+function indexableFiles() {
+  return [
+    "index.html", "tools.html", "guides.html", "reference.html", "about.html", "contact.html", "privacy.html",
+    ...tools.map((tool) => `tools/${tool.slug}.html`),
+    ...guides.map((guide) => `guides/${guide.slug}.html`),
+    ...references.map((reference) => `reference/${reference.slug}.html`)
+  ];
+}
+
+function discoveryFiles() {
+  const urls = indexableFiles().map((file) => pageUrl(file));
+  write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}\n</urlset>\n`);
+  write("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
+  write("llms.txt", `# Pack Prep Tools\n\nPackaging calculations and operating references for repeatable shipment preparation.\n\n## Calculators (${tools.length})\n${tools.map((tool) => `- [${tool.title}](${SITE}/tools/${tool.slug}.html): ${tool.description}`).join("\n")}\n\n## Guides (${guides.length})\n${guides.map((guide) => `- [${guide.title}](${SITE}/guides/${guide.slug}.html): ${guide.description}`).join("\n")}\n\n## Reference (${references.length})\n${references.map((reference) => `- [${reference.title}](${SITE}/reference/${reference.slug}.html): ${reference.description}`).join("\n")}\n\nAll calculator outputs are planning estimates. Verify physical packs and current supplier, marketplace, carrier, facility, and regulatory requirements.\n`);
+}
+
 function generate() {
   write("index.html", homepage());
   write("tools/dimensional-weight.html", calculatorPage(tools[0]));
@@ -737,6 +925,7 @@ function generate() {
   references.forEach((reference) => write(`reference/${reference.slug}.html`, articlePage(reference, "Reference")));
   basicPages.forEach((page) => write(page.file, basicPage(page)));
   write("404.html", notFound());
+  discoveryFiles();
 }
 
 generate();

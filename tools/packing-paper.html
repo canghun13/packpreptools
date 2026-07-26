@@ -12,8 +12,8 @@
   <meta property="og:title" content="Packing Paper Calculator">
   <meta property="og:description" content="Estimate packing paper sheet count from box void and an operator-tested crumpled yield depth.">
   <meta property="og:url" content="https://packpreptools.com/tools/packing-paper.html">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-dispatch">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-dispatch">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
   <script>
@@ -36,7 +36,7 @@
   </div>
 </header>
 <main id="main">
-  <header class="page-banner"><div class="page-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/tools.html">Tools</a> <span aria-hidden="true">/</span> <span>Packing Paper Calculator</span></nav><p class="dispatch-meta"><span>Protection</span><span>Calculation utility</span></p><h1>Packing Paper Calculator</h1><p class="lede">Estimate packing paper sheet count from box void and an operator-tested crumpled yield depth.</p></div></header>
+  <header class="page-banner"><div class="page-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/tools.html">Tools</a> <span aria-hidden="true">/</span> <span>Packing Paper Calculator</span></nav><p class="dispatch-meta"><span>Materials and usage</span><span>Calculation utility</span></p><h1>Packing Paper Calculator</h1><p class="lede">Estimate packing paper sheet count from box void and an operator-tested crumpled yield depth.</p></div></header>
   <section class="calculator-console"><div class="page-shell">
     <div class="manifest-panel"><div class="manifest-header"><span>Shipment input manifest</span><span>Required fields / visible units</span></div>
       <form class="calculator-form" data-calculator="packing-paper" novalidate><div class="manifest-grid"><div class="field"><label for="unit">Measurement unit</label><select id="unit" name="unit"><option value="in">Inches (in)</option><option value="cm">Centimeters (cm)</option></select></div><div class="field"><label for="boxLength">Box internal length</label><div class="input-shell"><input id="boxLength" name="boxLength" type="number" inputmode="decimal" min="0" step="any" value="14" required aria-describedby="boxLength-unit"><span class="suffix" id="boxLength-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="boxWidth">Box internal width</label><div class="input-shell"><input id="boxWidth" name="boxWidth" type="number" inputmode="decimal" min="0" step="any" value="10" required aria-describedby="boxWidth-unit"><span class="suffix" id="boxWidth-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="boxHeight">Box internal height</label><div class="input-shell"><input id="boxHeight" name="boxHeight" type="number" inputmode="decimal" min="0" step="any" value="8" required aria-describedby="boxHeight-unit"><span class="suffix" id="boxHeight-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="productLength">Product length</label><div class="input-shell"><input id="productLength" name="productLength" type="number" inputmode="decimal" min="0" step="any" value="10" required aria-describedby="productLength-unit"><span class="suffix" id="productLength-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="productWidth">Product width</label><div class="input-shell"><input id="productWidth" name="productWidth" type="number" inputmode="decimal" min="0" step="any" value="6" required aria-describedby="productWidth-unit"><span class="suffix" id="productWidth-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="productHeight">Product height</label><div class="input-shell"><input id="productHeight" name="productHeight" type="number" inputmode="decimal" min="0" step="any" value="4" required aria-describedby="productHeight-unit"><span class="suffix" id="productHeight-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="sheetLength">Paper sheet length</label><div class="input-shell"><input id="sheetLength" name="sheetLength" type="number" inputmode="decimal" min="0" step="any" value="24" required aria-describedby="sheetLength-unit"><span class="suffix" id="sheetLength-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="sheetWidth">Paper sheet width</label><div class="input-shell"><input id="sheetWidth" name="sheetWidth" type="number" inputmode="decimal" min="0" step="any" value="18" required aria-describedby="sheetWidth-unit"><span class="suffix" id="sheetWidth-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="yieldDepth">Crumpled yield depth</label><div class="input-shell"><input id="yieldDepth" name="yieldDepth" type="number" inputmode="decimal" min="0" step="any" value="2" required aria-describedby="yieldDepth-unit"><span class="suffix" id="yieldDepth-unit"><span data-unit-suffix>in / cm</span></span></div></div></div><div class="form-actions"><button class="button button-primary" type="submit">Calculate</button><button class="button button-quiet" type="reset">Reset</button></div><p class="form-error" data-error role="alert" aria-live="polite"></p></form>
@@ -48,12 +48,12 @@
     <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">Sheets = round up [void volume ÷ (sheet length × sheet width × tested yield depth)]</div>
     <h2 id="example">Worked example</h2><p>An 880 in³ void divided by an estimated 864 in³ crumpled yield per 24 × 18 in sheet rounds up to 2 sheets.</p>
     <h2 id="interpretation">How to interpret the result</h2><p>Calibrate yield depth by packing several real orders with your paper weight and operator method.</p>
-    <h2 id="limits">Assumptions and limitations</h2><p>Paper does not fill space like a solid block. This planning estimate must be calibrated with repeatable bench tests.</p>
+    <h2 id="limits">Assumptions and limitations</h2><p>Paper does not fill space like a solid block. This planning estimate must be calibrated with repeatable packing trials.</p>
     <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
     <ul class="related-register"><li><a href="/tools/void-fill.html">Void Fill Calculator</a></li><li><a href="/tools/bubble-wrap.html">Bubble Wrap Calculator</a></li><li><a href="/reference/common-packaging-materials.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: July 26, 2026</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-dispatch" defer></script><footer class="site-footer">
+</main><script src="/assets/calculators.js?v=20260726-complete" defer></script><footer class="site-footer">
   <div class="footer-shell footer-main">
     <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
     <nav class="footer-links" aria-label="Footer">
@@ -62,6 +62,6 @@
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-dispatch" defer></script>
+<script src="/assets/site.js?v=20260726-complete" defer></script>
 </body>
 </html>

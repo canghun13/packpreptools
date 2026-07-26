@@ -37,13 +37,13 @@
 
 ## 2. 현재 저장소 상태
 
-2026-07-26 Phase 1 — Foundation Build 완료 기준:
+2026-07-26 Phase 1–3 1차 완성 기준:
 
-- 실제 공개 HTML 26개
+- 실제 공개 HTML 62개
 - 기본 페이지 8개
-- 계산기 10개
-- Guides 4개
-- Reference 4개
+- 계산기 32개
+- Guides 12개
+- Reference 10개
 - 공통 스타일: `assets/styles.css`
 - 공통 UI 동작: `assets/site.js`
 - 계산 로직: `assets/calculators.js`
@@ -55,11 +55,11 @@
 
 ### 현재 상태 판정
 
-- 실제 `index.html`과 Phase 1 전체 페이지 생성 완료
-- GitHub `main`에 Phase 1 구현 push 완료
+- Phase 1 Foundation·디자인 차별화와 Phase 2·3 기능/콘텐츠 확장 완료
+- GitHub `main`에 1차 완성 구현 push 완료
 - GitHub Pages / Cloudflare 실도메인에서 Homepage와 대표 계산기 응답 및 동작 확인 완료
 - 모든 공개 HTML에 고유 SEO 메타데이터, Open Graph, favicon, GA4, 정적 JSON-LD 적용
-- 자동 QA, 계산 검증, 5개 반응형 폭 브라우저 QA 통과
+- 자동 QA, 계산기 32개·독립 검사 160개, 62페이지 × 5개 반응형 폭 브라우저 QA 통과
 - HIGH 위험 0
 
 ---
@@ -526,7 +526,7 @@ Guide / Reference:
 
 ### 작업
 
-Phase 1 — Design Differentiation 완료
+Phase 2 + Phase 3 — Pack Prep Tools 1차 완성 완료
 
 ### 권장 모델
 
@@ -540,16 +540,16 @@ Sol
 
 - [x] 실제 `index.html` 생성
 - [x] 기본 페이지 8개
-- [x] 계산기 10개
-- [x] Guides 4개
-- [x] Reference 4개
+- [x] 계산기 32개
+- [x] Guides 12개
+- [x] Reference 10개
 - [x] 독립 디자인 시스템
 - [x] 공통 Header / Footer
 - [x] GA4 / SEO / JSON-LD
 - [x] robots / sitemap / llms / 404
 - [x] 자동 QA PASS
-- [x] 계산 검증 PASS
-- [x] 1440 / 1280 / 1024 / 768 / 390 브라우저 QA PASS
+- [x] 계산 검증 160개 PASS
+- [x] 공개 HTML 62개 × 1440 / 1280 / 1024 / 768 / 390 브라우저 QA PASS
 - [x] Tabletop Maker Lab 비교 Quality Gate PASS
 - [x] 자산 버전 키 적용 및 캐시 혼합 방지
 - [x] HIGH 위험 0
@@ -568,30 +568,39 @@ Sol
 - 작업 환경: Windows / PowerShell / Codex Desktop
 - 사용 모델: Sol
 - 추론 강도: 중간
-- 작업 범위: Phase 1 — Pack Prep Tools 전체 디자인 차별화
-- 변경 파일: 디자인·생성·QA 관련 31개와 handover 1개, 총 32개
-- 공개 HTML 수: 26
-- 계산기 수: 10
-- Guides 수: 4
-- Reference 수: 4
-- 자동 QA: PASS — 26 HTML, 25 sitemap URL, JavaScript 5개 문법 및 구조 검증
-- 계산 검증: PASS — 계산기 10개, 독립 검사 50개
-- 브라우저 QA: PASS — 필수 22페이지 × 1440/1280/1024/768/390 = 110 렌더 검사, 가로 넘침·H1·Header·Footer·콘솔 오류 0; 계산기 버튼 10개 통과; 모바일 메뉴·오류 처리·Reset 통과
-- 비교 Quality Gate: PASS — Tabletop Maker Lab과 Hero 실루엣, Header 색상·구조, 로고 마크, Homepage 순서, 도구 표시, 계산기 입력·결과 레이아웃, 문서 목록, 색상 체계를 분리했으며 금지 문구·이전 레이아웃 class 잔존 0
-- 계산기 기능 보존: PASS — 공식, 입력 ID, 결과 ID, 오류 처리, Reset, 내부 링크 변경 없음
-- 캐시 대응: 모든 HTML의 favicon/CSS/site.js/calculators.js에 `20260726-dispatch` 버전 키 적용
-- 구현 커밋: `b71b6fb` — Redesign Pack Prep Tools as dispatch console
-- 캐시 보완 커밋: `89ca4a1` — Version dispatch design assets
+- 작업 범위: Phase 2 + Phase 3 연속 구현, Pack Prep Tools 1차 완성
+- 변경 파일: 총 69개 — 신규 공개 HTML 36개, 기존 HTML/생성기/계산·QA/검색 파일 갱신 32개, handover 1개
+- 공개 HTML 수: 62
+- 계산기 수: 32
+- Guides 수: 12
+- Reference 수: 10
+- 신규 계산기 22개: Carton Count, Case Pack, Box Utilization, Multi-item Box Fit, Packaging Material Budget, Monthly Packaging Spend, Label Cost, Insert Quantity, Packaging Waste Allowance, Packaging Supply Reorder Point, Order Packing Time, Labor Capacity per Shift, Prep Batch Time, Kitting Cost, Bundle Packing Cost, Master Carton Dimensions, Master Carton Weight, Carton Cube, Cases per Pallet, Pallet Layer Count, Pallet Height, Pallet Utilization
+- 신규 Guides 8개: Box vs Poly Mailer, How to Choose Void Fill, Packing Station Workflow, Packaging Inventory Basics, Tape Types and Seal Patterns, Packaging Cost Reduction Checklist, Master Carton Planning, Pallet Planning Basics
+- 신규 Reference 6개: Packaging Unit Conversion, Packaging Cost Components, Box Style and Closure Glossary, Void Fill Yield Factors, Master Carton Terms, Pallet and Unit Load Terms
+- 제외 또는 교체한 계산기: 없음. 요청된 22개 모두 기존 도구와 다른 운영 출력을 제공한다고 판정해 구현함
+- Multi-item Box Fit 범위: 6개 직교 방향의 단순 격자 용량 추정이며 3D bin-packing 최적화로 주장하지 않음
+- Pallet 범위: 팔레트 크기·최대 높이·레이어를 사용자 입력으로 받고 안정성·압축 강도·무게 중심·장비·규제 적합성을 보증하지 않음
+- 자동 QA: PASS — 62 HTML, 61 sitemap URL, JavaScript 5개, 고유 title/description/canonical/H1, GA4, JSON-LD, 중복 ID, 내부 링크, 허브 도달성, robots/sitemap/llms, 404 noindex 검증
+- 계산 검증: PASS — 계산기 32개, 독립 검사 160개. 기존 10개 50건 회귀 검사와 신규 22개 110건 정상·경계·오류·재입력 결정성 검사
+- 브라우저 QA: PASS — 공개 HTML 62개 × 1440/1280/1024/768/390 = 310 렌더 검사. 가로 넘침, Header·로고·Footer, 테이블, H1, NaN/Infinity 실패 0
+- 계산기 UI QA: PASS — Calculate 32개, Reset 32개, 모바일 suffix 32개, 모바일 메뉴, 물리적 불가 입력 오류 3종, 콘솔 오류 0
+- 디자인 일관성: PASS — Shipping operations console / packing manifest / dispatch control sheet 유지. 밝은 2단 Header, 전폭 Hero, Quick Start 4개, workflow, 운영 테이블, 문서 인덱스, 전폭 manifest와 summary strip 보존
+- 기존 기능 회귀: PASS — 기존 URL, 기존 계산기 10개 공식과 입력/결과 ID, GA4, canonical, JSON-LD, 내부 링크 보존
+- 검색 파일: sitemap 61개 색인 URL, 404 제외; robots와 llms를 32/12/10 최종 구조로 재생성
+- 캐시 대응: favicon/CSS/site.js/calculators.js 자산 버전을 `20260726-complete`로 갱신
+- 구현 커밋: 아래 최신 커밋 기록 참조
 - push: `origin/main` push 완료
-- 실배포 확인: GitHub Pages `89ca4a1` 배포 성공. 캐시 구분 쿼리를 사용한 https://packpreptools.com/ 최신 응답에서 흰색 Header, 새 전폭 Hero, Quick Start 4개, 버전 적용 CSS/JS를 확인했고 대표 DIM 계산기에서 `6.91 lb`, 가로 넘침 0, 콘솔 오류 0 확인
-- 남은 문제: HIGH 없음, MEDIUM 없음. LOW — 점검 시점에 Cloudflare 기본 URL HTML은 이전 버전이 남고 캐시 구분 쿼리의 최신 원본은 정상인 전파 지연이 확인됨. 정적 자산에는 버전 키를 적용했으며 기본 HTML 캐시는 TTL 경과 후 재확인 필요. 운송사 DIM divisor와 포장재 yield도 시점·계약·작업 방식에 따라 달라지므로 콘텐츠 주기 검토와 현장 보정 필요
+- 실배포 확인: 아래 최신 배포 기록 참조
+- 남은 문제: HIGH 없음, MEDIUM 없음. LOW — 운송사 divisor, 포장재 yield, 공급 리드타임, 작업 속도는 운영 데이터에 맞춰 주기 보정 필요. Cloudflare HTML 캐시는 배포 직후 TTL 전파 차이가 날 수 있음
+- 1차 완성 판정: 가능 — 수량·기능·콘텐츠·SEO·QA·배포 기준 충족
 
 ### 다음 작업
 
-- 작업: Phase 1 운영 관찰 후 Phase 2 범위 우선순위 확정
+- 작업: 1차 완성 운영 관찰과 실제 입력 가정 보정
 - 권장 모델: Sol
 - 추론 강도: 중간
-- 완료 조건: GA4 수집·검색 색인·404 유입·계산기 피드백 확인, 최신 carrier divisor 및 포장재 가정 검토, Phase 2 범위를 별도 승인 후 시작
+- 일정: 배포 후 7일에 기본 URL 캐시·404·콘솔·모바일 확인, 30일에 GA4·검색 색인·도구 사용 분포 확인, 이후 분기마다 divisor·yield·lead time·labor pace 검토
+- 완료 조건: 운영 데이터로 가정값과 문서 검토일을 갱신하고, 기능 확장은 별도 승인된 범위에서만 시작
 
 ### 최근 검증 명령
 

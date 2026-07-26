@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Packaging Material Budget Calculator | Pack Prep Tools</title>
+  <meta name="description" content="Budget variable packaging materials with waste and contingency allowances.">
+  
+  <link rel="canonical" href="https://packpreptools.com/tools/packaging-material-budget.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pack Prep Tools">
+  <meta property="og:title" content="Packaging Material Budget Calculator">
+  <meta property="og:description" content="Budget variable packaging materials with waste and contingency allowances.">
+  <meta property="og:url" content="https://packpreptools.com/tools/packaging-material-budget.html">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XR7JWJ36CD');
+  </script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Packaging Material Budget Calculator","applicationCategory":"BusinessApplication","operatingSystem":"Any","url":"https://packpreptools.com/tools/packaging-material-budget.html","description":"Budget variable packaging materials with waste and contingency allowances.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://packpreptools.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://packpreptools.com/tools.html"},{"@type":"ListItem","position":3,"name":"Packaging Material Budget Calculator","item":"https://packpreptools.com/tools/packaging-material-budget.html"}]}]}</script>
+</head><body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="header-status"><div class="header-shell"><span>Shipping operations utilities</span><span class="system-state">Calculators online</span></div></div>
+  <div class="header-shell header-main">
+    <a class="brand" href="/" aria-label="Pack Prep Tools home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-button>Menu</button>
+    <nav class="site-nav" id="site-nav" aria-label="Primary" data-site-nav>
+      <a href="/">Home</a><a href="/tools.html" aria-current="page">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <header class="page-banner"><div class="page-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/tools.html">Tools</a> <span aria-hidden="true">/</span> <span>Packaging Material Budget Calculator</span></nav><p class="dispatch-meta"><span>Cost and inventory</span><span>Calculation utility</span></p><h1>Packaging Material Budget Calculator</h1><p class="lede">Budget variable packaging materials with waste and contingency allowances.</p></div></header>
+  <section class="calculator-console"><div class="page-shell">
+    <div class="manifest-panel"><div class="manifest-header"><span>Shipment input manifest</span><span>Required fields / visible units</span></div>
+      <form class="calculator-form" data-calculator="packaging-material-budget" novalidate><div class="manifest-grid"><div class="field"><label for="currency">Currency symbol</label><select id="currency" name="currency"><option value="$">$ — Dollar</option><option value="€">€ — Euro</option><option value="£">£ — Pound</option><option value="₩">₩ — Won</option></select></div><div class="field"><label for="orders">Planned orders</label><div class="input-shell"><input id="orders" name="orders" type="number" inputmode="decimal" min="0" step="any" value="1000" required aria-describedby="orders-unit"><span class="suffix" id="orders-unit">count</span></div></div><div class="field"><label for="materialCost">Material cost per order</label><div class="input-shell"><input id="materialCost" name="materialCost" type="number" inputmode="decimal" min="0" step="any" value="1.35" required aria-describedby="materialCost-unit"><span class="suffix" id="materialCost-unit">currency</span></div></div><div class="field"><label for="waste">Waste allowance</label><div class="input-shell"><input id="waste" name="waste" type="number" inputmode="decimal" min="0" step="any" value="5" required aria-describedby="waste-unit"><span class="suffix" id="waste-unit">%</span></div></div><div class="field"><label for="contingency">Contingency reserve</label><div class="input-shell"><input id="contingency" name="contingency" type="number" inputmode="decimal" min="0" step="any" value="3" required aria-describedby="contingency-unit"><span class="suffix" id="contingency-unit">%</span></div></div></div><div class="form-actions"><button class="button button-primary" type="submit">Calculate</button><button class="button button-quiet" type="reset">Reset</button></div><p class="form-error" data-error role="alert" aria-live="polite"></p></form>
+    </div>
+    <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
+  </div></section>
+  <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
+    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">Budget = orders × material cost × (1 + waste % + contingency %)</div>
+    <h2 id="example">Worked example</h2><p>One thousand orders at $1.35 each with 5% waste and 3% contingency require a $1,458 budget.</p>
+    <h2 id="interpretation">How to interpret the result</h2><p>Use the result as an operating plan, compare it with the relevant capacity or budget, and record the assumptions used for the batch.</p>
+    <h2 id="limits">Assumptions and limitations</h2><p>Inputs describe a simplified repeatable process. Validate yields, labor pace, fit, supplier lead time, and operating limits with current production data.</p>
+    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
+    <ul class="related-register"><li><a href="/tools/monthly-packaging-spend.html">Monthly Packaging Spend Calculator</a></li><li><a href="/tools/packaging-cost.html">Packaging Cost per Order Calculator</a></li><li><a href="/reference/packaging-cost-components.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <p class="meta-line">Last reviewed: July 26, 2026</p>
+  </article></div></section>
+</main><script src="/assets/calculators.js?v=20260726-complete" defer></script><footer class="site-footer">
+  <div class="footer-shell footer-main">
+    <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="/tools.html">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a>
+    </nav>
+  </div>
+  <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
+</footer>
+<script src="/assets/site.js?v=20260726-complete" defer></script>
+</body>
+</html>

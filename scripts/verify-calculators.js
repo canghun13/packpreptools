@@ -107,4 +107,39 @@ const costUsd = numbers(calculators["packaging-cost"]({ ...costBase, currency: "
 const costEur = numbers(calculators["packaging-cost"]({ ...costBase, currency: "€" }))[0];
 close(costEur, costUsd, 0.001, "packaging-cost currency display conversion");
 
-console.log(`CALCULATION VERIFICATION PASS — 10 calculators, ${checks} independent checks`);
+const phaseCases = {
+  "carton-count": [[{units:125,perCarton:24},6],[{units:48,perCarton:24},2],[{units:1,perCarton:1},1],{units:0,perCarton:1}],
+  "case-pack": [[{cases:12,unitsPerCase:24,reserve:6},294],[{cases:1,unitsPerCase:1,reserve:0},1],[{cases:2,unitsPerCase:3,reserve:1},7],{cases:0,unitsPerCase:1,reserve:0}],
+  "box-utilization": [[{boxLength:16,boxWidth:12,boxHeight:10,itemLength:7,itemWidth:5,itemHeight:3,quantity:4,unit:"in"},21.9],[{boxLength:2,boxWidth:2,boxHeight:2,itemLength:1,itemWidth:1,itemHeight:1,quantity:1,unit:"in"},12.5],[{boxLength:1,boxWidth:1,boxHeight:1,itemLength:1,itemWidth:1,itemHeight:1,quantity:1,unit:"in"},100],{boxLength:1,boxWidth:1,boxHeight:1,itemLength:2,itemWidth:1,itemHeight:1,quantity:1,unit:"in"}],
+  "multi-item-box-fit": [[{boxLength:16,boxWidth:12,boxHeight:10,itemLength:7,itemWidth:5,itemHeight:3,quantity:8,unit:"in"},16],[{boxLength:10,boxWidth:10,boxHeight:10,itemLength:5,itemWidth:5,itemHeight:5,quantity:8,unit:"in"},8],[{boxLength:1,boxWidth:1,boxHeight:1,itemLength:1,itemWidth:1,itemHeight:1,quantity:1,unit:"in"},1],{boxLength:1,boxWidth:1,boxHeight:1,itemLength:2,itemWidth:2,itemHeight:2,quantity:1,unit:"in"}],
+  "packaging-material-budget": [[{orders:1000,materialCost:1.35,waste:5,contingency:3,currency:"$"},1458],[{orders:100,materialCost:2,waste:0,contingency:0,currency:"$"},200],[{orders:1,materialCost:0,waste:0,contingency:0,currency:"$"},0],{orders:0,materialCost:1,waste:0,contingency:0,currency:"$"}],
+  "monthly-packaging-spend": [[{orders:1500,costPerOrder:1.45,fixedCost:250,months:3,currency:"$"},2425],[{orders:100,costPerOrder:2,fixedCost:0,months:1,currency:"$"},200],[{orders:1,costPerOrder:0,fixedCost:0,months:1,currency:"$"},0],{orders:0,costPerOrder:1,fixedCost:0,months:1,currency:"$"}],
+  "label-cost": [[{orders:1000,labelsPerOrder:2,unitCost:.04,waste:3,currency:"$"},82.4],[{orders:10,labelsPerOrder:1,unitCost:.5,waste:0,currency:"$"},5],[{orders:1,labelsPerOrder:1,unitCost:0,waste:0,currency:"$"},0],{orders:0,labelsPerOrder:1,unitCost:1,waste:0,currency:"$"}],
+  "insert-quantity": [[{orders:1200,insertsPerOrder:1,spoilage:4},1248],[{orders:10,insertsPerOrder:2,spoilage:0},20],[{orders:1,insertsPerOrder:1,spoilage:100},2],{orders:0,insertsPerOrder:1,spoilage:0}],
+  "packaging-waste-allowance": [[{baseQuantity:1000,waste:7},1070],[{baseQuantity:10,waste:0},10],[{baseQuantity:1,waste:1},2],{baseQuantity:0,waste:0}],
+  "packaging-supply-reorder-point": [[{dailyUse:80,leadDays:10,safetyStock:300,onHand:950},1100],[{dailyUse:10,leadDays:2,safetyStock:0,onHand:30},20],[{dailyUse:0,leadDays:0,safetyStock:0,onHand:0},0],{dailyUse:-1,leadDays:1,safetyStock:0,onHand:0}],
+  "order-packing-time": [[{orders:120,minutesPerOrder:3.5,setupMinutes:20},440],[{orders:10,minutesPerOrder:2,setupMinutes:0},20],[{orders:1,minutesPerOrder:.1,setupMinutes:0},.1],{orders:0,minutesPerOrder:1,setupMinutes:0}],
+  "labor-capacity-per-shift": [[{workers:3,shiftHours:8,utilization:80,minutesPerOrder:4},288],[{workers:1,shiftHours:1,utilization:100,minutesPerOrder:10},6],[{workers:1,shiftHours:.1,utilization:1,minutesPerOrder:1},0],{workers:0,shiftHours:1,utilization:100,minutesPerOrder:1}],
+  "prep-batch-time": [[{units:250,secondsPerUnit:35,setupMinutes:15,checkMinutes:20},180.8],[{units:60,secondsPerUnit:1,setupMinutes:0,checkMinutes:0},1],[{units:1,secondsPerUnit:1,setupMinutes:0,checkMinutes:0},0],{units:0,secondsPerUnit:1,setupMinutes:0,checkMinutes:0}],
+  "kitting-cost": [[{componentCost:1.2,components:3,packaging:.65,minutes:4,hourly:18,waste:2,currency:"$"},5.54],[{componentCost:1,components:1,packaging:0,minutes:0,hourly:0,waste:0,currency:"$"},1],[{componentCost:0,components:1,packaging:0,minutes:0,hourly:0,waste:0,currency:"$"},0],{componentCost:1,components:0,packaging:0,minutes:0,hourly:0,waste:0,currency:"$"}],
+  "bundle-packing-cost": [[{items:4,handlingCost:.18,bundleMaterials:.55,minutes:3,hourly:18,currency:"$"},2.17],[{items:1,handlingCost:1,bundleMaterials:0,minutes:0,hourly:0,currency:"$"},1],[{items:1,handlingCost:0,bundleMaterials:0,minutes:0,hourly:0,currency:"$"},0],{items:0,handlingCost:1,bundleMaterials:0,minutes:0,hourly:0,currency:"$"}],
+  "master-carton-dimensions": [[{itemLength:8,itemWidth:5,itemHeight:3,columns:3,rows:2,layers:2,clearance:.5,gap:.25,unit:"in"},25.5],[{itemLength:1,itemWidth:1,itemHeight:1,columns:1,rows:1,layers:1,clearance:0,gap:0,unit:"in"},1],[{itemLength:.01,itemWidth:.01,itemHeight:.01,columns:1,rows:1,layers:1,clearance:0,gap:0,unit:"in"},.01],{itemLength:0,itemWidth:1,itemHeight:1,columns:1,rows:1,layers:1,clearance:0,gap:0,unit:"in"}],
+  "master-carton-weight": [[{units:12,unitWeight:1.8,tareWeight:2.4,maxWeight:30,weightUnit:"lb"},24],[{units:1,unitWeight:1,tareWeight:0,maxWeight:1,weightUnit:"lb"},1],[{units:1,unitWeight:.01,tareWeight:0,maxWeight:1,weightUnit:"lb"},.01],{units:2,unitWeight:2,tareWeight:0,maxWeight:3,weightUnit:"lb"}],
+  "carton-cube": [[{length:24,width:16,height:12,cartons:20,unit:"in"},1.51],[{length:100,width:100,height:100,cartons:1,unit:"cm"},1],[{length:1,width:1,height:1,cartons:1,unit:"in"},0],{length:0,width:1,height:1,cartons:1,unit:"in"}],
+  "cases-per-pallet": [[{palletLength:48,palletWidth:40,caseLength:16,caseWidth:12,layers:5,unit:"in"},45],[{palletLength:10,palletWidth:10,caseLength:5,caseWidth:5,layers:1,unit:"in"},4],[{palletLength:1,palletWidth:1,caseLength:1,caseWidth:1,layers:1,unit:"in"},1],{palletLength:1,palletWidth:1,caseLength:2,caseWidth:2,layers:1,unit:"in"}],
+  "pallet-layer-count": [[{cases:86,casesPerLayer:10,maxLayers:10},9],[{cases:20,casesPerLayer:10,maxLayers:2},2],[{cases:1,casesPerLayer:10,maxLayers:1},1],{cases:100,casesPerLayer:10,maxLayers:5}],
+  "pallet-height": [[{palletHeight:6,caseHeight:10,layers:6,topAllowance:2,maxHeight:72,unit:"in"},68],[{palletHeight:0,caseHeight:1,layers:1,topAllowance:0,maxHeight:1,unit:"in"},1],[{palletHeight:0,caseHeight:.01,layers:1,topAllowance:0,maxHeight:1,unit:"in"},.01],{palletHeight:1,caseHeight:10,layers:10,topAllowance:0,maxHeight:50,unit:"in"}],
+  "pallet-utilization": [[{palletLength:48,palletWidth:40,caseLength:16,caseWidth:12,casesPerLayer:10,unit:"in"},100],[{palletLength:10,palletWidth:10,caseLength:5,caseWidth:5,casesPerLayer:2,unit:"in"},50],[{palletLength:10,palletWidth:10,caseLength:1,caseWidth:1,casesPerLayer:1,unit:"in"},1],{palletLength:10,palletWidth:10,caseLength:6,caseWidth:6,casesPerLayer:3,unit:"in"}]
+};
+
+for (const [id, cases] of Object.entries(phaseCases)) {
+  cases.slice(0, 3).forEach(([input, expected], index) => primary(id, input, expected, 0.011, `phase normal/boundary ${index + 1}`));
+  throws(id, cases[3]);
+  const first = calculators[id](cases[0][0]).primary;
+  assert.strictEqual(calculators[id](cases[0][0]).primary, first, `${id}: deterministic after reset/re-entry`);
+  checks += 1;
+}
+
+assert.strictEqual(Object.keys(calculators).length, 32, "Expected 32 calculator implementations");
+assert.ok(checks >= 160, `Expected at least 160 independent checks; found ${checks}`);
+console.log(`CALCULATION VERIFICATION PASS — ${Object.keys(calculators).length} calculators, ${checks} independent checks`);
