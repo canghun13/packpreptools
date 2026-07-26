@@ -442,8 +442,8 @@ function head({ file, title, description, type = "website", noindex = false, sch
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${canonical}">
-  <link rel="icon" type="image/png" href="/favicon.png">
-  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-dispatch">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-dispatch">
   ${ga()}
   <script type="application/ld+json">${JSON.stringify(schema)}</script>
 </head>`;
@@ -475,7 +475,7 @@ function footer() {
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js" defer></script>
+<script src="/assets/site.js?v=20260726-dispatch" defer></script>
 </body>
 </html>`;
 }
@@ -628,7 +628,7 @@ function calculatorPage(tool) {
     <ul class="related-register">${related}<li><a href="${tool.doc}">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: ${REVIEWED}</p>
   </article></div></section>
-</main><script src="/assets/calculators.js" defer></script>${footer()}`;
+</main><script src="/assets/calculators.js?v=20260726-dispatch" defer></script>${footer()}`;
 }
 
 function indexPage(kind, items) {
