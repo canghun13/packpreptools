@@ -14,7 +14,11 @@
 아래 명령을 그대로 실행한다.
 
 ```text
-이 저장소는 https://packpreptools.com/ 프로젝트다.
+이 저장소는 Pack Prep Tools 프로젝트다.
+
+- 사이트: https://packpreptools.com/
+- GitHub 저장소: https://github.com/canghun13/packpreptools
+- 원격 저장소 주소: https://github.com/canghun13/packpreptools.git
 
 먼저 저장소 루트의 handover.md를 처음부터 끝까지 읽고, 이 문서를 프로젝트의 유일한 기준으로 사용해라.
 
@@ -22,10 +26,11 @@
 1. git status
 2. 현재 브랜치
 3. git remote -v
-4. 최근 커밋 5개
-5. 기존 파일 구조
-6. 현재 배포 페이지와 로컬 파일의 차이
-7. 기존 사용자 수정사항과 미커밋 변경사항
+4. origin이 `https://github.com/canghun13/packpreptools.git`인지 확인하고, 다르면 임의 변경하지 말고 현재 상태를 보고
+5. 최근 커밋 5개
+6. 기존 파일 구조
+7. 현재 배포 페이지와 로컬 파일의 차이
+8. 기존 사용자 수정사항과 미커밋 변경사항
 
 중요:
 - 기존 파일을 무조건 덮어쓰거나 삭제하지 마라.
@@ -86,6 +91,8 @@
 | 항목 | 확정값 |
 |---|---|
 | 도메인 | `https://packpreptools.com/` |
+| GitHub 저장소 | `https://github.com/canghun13/packpreptools` |
+| Git remote | `https://github.com/canghun13/packpreptools.git` |
 | 브랜드 | **Pack Prep Tools** |
 | 공개 언어 | 영어 |
 | 개발·인수인계 문서 | 한국어 |
@@ -190,6 +197,26 @@
 3. 실제 배포된 `https://packpreptools.com/`
 
 채팅 기억이나 로컬 메모는 기준이 아니다.
+
+## 새 PC에서 최초 시작
+
+작업 폴더가 아직 없다면:
+
+```bash
+git clone https://github.com/canghun13/packpreptools.git
+cd packpreptools
+git branch --show-current
+git remote -v
+git pull --ff-only origin main
+```
+
+`origin`은 반드시 아래 주소를 가리켜야 한다.
+
+```text
+https://github.com/canghun13/packpreptools.git
+```
+
+다른 저장소를 열었거나 `origin`이 다르면 작업하지 말고 먼저 저장소를 바로잡는다.
 
 ## 작업 시작 전
 
@@ -927,6 +954,7 @@ Phase 1 완료 전 시작하지 않는다.
 ## 인프라
 
 - [x] 도메인 확보: `packpreptools.com`
+- [x] GitHub 저장소: `https://github.com/canghun13/packpreptools`
 - [x] GitHub Pages 기본 세팅
 - [x] Cloudflare 기본 세팅
 - [x] GA4 측정 ID 확정: `G-XR7JWJ36CD`
