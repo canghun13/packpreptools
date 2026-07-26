@@ -118,7 +118,7 @@ Pack Prep Tools는 온라인 판매자, 소형 브랜드, Etsy·Shopify·eBay·A
 
 - 필라멘트, 프린터 설정, 출력 시간, 인필, 서포트, 3D 모델 스케일 계산기를 넣지 않는다.
 - Maker Print Tools의 디자인과 구성요소를 복사하지 않는다.
-- Pack Prep Tools는 포장 작업대, 상자 치수선, 패킹 슬립, 배송 라벨, 자재 태그를 연상시키는 독립 디자인을 사용한다.
+- Pack Prep Tools는 shipping operations console, packing manifest, dispatch control sheet를 연상시키는 독립 디자인을 사용한다.
 
 ---
 
@@ -200,13 +200,20 @@ git push origin main
 
 ### 핵심 인상
 
-Packing bench / measurement station / order prep worksheet
+Shipping operations console / packing manifest / dispatch control sheet
 
 ### 원칙
 
-- 일반적인 SaaS 랜딩페이지처럼 만들지 않는다.
-- 모든 섹션을 같은 흰색 둥근 카드로 반복하지 않는다.
-- 결과 영역은 포장 사양서나 작업표처럼 명확하게 만든다.
+- 차가운 흰색·회색, 짙은 네이비, 선명한 블루를 기본으로 하고 앰버는 경고에만 제한한다.
+- 밝은 2단 Header, 전폭 Hero, 상태선, 구획선, 수치 정렬로 배송 준비 화면의 인상을 만든다.
+- Homepage 도구는 카드가 아니라 Quick Start 행과 운영 테이블로 표시한다.
+- Tools, Guides, Reference 허브는 데이터·문서 인덱스 목록으로 구성한다.
+- 계산기 입력은 상단 전폭 2~3열 manifest form, 결과는 그 아래 전폭 summary strip으로 구성한다.
+- 문서 상세는 단일 본문과 목차를 사용한다.
+- workbench, bench, workstation, rotated card, specimen panel, 격자 종이 효과를 사용하지 않는다.
+- 일반적인 SaaS 랜딩페이지나 creator lab처럼 만들지 않는다.
+- 모든 섹션을 같은 둥근 카드로 반복하지 않는다.
+- 결과 영역은 포장 명세서나 출고 체크시트처럼 명확하게 만든다.
 - 숫자와 단위 가독성을 장식보다 우선한다.
 - 로고 영역이 줄바꿈되거나 눌리지 않게 한다.
 - `%`, `in`, `cm`, `lb`, `kg`, `ft²` 같은 suffix를 입력값과 분리해 안정적으로 표시한다.
@@ -519,7 +526,7 @@ Guide / Reference:
 
 ### 작업
 
-Phase 1 — Foundation Build 완료
+Phase 1 — Design Differentiation 완료
 
 ### 권장 모델
 
@@ -543,6 +550,8 @@ Sol
 - [x] 자동 QA PASS
 - [x] 계산 검증 PASS
 - [x] 1440 / 1280 / 1024 / 768 / 390 브라우저 QA PASS
+- [x] Tabletop Maker Lab 비교 Quality Gate PASS
+- [x] 자산 버전 키 적용 및 캐시 혼합 방지
 - [x] HIGH 위험 0
 - [x] handover.md 갱신
 - [x] commit 및 push
@@ -559,8 +568,8 @@ Sol
 - 작업 환경: Windows / PowerShell / Codex Desktop
 - 사용 모델: Sol
 - 추론 강도: 중간
-- 작업 범위: Phase 1 — Foundation Build 전체
-- 변경 파일: 공개 HTML 26개, 공통 CSS/JS, favicon, robots, sitemap, llms, 페이지 생성기, 자동 QA, 계산 검증
+- 작업 범위: Phase 1 — Pack Prep Tools 전체 디자인 차별화
+- 변경 파일: 디자인·생성·QA 관련 31개와 handover 1개, 총 32개
 - 공개 HTML 수: 26
 - 계산기 수: 10
 - Guides 수: 4
@@ -568,10 +577,14 @@ Sol
 - 자동 QA: PASS — 26 HTML, 25 sitemap URL, JavaScript 5개 문법 및 구조 검증
 - 계산 검증: PASS — 계산기 10개, 독립 검사 50개
 - 브라우저 QA: PASS — 필수 22페이지 × 1440/1280/1024/768/390 = 110 렌더 검사, 가로 넘침·H1·Header·Footer·콘솔 오류 0; 계산기 버튼 10개 통과; 모바일 메뉴·오류 처리·Reset 통과
-- 커밋: `0562df1` — Build Pack Prep Tools Phase 1 foundation
+- 비교 Quality Gate: PASS — Tabletop Maker Lab과 Hero 실루엣, Header 색상·구조, 로고 마크, Homepage 순서, 도구 표시, 계산기 입력·결과 레이아웃, 문서 목록, 색상 체계를 분리했으며 금지 문구·이전 레이아웃 class 잔존 0
+- 계산기 기능 보존: PASS — 공식, 입력 ID, 결과 ID, 오류 처리, Reset, 내부 링크 변경 없음
+- 캐시 대응: 모든 HTML의 favicon/CSS/site.js/calculators.js에 `20260726-dispatch` 버전 키 적용
+- 구현 커밋: `b71b6fb` — Redesign Pack Prep Tools as dispatch console
+- 캐시 보완 커밋: `89ca4a1` — Version dispatch design assets
 - push: `origin/main` push 완료
-- 실배포 확인: https://packpreptools.com/ 에서 새 Homepage title/H1, canonical, GA4, 도구 10개 노출 확인; https://packpreptools.com/tools/dimensional-weight.html 에서 Calculate 결과 `6.91 lb` 및 콘솔 오류 0 확인
-- 남은 문제: HIGH 없음, MEDIUM 없음. LOW — 운송사 DIM divisor와 포장재 yield는 시점·계약·작업 방식에 따라 달라지므로 콘텐츠 주기 검토와 현장 보정 필요
+- 실배포 확인: GitHub Pages `89ca4a1` 배포 성공. 캐시 구분 쿼리를 사용한 https://packpreptools.com/ 최신 응답에서 흰색 Header, 새 전폭 Hero, Quick Start 4개, 버전 적용 CSS/JS를 확인했고 대표 DIM 계산기에서 `6.91 lb`, 가로 넘침 0, 콘솔 오류 0 확인
+- 남은 문제: HIGH 없음, MEDIUM 없음. LOW — 점검 시점에 Cloudflare 기본 URL HTML은 이전 버전이 남고 캐시 구분 쿼리의 최신 원본은 정상인 전파 지연이 확인됨. 정적 자산에는 버전 키를 적용했으며 기본 HTML 캐시는 TTL 경과 후 재확인 필요. 운송사 DIM divisor와 포장재 yield도 시점·계약·작업 방식에 따라 달라지므로 콘텐츠 주기 검토와 현장 보정 필요
 
 ### 다음 작업
 
