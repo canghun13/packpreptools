@@ -9,84 +9,8 @@
 
 ---
 
-# 0. Codex 첫 실행 프롬프트
 
-아래 명령을 그대로 실행한다.
-
-```text
-이 저장소는 Pack Prep Tools 프로젝트다.
-
-- 사이트: https://packpreptools.com/
-- GitHub 저장소: https://github.com/canghun13/packpreptools
-- 원격 저장소 주소: https://github.com/canghun13/packpreptools.git
-
-먼저 저장소 루트의 handover.md를 처음부터 끝까지 읽고, 이 문서를 프로젝트의 유일한 기준으로 사용해라.
-
-작업 시작 전에 반드시 다음을 확인해라.
-1. git status
-2. 현재 브랜치
-3. git remote -v
-4. origin이 `https://github.com/canghun13/packpreptools.git`인지 확인하고, 다르면 임의 변경하지 말고 현재 상태를 보고
-5. 최근 커밋 5개
-6. 기존 파일 구조
-7. 현재 배포 페이지와 로컬 파일의 차이
-8. 기존 사용자 수정사항과 미커밋 변경사항
-
-중요:
-- 기존 파일을 무조건 덮어쓰거나 삭제하지 마라.
-- git reset --hard, git checkout ., 무조건 stash를 사용하지 마라.
-- 다른 프로젝트의 HTML/CSS/로고/카드/헤더 구조를 복사하지 마라.
-- React, Vue, Next.js, Astro, PHP, 데이터베이스를 도입하지 마라.
-- 정적 HTML/CSS/Vanilla JavaScript만 사용해라.
-- 사용자에게 이미 확정된 내용을 다시 묻지 마라.
-- 작은 구현 판단은 직접 합리적으로 결정하고 handover.md에 기록해라.
-- 디자인을 대충 만든 뒤 페이지부터 대량 생성하지 마라.
-- 공통 구조, 디자인 시스템, 계산 검증, 반응형 QA를 먼저 확정한 뒤 확장해라.
-- 작업 완료 보고만 하지 말고 실제 파일, 실제 계산, 실제 렌더링을 검증해라.
-
-이번 작업은 handover.md의 “Phase 1 — Foundation Build” 범위만 진행해라.
-
-작업 순서:
-1. 현재 저장소와 배포 상태를 점검한다.
-2. 사이트의 독립적인 디자인 시스템을 먼저 만든다.
-3. 공통 Header/Footer 로딩 구조를 만든다.
-4. Homepage, Tools, Guides, Reference, About, Contact, Privacy를 완성한다.
-5. Phase 1 핵심 계산기 10개를 실제 동작하게 만든다.
-6. 각 계산기마다 입력 설명, 공식/가정, 결과 해석, 예제, 제한사항, 관련 도구 링크를 포함한다.
-7. 모든 공개 HTML에 GA4 G-XR7JWJ36CD, canonical, title, meta description, OG, viewport, favicon을 적용한다.
-8. robots.txt, sitemap.xml, llms.txt, 404.html을 점검 또는 생성한다.
-9. 자동 QA 스크립트와 계산 검증 스크립트를 만든다.
-10. 1440px, 1280px, 1024px, 768px, 390px에서 대표 페이지를 실제 렌더링해 확인한다.
-11. 깨진 링크, 중복 ID, JS 오류, 누락된 GA4, 잘못된 canonical, sitemap 누락을 전수 검사한다.
-12. handover.md의 현재 상태, 완료 내역, 페이지 수, 계산기 수, QA 결과, 남은 위험, 다음 작업을 갱신한다.
-13. 변경사항을 커밋한다.
-14. push 권한이 있으면 main에 push하고, 없으면 사용자가 실행할 정확한 push 명령을 보고한다.
-
-최종 보고 형식:
-- 완료한 범위
-- 최종 공개 HTML 수
-- 최종 계산기 수
-- Guides/Reference 수
-- 자동 QA 결과
-- 계산 검증 결과
-- 브라우저 QA 결과
-- 커밋 해시
-- push 여부
-- 남은 HIGH / MEDIUM / LOW 위험
-- 다음 권장 작업
-```
-
-### 권장 모델
-
-- 이번 첫 구축: **Sol**
-- 단순 문구·작은 CSS 수정: **Terra 낮음**
-- 여러 페이지 동시 수정·계산기 추가·전수 QA: **Terra 중간**
-- 구조 재설계·복합 오류 분석: **Terra 높음** 또는 **Sol**
-- 토큰 비용을 고려해 작업 난이도보다 과한 모델을 사용하지 않는다.
-
----
-
-# 1. 확정 프로젝트 정보
+# 0. 확정 프로젝트 정보
 
 | 항목 | 확정값 |
 |---|---|
@@ -121,7 +45,7 @@
 
 ---
 
-# 2. GA4 고정 코드
+# 0. GA4 고정 코드
 
 모든 색인 가능한 공개 HTML의 `<head>` 안에 아래 코드를 동일하게 넣는다.
 
@@ -147,7 +71,7 @@
 
 ---
 
-# 3. 사이트 정의와 범위
+# 0. 사이트 정의와 범위
 
 ## 한 문장 정의
 
@@ -188,7 +112,7 @@
 
 ---
 
-# 4. 회사·집 멀티 PC 운영 규칙
+# 0. 회사·집 멀티 PC 운영 규칙
 
 ## 기준 순서
 
@@ -291,7 +215,7 @@ git pull --ff-only origin main
 
 ---
 
-# 5. 목표 파일 구조
+# 0. 목표 파일 구조
 
 기존 구조가 정상이라면 유지하고, 없을 경우 아래를 기준으로 만든다.
 
@@ -353,7 +277,7 @@ git pull --ff-only origin main
 
 ---
 
-# 6. 디자인 방향
+# 0. 디자인 방향
 
 ## 핵심 인상
 
@@ -395,7 +319,7 @@ git pull --ff-only origin main
 
 ---
 
-# 7. Phase 1 — Foundation Build
+# 0. Phase 1 — Foundation Build
 
 ## 목표
 
@@ -415,7 +339,7 @@ git pull --ff-only origin main
 
 ## 핵심 계산기 10개
 
-### 1. Dimensional Weight Calculator
+### 0. Dimensional Weight Calculator
 
 입력:
 - Length
@@ -434,7 +358,7 @@ git pull --ff-only origin main
 - 실제 운임 또는 billable weight를 단정하지 않는다.
 - 사용자가 실제 중량과 비교할 수 있는 입력은 추후 또는 현재 단계에서 함께 제공 가능하다.
 
-### 2. Length + Girth Calculator
+### 0. Length + Girth Calculator
 
 입력:
 - Longest side
@@ -447,7 +371,7 @@ git pull --ff-only origin main
 - Length + girth
 - 사용자가 넣은 제한값 대비 차이
 
-### 3. Box Size Calculator
+### 0. Box Size Calculator
 
 입력:
 - Product length/width/height
@@ -459,7 +383,7 @@ git pull --ff-only origin main
 - Added volume
 - 설명
 
-### 4. Box Volume Calculator
+### 0. Box Volume Calculator
 
 입력:
 - Length
@@ -473,7 +397,7 @@ git pull --ff-only origin main
 - Total volume
 - 변환 단위
 
-### 5. Void Fill Calculator
+### 0. Void Fill Calculator
 
 입력:
 - Internal box dimensions
@@ -486,7 +410,7 @@ git pull --ff-only origin main
 - Adjusted fill volume
 - 결과가 음수일 경우 오류 대신 “product does not fit” 처리
 
-### 6. Bubble Wrap Calculator
+### 0. Bubble Wrap Calculator
 
 입력:
 - Product dimensions
@@ -499,7 +423,7 @@ git pull --ff-only origin main
 - Estimated roll length
 - 계산 가정
 
-### 7. Packing Paper Calculator
+### 0. Packing Paper Calculator
 
 입력:
 - Product 또는 void volume
@@ -511,7 +435,7 @@ git pull --ff-only origin main
 - Estimated paper required
 - 결과 범위와 가정
 
-### 8. Tape Usage Calculator
+### 0. Tape Usage Calculator
 
 입력:
 - Box length
@@ -525,7 +449,7 @@ git pull --ff-only origin main
 - Total tape
 - Estimated roll count
 
-### 9. Poly Mailer Size Calculator
+### 0. Poly Mailer Size Calculator
 
 입력:
 - Product width
@@ -538,7 +462,7 @@ git pull --ff-only origin main
 - Recommended minimum flat length
 - 실제 제품 형태에 따라 달라질 수 있다는 안내
 
-### 10. Packaging Cost per Order
+### 0. Packaging Cost per Order
 
 입력:
 - Box or mailer cost
@@ -595,7 +519,7 @@ git pull --ff-only origin main
 
 ---
 
-# 8. Phase 1 Guides / Reference
+# 0. Phase 1 Guides / Reference
 
 ## Guides 4개
 
@@ -623,7 +547,7 @@ git pull --ff-only origin main
 
 ---
 
-# 9. SEO와 공개 페이지 규칙
+# 0. SEO와 공개 페이지 규칙
 
 모든 색인 가능한 HTML에 아래를 적용한다.
 
@@ -678,7 +602,7 @@ Guide/Reference:
 
 ---
 
-# 10. 공통 Header/Footer 규칙
+# 0. 공통 Header/Footer 규칙
 
 ## Header
 
@@ -719,7 +643,7 @@ Guide/Reference:
 
 ---
 
-# 11. QA Quality Gate
+# 0. QA Quality Gate
 
 아래가 모두 통과해야 “완료”라고 보고할 수 있다.
 
@@ -797,23 +721,23 @@ Guide/Reference:
 
 ---
 
-# 12. 이전 프로젝트에서 반복된 낭비 방지 규칙
+# 0. 이전 프로젝트에서 반복된 낭비 방지 규칙
 
-## 1. 디자인 재작업 방지
+## 0. 디자인 재작업 방지
 
 - 첫 단계에서 색상, 타이포그래피, 간격, 입력, 결과, 버튼, 표, Header/Footer를 확정한다.
 - Homepage와 대표 계산기 1개를 먼저 완성한다.
 - 390px와 1440px에서 확인한 뒤 나머지 페이지에 확장한다.
 - 대량 생성 후 “전부 비슷하다”는 문제를 만들지 않는다.
 
-## 2. 페이지 누락 방지
+## 0. 페이지 누락 방지
 
 - Header/Footer 메뉴 목록을 한 번 확정한다.
 - 모든 페이지에서 About, Contact, Privacy 접근성을 자동 검사한다.
 - 상세 페이지가 허브와 연결되어야 한다.
 - orphan page를 허용하지 않는다.
 
-## 3. 잘못된 공통 치환 방지
+## 0. 잘못된 공통 치환 방지
 
 - 사이트 전체 regex 치환 전 `git diff` 범위를 확인한다.
 - 계산기 ID, link href, canonical, JSON-LD는 일괄 치환 후 전수 검사한다.
@@ -829,14 +753,14 @@ grep -R "TODO\|Lorem\|placeholder" .
 
 Windows에서는 PowerShell `Select-String` 또는 Node QA 스크립트를 사용해도 된다.
 
-## 4. 계산식 복붙 오류 방지
+## 0. 계산식 복붙 오류 방지
 
 - 계산기별 입력 ID만 읽는다.
 - 공통 함수가 존재하지 않는 DOM 요소를 읽지 않게 한다.
 - 계산 공식은 UI 구현과 별도의 검증 스크립트에서 다시 계산한다.
 - 단위 변환은 한곳에서 관리한다.
 
-## 5. 캐시 혼동 방지
+## 0. 캐시 혼동 방지
 
 배포 후 화면이 이상하면 무조건 코드를 다시 고치지 않는다.
 
@@ -851,14 +775,14 @@ Windows에서는 PowerShell `Select-String` 또는 Node QA 스크립트를 사�
 
 로컬 파일과 배포 파일이 같은지 확인한 후 수정한다.
 
-## 6. 보고만 하고 검증하지 않는 문제 방지
+## 0. 보고만 하고 검증하지 않는 문제 방지
 
 - “PASS”라고 적으려면 실행한 명령과 검사 건수를 남긴다.
 - 브라우저 QA는 실제 렌더링한 페이지와 폭을 기록한다.
 - 계산 검증은 입력과 expected 결과를 기록한다.
 - 커밋 해시와 push 여부를 보고한다.
 
-## 7. 토큰 낭비 방지
+## 0. 토큰 낭비 방지
 
 - 한 번에 필요 이상으로 페이지를 확장하지 않는다.
 - 구조가 확정되기 전 대량 콘텐츠를 만들지 않는다.
@@ -868,7 +792,7 @@ Windows에서는 PowerShell `Select-String` 또는 Node QA 스크립트를 사�
 
 ---
 
-# 13. Phase 로드맵
+# 0. Phase 로드맵
 
 ## Phase 1 — Foundation Build
 
@@ -949,7 +873,7 @@ Phase 1 완료 전 시작하지 않는다.
 
 ---
 
-# 14. 현재 상태
+# 0. 현재 상태
 
 ## 인프라
 
@@ -992,7 +916,7 @@ Phase 1 완료 전 시작하지 않는다.
 
 ---
 
-# 15. 작업 완료 후 반드시 갱신할 항목
+# 0. 작업 완료 후 반드시 갱신할 항목
 
 Codex는 매 작업 종료 전에 아래 형식을 유지하여 이 문서를 갱신한다.
 
@@ -1043,7 +967,7 @@ Codex는 매 작업 종료 전에 아래 형식을 유지하여 이 문서를 �
 
 ---
 
-# 16. 최종 완료 보고 템플릿
+# 0. 최종 완료 보고 템플릿
 
 ```text
 Pack Prep Tools 작업 완료 보고
@@ -1073,7 +997,7 @@ push:
 
 ---
 
-# 17. 현재 다음 작업
+# 0. 현재 다음 작업
 
 ## 작업
 
