@@ -588,9 +588,9 @@ Sol
 - 기존 기능 회귀: PASS — 기존 URL, 기존 계산기 10개 공식과 입력/결과 ID, GA4, canonical, JSON-LD, 내부 링크 보존
 - 검색 파일: sitemap 61개 색인 URL, 404 제외; robots와 llms를 32/12/10 최종 구조로 재생성
 - 캐시 대응: favicon/CSS/site.js/calculators.js 자산 버전을 `20260726-complete`로 갱신
-- 구현 커밋: 아래 최신 커밋 기록 참조
+- 구현 커밋: `bb9732e9cb84842cf1feaf5fde20eb63bac040bd` — Complete Pack Prep Tools phases 2 and 3
 - push: `origin/main` push 완료
-- 실배포 확인: 아래 최신 배포 기록 참조
+- 실배포 확인: GitHub Pages run `30196409094` build/deploy 성공. 기본 https://packpreptools.com/ 응답에서 32 calculators·22 documents·Quick Start 4개와 `20260726-complete` CSS 확인. Tools hub 32행·6개 카테고리 확인. Master Carton Dimensions 실계산 결과 `25.5 × 11.25 × 7.25 in`, 콘솔 오류 0, 가로 넘침 0 확인
 - 남은 문제: HIGH 없음, MEDIUM 없음. LOW — 운송사 divisor, 포장재 yield, 공급 리드타임, 작업 속도는 운영 데이터에 맞춰 주기 보정 필요. Cloudflare HTML 캐시는 배포 직후 TTL 전파 차이가 날 수 있음
 - 1차 완성 판정: 가능 — 수량·기능·콘텐츠·SEO·QA·배포 기준 충족
 
