@@ -217,6 +217,30 @@ const tools = [
   }
 ];
 
+const toolOperations = {
+  "dimensional-weight": { category: "Shipment size", output: "DIM weight", useWhen: "A light package may rate by volume." },
+  "length-girth": { category: "Shipment size", output: "Length + girth", useWhen: "Checking a published package-size limit." },
+  "box-size": { category: "Container fit", output: "Minimum internal size", useWhen: "Selecting a carton around a protected product." },
+  "box-volume": { category: "Container fit", output: "Cubic capacity", useWhen: "Comparing carton capacity or usable space." },
+  "void-fill": { category: "Protection", output: "Empty volume", useWhen: "Estimating headspace and cushioning demand." },
+  "bubble-wrap": { category: "Protection", output: "Wrap area", useWhen: "Planning layers and overlap for a product." },
+  "packing-paper": { category: "Protection", output: "Paper sheets", useWhen: "Converting empty volume into a paper plan." },
+  "tape-usage": { category: "Closure", output: "Tape length", useWhen: "Planning tape for a carton batch." },
+  "poly-mailer-size": { category: "Container fit", output: "Mailer size", useWhen: "Sizing a flexible mailer around thickness." },
+  "packaging-cost": { category: "Cost control", output: "Cost per order", useWhen: "Combining materials, waste, and labor." }
+};
+
+const documentRelations = {
+  "how-to-measure-a-box": "Length + Girth Calculator",
+  "dimensional-weight-explained": "DIM Weight Calculator",
+  "how-much-packaging-clearance": "Box Size Calculator",
+  "reduce-packaging-cost": "Packaging Cost Calculator",
+  "package-measurement-terms": "All measurement tools",
+  "common-packaging-materials": "Protection tools",
+  "dimensional-weight-divisors": "DIM Weight Calculator",
+  "internal-vs-external-box-dimensions": "Box Size Calculator"
+};
+
 const guides = [
   {
     slug: "how-to-measure-a-box",
@@ -348,7 +372,7 @@ const basicPages = [
     file: "about.html",
     title: "About Pack Prep Tools",
     description: "Learn how Pack Prep Tools helps online sellers plan package dimensions, materials, and packing cost.",
-    eyebrow: "About the workbench",
+    eyebrow: "About the service",
     body: `<p>Pack Prep Tools is a focused set of practical calculators and reference notes for people who pack finished products for shipment. It is built for online sellers, small brands, marketplace shops, and compact fulfillment teams.</p>
       <h2>What the site covers</h2><p>The tools address carton and mailer size, dimensional weight, length plus girth, empty space, cushioning, tape, material cost, and packing labor. They do not buy labels, quote live rates, store orders, or promise regulatory compliance.</p>
       <h2>How to use the estimates</h2><p>Start with accurate package measurements, use the calculator to create a planning estimate, then verify the result with your actual materials and current carrier or supplier rules. Packaging is physical work: a bench test is the final fit check.</p>
@@ -430,8 +454,9 @@ function header(current) {
   return `<body>
 <a class="skip-link" href="#main">Skip to main content</a>
 <header class="site-header">
-  <div class="header-inner">
-    <a class="brand" href="/" aria-label="Pack Prep Tools home"><span class="brand-mark" aria-hidden="true"></span><span>Pack Prep Tools</span></a>
+  <div class="header-status"><div class="header-shell"><span>Shipping operations utilities</span><span class="system-state">Calculators online</span></div></div>
+  <div class="header-shell header-main">
+    <a class="brand" href="/" aria-label="Pack Prep Tools home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a>
     <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-button>Menu</button>
     <nav class="site-nav" id="site-nav" aria-label="Primary" data-site-nav>
       ${items.map(([label, href]) => `<a href="${href}"${current === label ? ' aria-current="page"' : ""}>${label}</a>`).join("")}
@@ -442,13 +467,13 @@ function header(current) {
 
 function footer() {
   return `<footer class="site-footer">
-  <div class="footer-inner">
-    <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span>Pack Prep Tools</span></a><p class="footer-copy">Practical measurements, material estimates, and packing-cost worksheets for small shipping operations.</p></div>
+  <div class="footer-shell footer-main">
+    <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
     <nav class="footer-links" aria-label="Footer">
       <a href="/tools.html">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a>
     </nav>
-    <div class="footer-bottom">© 2026 Pack Prep Tools. Planning estimates only; verify fit, protection, and current carrier rules.</div>
   </div>
+  <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
 <script src="/assets/site.js" defer></script>
 </body>
@@ -470,6 +495,30 @@ function breadcrumbs(parts) {
   return `<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a>${parts.map((p) => ` <span aria-hidden="true">/</span> ${p.href ? `<a href="${p.href}">${p.label}</a>` : `<span>${p.label}</span>`}`).join("")}</nav>`;
 }
 
+function operationsTable(items) {
+  return `<table class="operations-table">
+    <thead><tr><th>Category</th><th>Tool</th><th>Primary output</th><th>Use when</th></tr></thead>
+    <tbody>${items.map((tool) => {
+      const operation = toolOperations[tool.slug];
+      return `<tr><td data-label="Category"><span class="category">${operation.category}</span></td><td data-label="Tool"><a href="/tools/${tool.slug}.html">${tool.title}</a></td><td data-label="Primary output">${operation.output}</td><td data-label="Use when">${operation.useWhen}</td></tr>`;
+    }).join("")}</tbody>
+  </table>`;
+}
+
+function documentRegister(items, prefix) {
+  const folder = prefix === "G" ? "guides" : "reference";
+  return `<ol class="document-register">${items.map((item, index) => `<li><a href="/${folder}/${item.slug}.html"><code>${prefix}${String(index + 1).padStart(2, "0")}</code><span><strong>${item.title}</strong><small>${item.description}</small></span></a></li>`).join("")}</ol>`;
+}
+
+function documentTable(items, kind) {
+  const folder = kind.toLowerCase();
+  const prefix = kind === "Guides" ? "G" : "R";
+  return `<table class="operations-table">
+    <thead><tr><th>Document</th><th>Title</th><th>Summary</th><th>Related tool</th></tr></thead>
+    <tbody>${items.map((item, index) => `<tr><td data-label="Document"><span class="category">${prefix}${String(index + 1).padStart(2, "0")}</span></td><td data-label="Title"><a href="/${folder}/${item.slug}.html">${item.title}</a></td><td data-label="Summary">${item.description}</td><td data-label="Related tool">${documentRelations[item.slug]}</td></tr>`).join("")}</tbody>
+  </table>`;
+}
+
 function write(file, contents) {
   const target = path.join(ROOT, file);
   fs.mkdirSync(path.dirname(target), { recursive: true });
@@ -489,29 +538,32 @@ function homepage() {
   };
   return `${head({ file, title, description, schema })}${header("Home")}
 <main id="main">
-  <section class="hero"><div class="page-shell hero-grid">
-    <div><p class="eyebrow">Packing bench calculators</p><h1>Measure the pack. Plan the materials.</h1><p class="hero-copy">Straightforward calculators for box fit, shipping dimensions, cushioning, tape, mailers, and per-order packing cost—built for small sellers doing real bench work.</p>
-      <div class="button-row"><a class="button button-primary" href="/tools/dimensional-weight.html">Calculate DIM weight</a><a class="button button-secondary" href="/tools.html">Browse all tools</a></div>
-    </div>
-    <div class="specimen" aria-label="Package measurement worksheet illustration">
-      <p class="eyebrow">Current package</p><div class="specimen-box"></div>
-      <div class="measure-line"><span>Length</span><i></i><strong>12 in</strong></div>
-      <div class="measure-line"><span>Width</span><i></i><strong>10 in</strong></div>
-      <div class="measure-line"><span>Height</span><i></i><strong>8 in</strong></div>
-    </div>
+  <section class="dispatch-hero"><div class="page-shell dispatch-hero-inner">
+    <p class="dispatch-meta"><span>10 live calculators</span><span>No sign-in</span><span>Browser-based results</span></p>
+    <h1>Packaging decisions, ready for dispatch.</h1>
+    <p class="hero-copy">Size the shipment, plan protection, estimate closure materials, and understand cost before an order leaves your operation.</p>
+    <div class="button-row"><a class="button button-primary" href="/tools.html">Open packaging tools</a><a class="button button-secondary" href="/guides/how-to-measure-a-box.html">Review measurement procedure</a></div>
   </div></section>
-  <section class="section"><div class="page-shell">
-    <div class="section-heading"><div><p class="eyebrow">Tool rack / 10</p><h2>Start with the package decision in front of you.</h2></div><p>Each worksheet names its assumptions, shows the method, and links to the measurements behind the result.</p></div>
-    <ol class="tool-list">${tools.map((tool, index) => `<li><a class="tool-link" href="/tools/${tool.slug}.html"><span class="tool-index">${String(index + 1).padStart(2, "0")}</span><span><h3>${tool.title}</h3><p>${tool.short}</p></span><span class="arrow" aria-hidden="true">→</span></a></li>`).join("")}</ol>
+  <nav class="quick-start" aria-label="Quick start tools"><div class="page-shell quick-start-shell">
+    <div class="quick-label">Quick start<br>common decisions</div>
+    ${["dimensional-weight", "box-size", "void-fill", "packaging-cost"].map((slug) => {
+      const tool = tools.find((item) => item.slug === slug);
+      return `<a class="quick-link" href="/tools/${slug}.html"><small>${toolOperations[slug].category}</small><strong>${tool.title}</strong></a>`;
+    }).join("")}
+  </div></nav>
+  <section class="content-section"><div class="page-shell">
+    <div class="section-title"><span class="section-code">Dispatch flow / 04 stages</span><h2>Move from dimensions to a repeatable pack.</h2><p>Use the stage that matches the operational decision, then verify the estimate against the finished shipment.</p></div>
+    <div class="process-track"><div class="process-step"><b>01</b><h3>Measure</h3><p>Capture final external size for shipping and internal size for fit.</p></div><div class="process-step"><b>02</b><h3>Protect</h3><p>Allow for wrap, clearance, void fill, and handling conditions.</p></div><div class="process-step"><b>03</b><h3>Close</h3><p>Size the mailer or estimate tape for the selected seal pattern.</p></div><div class="process-step"><b>04</b><h3>Cost</h3><p>Combine material use, waste allowance, and packing labor.</p></div></div>
   </div></section>
-  <section class="section section-ink"><div class="page-shell">
-    <div class="section-heading"><div><p class="eyebrow">Bench sequence</p><h2>A calculator is one step in a better pack.</h2></div><p>Use measured inputs, treat the result as a planning specification, and verify it with production materials.</p></div>
-    <div class="workflow"><div class="workflow-step"><strong>01 / MEASURE</strong><h3>Capture the finished dimensions.</h3><p>Know whether the task needs internal fit dimensions or external shipping dimensions.</p></div><div class="workflow-step"><strong>02 / CALCULATE</strong><h3>Record the assumptions.</h3><p>Choose the correct unit, divisor, clearance, material yield, or labor rate.</p></div><div class="workflow-step"><strong>03 / VERIFY</strong><h3>Run a physical pack test.</h3><p>Confirm fit, protection, closure, movement, and the final package size at the bench.</p></div></div>
+  <section class="content-section content-section-muted"><div class="page-shell">
+    <div class="section-title"><span class="section-code">Tool register / 10 active</span><h2>Packaging operations register</h2><p>Choose by the output required for the shipment record.</p></div>
+    ${operationsTable(tools)}
   </div></section>
-  <section class="section"><div class="page-shell">
-    <div class="section-heading"><div><p class="eyebrow">Field notes</p><h2>Measure consistently. Pack repeatably.</h2></div><p>Guides and concise references explain the terms and decisions used across every calculator.</p></div>
-    <ul class="document-list">${guides.slice(0, 2).map((guide) => `<li><a class="document-link" href="/guides/${guide.slug}.html"><span class="tool-index">GUIDE</span><span><h3>${guide.title}</h3><p>${guide.description}</p></span><span class="arrow" aria-hidden="true">→</span></a></li>`).join("")}${references.slice(0, 2).map((ref) => `<li><a class="document-link" href="/reference/${ref.slug}.html"><span class="tool-index">REF</span><span><h3>${ref.title}</h3><p>${ref.description}</p></span><span class="arrow" aria-hidden="true">→</span></a></li>`).join("")}</ul>
+  <section class="content-section"><div class="page-shell">
+    <div class="section-title"><span class="section-code">Controlled documents</span><h2>Procedures and reference data</h2><p>Measurement procedures explain what to do. Reference sheets define the terms and assumptions used in calculations.</p></div>
+    <div class="document-index"><section class="document-group"><h3>Guides / procedures</h3>${documentRegister(guides, "G")}</section><section class="document-group"><h3>Reference / definitions</h3>${documentRegister(references, "R")}</section></div>
   </div></section>
+  <section class="operations-notice"><div class="page-shell operations-notice-grid"><div><h2>Estimate, verify, dispatch.</h2><p>Results support packaging decisions; they do not replace a physical pack test or current carrier rules.</p></div><ol class="verify-list"><li><b>01 / Estimate</b>Use accurate dimensions and documented assumptions.</li><li><b>02 / Verify</b>Pack the real item and measure the finished package.</li><li><b>03 / Release</b>Confirm protection, closure, and current service limits.</li></ol></div></section>
 </main>${footer()}`;
 }
 
@@ -559,21 +611,23 @@ function calculatorPage(tool) {
   }).join("");
   return `${head({ file, title, description: tool.description, schema })}${header("Tools")}
 <main id="main">
-  <header class="page-hero"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: title }])}<p class="eyebrow">Packing worksheet</p><h1>${title}</h1><p class="lede">${tool.description}</p></div></header>
-  <section class="section"><div class="page-shell calculator-layout">
-    <div class="worksheet"><div class="worksheet-head"><span>Input specification</span><span>Units stay visible</span></div>
-      <form class="calculator-form" data-calculator="${tool.slug}" novalidate><div class="field-grid">${unitOptions(tool)}${fields}${select}</div><div class="form-actions"><button class="button button-primary" type="submit">Calculate</button><button class="button button-quiet" type="reset">Reset</button></div><p class="form-error" data-error role="alert" aria-live="polite"></p></form>
+  <header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: title }])}<p class="dispatch-meta"><span>${toolOperations[tool.slug].category}</span><span>Calculation utility</span></p><h1>${title}</h1><p class="lede">${tool.description}</p></div></header>
+  <section class="calculator-console"><div class="page-shell">
+    <div class="manifest-panel"><div class="manifest-header"><span>Shipment input manifest</span><span>Required fields / visible units</span></div>
+      <form class="calculator-form" data-calculator="${tool.slug}" novalidate><div class="manifest-grid">${unitOptions(tool)}${fields}${select}</div><div class="form-actions"><button class="button button-primary" type="submit">Calculate</button><button class="button button-quiet" type="reset">Reset</button></div><p class="form-error" data-error role="alert" aria-live="polite"></p></form>
     </div>
-    <section class="result-sheet" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="result-head"><span>Pack specification</span><span>Estimate</span></div><div class="result-body"><p class="result-kicker">Calculated result</p><p class="result-primary" data-result-primary>Enter your package details to begin.</p><dl class="result-values" data-result-values></dl></div></section>
+    <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
-  <section class="section"><div class="page-shell content-grid"><article class="prose">
-    <h2>Calculation method</h2><p>This worksheet uses the following planning method:</p><div class="formula">${tool.formula}</div>
-    <h2>Worked example</h2><p>${tool.example}</p>
-    <h2>How to interpret the result</h2><p>${tool.interpretation}</p>
-    <h2>Assumptions and limitations</h2><p>${tool.assumptions}</p>
-    <div class="note"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
+  <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
+    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">${tool.formula}</div>
+    <h2 id="example">Worked example</h2><p>${tool.example}</p>
+    <h2 id="interpretation">How to interpret the result</h2><p>${tool.interpretation}</p>
+    <h2 id="limits">Assumptions and limitations</h2><p>${tool.assumptions}</p>
+    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
+    <ul class="related-register">${related}<li><a href="${tool.doc}">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: ${REVIEWED}</p>
-  </article><aside class="side-links"><h2>Continue the pack plan</h2><ul>${related}<li><a href="${tool.doc}">Read the related guide or reference</a></li><li><a href="/tools.html">View all calculators</a></li></ul></aside></div></section>
+  </article></div></section>
 </main><script src="/assets/calculators.js" defer></script>${footer()}`;
 }
 
@@ -582,10 +636,9 @@ function indexPage(kind, items) {
   const file = `${kind.toLowerCase()}.html`;
   const title = isTools ? "Packaging Calculators" : kind === "Guides" ? "Packaging Guides" : "Packaging Reference";
   const description = isTools ? "Browse ten practical calculators for package dimensions, materials, and cost." : kind === "Guides" ? "Read practical guides for measuring, sizing, and controlling packaging cost." : "Use concise reference notes for packaging terms, materials, dimensions, and DIM divisors.";
-  const list = items.map((item, index) => `<li><a class="document-link" href="/${kind.toLowerCase()}/${item.slug}.html"><span class="tool-index">${String(index + 1).padStart(2, "0")}</span><span><h3>${item.title}</h3><p>${item.short || item.description}</p></span><span class="arrow" aria-hidden="true">→</span></a></li>`).join("");
   return `${head({ file, title, description, schema: websiteSchema(file, title, description) })}${header(kind)}
-<main id="main"><header class="page-hero"><div class="page-shell">${breadcrumbs([{ label: kind }])}<p class="eyebrow">${isTools ? "Tool rack" : "Field notes"}</p><h1>${title}</h1><p class="lede">${description}</p></div></header>
-<section class="section"><div class="page-shell"><ul class="document-list">${list}</ul></div></section></main>${footer()}`;
+<main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: kind }])}<p class="dispatch-meta"><span>${isTools ? "Operations register" : "Controlled documents"}</span><span>${items.length} active records</span></p><h1>${title}</h1><p class="lede">${description}</p></div></header>
+<section class="content-section"><div class="page-shell">${isTools ? operationsTable(items) : documentTable(items, kind)}</div></section></main>${footer()}`;
 }
 
 function articlePage(item, kind) {
@@ -604,19 +657,19 @@ function articlePage(item, kind) {
     ]
   };
   const body = kind === "Guides"
-    ? `<p class="lede">${item.intro}</p>${item.sections.map(([heading, text]) => `<h2>${heading}</h2><p>${text}</p>`).join("")}<h2>Bench checklist</h2><ul>${item.checklist.map((x) => `<li>${x}</li>`).join("")}</ul><div class="note"><strong>Planning note.</strong> Packaging performance depends on the product, materials, handling environment, and current shipping requirements. Test the finished pack.</div>`
-    : `<p class="lede">${item.intro}</p><dl class="reference-table">${item.rows.map(([term, text]) => `<div class="note"><dt><strong>${term}</strong></dt><dd>${text}</dd></div>`).join("")}</dl><div class="note"><strong>Reference note.</strong> Confirm current supplier and carrier specifications before using a term or value operationally.</div>`;
+    ? `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul>${item.sections.map(([heading], index) => `<li><a href="#section-${index + 1}">${heading}</a></li>`).join("")}<li><a href="#checklist">Checklist</a></li></ul></nav>${item.sections.map(([heading, text], index) => `<h2 id="section-${index + 1}">${heading}</h2><p>${text}</p>`).join("")}<h2 id="checklist">Dispatch checklist</h2><ul>${item.checklist.map((x) => `<li>${x}</li>`).join("")}</ul><div class="caution"><strong>Planning note.</strong> Packaging performance depends on the product, materials, handling environment, and current shipping requirements. Test the finished pack.</div>`
+    : `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#definitions">Definitions and operating notes</a></li><li><a href="#verification">Verification</a></li></ul></nav><h2 id="definitions">Definitions and operating notes</h2><dl class="reference-ledger">${item.rows.map(([term, text]) => `<div><dt>${term}</dt><dd>${text}</dd></div>`).join("")}</dl><div class="caution" id="verification"><strong>Reference note.</strong> Confirm current supplier and carrier specifications before using a term or value operationally.</div>`;
   const related = kind === "Guides" ? item.related : item.slug.includes("dimensional") ? "/tools/dimensional-weight.html" : item.slug.includes("internal") ? "/tools/box-size.html" : "/tools.html";
   return `${head({ file, title, description: item.description, type: "article", schema })}${header(kind)}
-<main id="main"><header class="page-hero"><div class="page-shell">${breadcrumbs([{ label: kind, href: `/${folder}.html` }, { label: title }])}<p class="eyebrow">${kind === "Guides" ? "Packing guide" : "Reference sheet"}</p><h1>${title}</h1></div></header>
-<section class="section"><div class="page-shell content-grid"><article class="prose">${body}<p class="meta-line">Last reviewed: ${REVIEWED}</p></article><aside class="side-links"><h2>Related</h2><ul><li><a href="${related}">Open the related calculator</a></li><li><a href="/${folder}.html">View all ${folder}</a></li></ul></aside></div></section></main>${footer()}`;
+<main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: kind, href: `/${folder}.html` }, { label: title }])}<p class="dispatch-meta"><span>${kind === "Guides" ? "Procedure" : "Reference record"}</span><span>Reviewed July 2026</span></p><h1>${title}</h1></div></header>
+<section class="article-zone"><div class="page-shell article-shell"><article class="article-body">${body}<ul class="related-register"><li><a href="${related}">Related calculator</a></li><li><a href="/${folder}.html">All ${folder}</a></li></ul><p class="meta-line">Last reviewed: ${REVIEWED}</p></article></div></section></main>${footer()}`;
 }
 
 function basicPage(page) {
   const schema = websiteSchema(page.file, page.title, page.description);
   return `${head({ file: page.file, title: page.title, description: page.description, schema })}${header(page.title.startsWith("About") ? "About" : "")}
-<main id="main"><header class="page-hero"><div class="page-shell">${breadcrumbs([{ label: page.title }])}<p class="eyebrow">${page.eyebrow}</p><h1>${page.title}</h1><p class="lede">${page.description}</p></div></header>
-<section class="section"><div class="page-shell"><article class="prose">${page.body}<p class="meta-line">Last reviewed: ${REVIEWED}</p></article></div></section></main>${footer()}`;
+<main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: page.title }])}<p class="dispatch-meta"><span>${page.eyebrow}</span><span>Pack Prep Tools</span></p><h1>${page.title}</h1><p class="lede">${page.description}</p></div></header>
+<section class="article-zone"><div class="page-shell article-shell"><article class="article-body">${page.body}<p class="meta-line">Last reviewed: ${REVIEWED}</p></article></div></section></main>${footer()}`;
 }
 
 function notFound() {
@@ -624,7 +677,7 @@ function notFound() {
   const title = "Package Not Found";
   const description = "The requested Pack Prep Tools page could not be found.";
   return `${head({ file, title, description, noindex: true, schema: websiteSchema(file, title, description) })}${header("")}
-<main id="main"><header class="page-hero"><div class="page-shell"><p class="eyebrow">404 / missing label</p><h1>Package not found.</h1><p class="lede">This page may have moved, or the address may be incomplete. Return to the workbench and choose a current tool.</p><div class="button-row"><a class="button button-primary" href="/">Go to homepage</a><a class="button button-quiet" href="/tools.html">Browse calculators</a></div></div></header></main>${footer()}`;
+<main id="main"><header class="page-banner"><div class="page-shell"><p class="dispatch-meta"><span>404 / route unavailable</span><span>No shipment record</span></p><h1>Package not found.</h1><p class="lede">This page may have moved, or the address may be incomplete. Return to the dispatch index and choose a current tool.</p><div class="button-row"><a class="button button-primary" href="/">Go to homepage</a><a class="button button-quiet" href="/tools.html">Browse calculators</a></div></div></header></main>${footer()}`;
 }
 
 function crc32(buffer) {
@@ -652,9 +705,9 @@ function favicon() {
     raw[y * (size * 4 + 1)] = 0;
     for (let x = 0; x < size; x++) {
       const offset = y * (size * 4 + 1) + 1 + x * 4;
-      const border = x < 4 || x > 27 || y < 5 || y > 26;
-      const seam = x >= 15 && x <= 17;
-      const color = border || seam ? [244, 240, 230, 255] : [37, 71, 60, 255];
+      const line = x >= 5 && x <= 27 && ((y >= 6 && y <= 8) || (y >= 15 && y <= 17) || (y >= 24 && y <= 26));
+      const node = (x >= 4 && x <= 10 && y >= 4 && y <= 10) || (x >= 22 && x <= 28 && y >= 13 && y <= 19) || (x >= 4 && x <= 10 && y >= 22 && y <= 28);
+      const color = node ? [255, 255, 255, 255] : line ? [8, 120, 232, 255] : [7, 26, 46, 255];
       raw.set(color, offset);
     }
   }

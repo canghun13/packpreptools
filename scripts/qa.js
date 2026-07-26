@@ -116,6 +116,12 @@ for (const file of htmlFiles) {
   if (/(localhost|127\.0\.0\.1|example\.com|makerprinttools|lorem ipsum|\bTODO\b|placeholder)/i.test(html)) {
     fail(`${name}: temporary, foreign-project, or placeholder text found.`);
   }
+  if (/(workbench|on the bench|bench sequence|packing bench calculators|field notes|start with the package decision in front of you|measure the pack\. plan the materials\.)/i.test(html)) {
+    fail(`${name}: retired creator-lab or bench language found.`);
+  }
+  if (/(hero-grid|specimen|section-heading|tool-link|document-link|calculator-layout|worksheet-head|result-sheet|section-ink|workflow-step)/i.test(html)) {
+    fail(`${name}: retired layout class found.`);
+  }
 }
 
 const scriptFiles = allFiles.filter((file) => file.endsWith(".js"));
@@ -125,6 +131,14 @@ for (const file of scriptFiles) {
   } catch (error) {
     fail(`${rel(file)}: JavaScript syntax error.`);
   }
+}
+
+const stylesheet = fs.readFileSync(path.join(ROOT, "assets", "styles.css"), "utf8");
+["#25473c", "#163128", "#e86f3d", "#f4f0e6", ".specimen", ".calculator-layout", ".result-sheet"].forEach((pattern) => {
+  if (stylesheet.toLowerCase().includes(pattern.toLowerCase())) fail(`assets/styles.css: retired visual pattern ${pattern} found.`);
+});
+if (!stylesheet.includes("--navy-950") || !stylesheet.includes("--blue-600") || !stylesheet.includes("--amber-600")) {
+  fail("assets/styles.css: dispatch-control palette tokens missing.");
 }
 
 const sitemap = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");

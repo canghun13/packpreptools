@@ -15,7 +15,7 @@
     const calculatorId = form.dataset.calculator;
     const calculate = window.PackPrepCalculators &&
       window.PackPrepCalculators.calculators[calculatorId];
-    const result = form.closest(".calculator-layout").querySelector("[data-result]");
+    const result = form.closest(".calculator-console").querySelector("[data-result]");
     const resultPrimary = result && result.querySelector("[data-result-primary]");
     const resultValues = result && result.querySelector("[data-result-values]");
     const error = form.querySelector("[data-error]");
