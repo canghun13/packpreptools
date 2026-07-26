@@ -12,8 +12,8 @@
   <meta property="og:title" content="Cases per Pallet Calculator">
   <meta property="og:description" content="Estimate straight-grid cases per pallet across a user-entered layer count.">
   <meta property="og:url" content="https://packpreptools.com/tools/cases-per-pallet.html">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-content">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-content">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
   <script>
@@ -44,16 +44,19 @@
     <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
   <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
-    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
-    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">Cases per pallet = best straight or rotated grid per layer × layers</div>
-    <h2 id="example">Worked example</h2><p>A 48 × 40 in pallet with 16 × 12 in cases fits 9 cases per layer and 45 across five layers in a single-orientation grid.</p>
-    <h2 id="interpretation">How to interpret the result</h2><p>Use the result as an operating plan, compare it with the relevant capacity or budget, and record the assumptions used for the batch.</p>
-    <h2 id="limits">Assumptions and limitations</h2><p>This planning estimate does not verify load stability, overhang, compression strength, weight distribution, equipment clearance, or regulatory compliance. Confirm the physical unit load.</p>
-    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
-    <ul class="related-register"><li><a href="/tools/pallet-layer-count.html">Pallet Layer Count Calculator</a></li><li><a href="/tools/pallet-utilization.html">Pallet Utilization Calculator</a></li><li><a href="/guides/pallet-planning-basics.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use Cases per Pallet to estimate a whole-case count from one straight-grid orientation per layer and a user-entered number of layers. It compares unrotated and 90-degree rotated footprints. Pallet Layer Count instead starts from required cases and known cases per layer.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Enter the usable pallet footprint, finished case footprint, and a layer count already screened for height and weight. Keep dimensions in one unit and use case length and width in the intended upright orientation. Reduce usable pallet size if edge clearance is required.</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Pallet length</th><td>Cases per Pallet Calculator: Measure pallet length on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Pallet width</th><td>Cases per Pallet Calculator: Measure pallet width on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Case length</th><td>Cases per Pallet Calculator: Measure case length on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Case width</th><td>Cases per Pallet Calculator: Measure case width on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Layer count</th><td>Cases per Pallet Calculator: Count layer count in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Cases per pallet = best straight or rotated grid per layer × layers</div><ol class="procedure-list"><li><strong>Validate the Cases per Pallet Calculator manifest:</strong> confirm that pallet length, pallet width, case length describe the same Cases per Pallet Calculator pack, batch, or planning period.</li><li><strong>Calculate cases per pallet:</strong> apply <span class="inline-formula">Cases per pallet = best straight or rotated grid per layer × layers</span> without rounding intermediate values for Cases per Pallet Calculator.</li><li><strong>Review the cases per pallet breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Cases per Pallet Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>A 48 × 40 in pallet with 16 × 12 in cases fits 9 cases per layer and 45 across five layers in a single-orientation grid.</p><p><strong>Next action:</strong> After: check Pallet Height, Pallet Utilization, gross weight, and a physical unit load.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>Review cases per layer, selected orientation, and total cases. A rotated grid can increase count, but the calculator does not mix orientations within a layer. Before approval, draw the pattern, check edge support and partial top layers, and verify loaded height and gross weight.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Using nominal pallet or carton dimensions without measuring.</li><li>Allowing unapproved overhang to make a case appear to fit.</li><li>Entering layers before checking height and weight.</li><li>Assuming the best area count creates a stable pattern.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The tool uses a single rectangular grid and excludes mixed orientations, pinwheel patterns, interlocking, gaps, deck-board support, overhang, compression, containment, weight, center of gravity, and handling stability.</p>
+    <div class="caution"><strong>Cases per Pallet Calculator estimate only:</strong> verify the Cases per Pallet Calculator cases per pallet with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: define usable footprint and allowed case orientation.</li><li>After: check Pallet Height, Pallet Utilization, gross weight, and a physical unit load.</li></ol><ul class="related-register"><li><a href="/tools/pallet-layer-count.html">Pallet Layer Count Calculator</a></li><li><a href="/tools/pallet-utilization.html">Pallet Utilization Calculator</a></li><li><a href="/guides/pallet-planning-basics.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: July 26, 2026</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-complete" defer></script><footer class="site-footer">
+</main><script src="/assets/calculators.js?v=20260726-content" defer></script><footer class="site-footer">
   <div class="footer-shell footer-main">
     <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
     <nav class="footer-links" aria-label="Footer">
@@ -62,6 +65,6 @@
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-complete" defer></script>
+<script src="/assets/site.js?v=20260726-content" defer></script>
 </body>
 </html>

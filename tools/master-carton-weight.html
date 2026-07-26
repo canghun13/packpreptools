@@ -12,8 +12,8 @@
   <meta property="og:title" content="Master Carton Weight Calculator">
   <meta property="og:description" content="Check estimated packed carton weight against a user-entered planning maximum.">
   <meta property="og:url" content="https://packpreptools.com/tools/master-carton-weight.html">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-content">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-content">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
   <script>
@@ -44,16 +44,19 @@
     <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
   <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
-    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
-    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">Packed carton weight = units × unit weight + carton and packing tare</div>
-    <h2 id="example">Worked example</h2><p>Twelve 1.8 lb units plus 2.4 lb tare produce a 24 lb master carton, leaving 6 lb to a 30 lb planning maximum.</p>
-    <h2 id="interpretation">How to interpret the result</h2><p>Use the result as an operating plan, compare it with the relevant capacity or budget, and record the assumptions used for the batch.</p>
-    <h2 id="limits">Assumptions and limitations</h2><p>Inputs describe a simplified repeatable process. Validate yields, labor pace, fit, supplier lead time, and operating limits with current production data.</p>
-    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
-    <ul class="related-register"><li><a href="/tools/master-carton-dimensions.html">Master Carton Dimensions Calculator</a></li><li><a href="/tools/cases-per-pallet.html">Cases per Pallet Calculator</a></li><li><a href="/reference/master-carton-terms.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use Master Carton Weight to check product weight plus carton-and-packing tare against an internal planning maximum supplied by the user. It answers a weight question, not a dimensional capacity question. Master Carton Dimensions should establish the layout and unit count first.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Use the actual units per carton, a representative packed-unit weight in pounds, and tare measured from the carton, dividers, liners, labels, and closure. Set maximum planned weight from the applicable facility, customer, equipment, or service requirement rather than assuming a universal limit.</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Units per carton</th><td>Master Carton Weight Calculator: Count units per carton in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr><tr><th>Weight per unit</th><td>Master Carton Weight Calculator: Weigh weight per unit on a suitable scale and use the same weight unit for every weight field.</td></tr><tr><th>Carton and packing weight</th><td>Master Carton Weight Calculator: Weigh carton and packing weight on a suitable scale and use the same weight unit for every weight field.</td></tr><tr><th>Maximum planned weight</th><td>Master Carton Weight Calculator: Weigh maximum planned weight on a suitable scale and use the same weight unit for every weight field.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Packed carton weight = units × unit weight + carton and packing tare</div><ol class="procedure-list"><li><strong>Validate the Master Carton Weight Calculator manifest:</strong> confirm that units per carton, weight per unit, carton and packing weight describe the same Master Carton Weight Calculator pack, batch, or planning period.</li><li><strong>Calculate packed carton weight:</strong> apply <span class="inline-formula">Packed carton weight = units × unit weight + carton and packing tare</span> without rounding intermediate values for Master Carton Weight Calculator.</li><li><strong>Review the packed carton weight breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Master Carton Weight Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>Twelve 1.8 lb units plus 2.4 lb tare produce a 24 lb master carton, leaving 6 lb to a 30 lb planning maximum.</p><p><strong>Next action:</strong> After: weigh a completed carton and use the result in pallet load planning.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>A result below the maximum reports remaining allowance, but that margin should cover normal product and material variation. A result close to the ceiling needs sample cartons weighed at the high end of tolerance. If the estimate exceeds the maximum, reduce case pack or redesign the pack.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Using net product weight while forgetting retail or inner packaging.</li><li>Omitting dividers, tape, and labels from tare.</li><li>Treating a carrier limit as a safe manual-handling limit.</li><li>Averaging unit weights when the upper tolerance controls compliance.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The tool adds weights linearly and does not evaluate weight distribution, lifting ergonomics, carton strength, pallet load, scale calibration, regulatory rules, or service-specific limits.</p>
+    <div class="caution"><strong>Master Carton Weight Calculator estimate only:</strong> verify the Master Carton Weight Calculator packed carton weight with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: finalize unit count and measure unit and tare samples.</li><li>After: weigh a completed carton and use the result in pallet load planning.</li></ol><ul class="related-register"><li><a href="/tools/master-carton-dimensions.html">Master Carton Dimensions Calculator</a></li><li><a href="/tools/cases-per-pallet.html">Cases per Pallet Calculator</a></li><li><a href="/reference/master-carton-terms.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: July 26, 2026</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-complete" defer></script><footer class="site-footer">
+</main><script src="/assets/calculators.js?v=20260726-content" defer></script><footer class="site-footer">
   <div class="footer-shell footer-main">
     <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
     <nav class="footer-links" aria-label="Footer">
@@ -62,6 +65,6 @@
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-complete" defer></script>
+<script src="/assets/site.js?v=20260726-content" defer></script>
 </body>
 </html>

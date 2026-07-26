@@ -12,8 +12,8 @@
   <meta property="og:title" content="Dimensional Weight Calculator">
   <meta property="og:description" content="Calculate dimensional weight in pounds or kilograms from package dimensions and a carrier divisor.">
   <meta property="og:url" content="https://packpreptools.com/tools/dimensional-weight.html">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-content">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-content">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
   <script>
@@ -44,16 +44,19 @@
     <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
   <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
-    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
-    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">Dimensional weight = length × width × height ÷ DIM divisor</div>
-    <h2 id="example">Worked example</h2><p>A 12 × 10 × 8 in carton has 960 in³ of volume. Using a 139 divisor, its DIM weight is 6.91 lb, commonly rounded up to 7 lb for rating.</p>
-    <h2 id="interpretation">How to interpret the result</h2><p>Compare the rounded DIM weight with the scale weight. A carrier may bill whichever is greater, subject to its current service rules.</p>
-    <h2 id="limits">Assumptions and limitations</h2><p>The calculator does not select a divisor for you or quote a shipment. Confirm the divisor, rounding method, and minimums with the carrier or marketplace you use.</p>
-    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
-    <ul class="related-register"><li><a href="/tools/box-volume.html">Box Volume Calculator</a></li><li><a href="/tools/length-girth.html">Length + Girth Calculator</a></li><li><a href="/reference/dimensional-weight-divisors.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use this calculator before comparing a packed carton with a shipping service’s size-based rating method. It converts external package volume into a comparison weight; it does not measure scale weight or choose the billable weight. That makes it different from Box Volume, which reports capacity, and Length + Girth, which checks a package perimeter.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Measure the closed package at its maximum outside points, including bulging flaps or protrusions. Select the unit system that matches the divisor and enter the divisor from the current service, marketplace, or account rule. Do not combine centimeter dimensions with an inch-pound divisor.</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Length</th><td>Dimensional Weight Calculator: Measure length on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Width</th><td>Dimensional Weight Calculator: Measure width on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Height</th><td>Dimensional Weight Calculator: Measure height on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>DIM divisor</th><td>Dimensional Weight Calculator: Obtain dim divisor from the current official service, marketplace, or account method and match its unit system.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Dimensional weight = length × width × height ÷ DIM divisor</div><ol class="procedure-list"><li><strong>Validate the Dimensional Weight Calculator manifest:</strong> confirm that length, width, height describe the same Dimensional Weight Calculator pack, batch, or planning period.</li><li><strong>Calculate dim weight:</strong> apply <span class="inline-formula">Dimensional weight = length × width × height ÷ DIM divisor</span> without rounding intermediate values for Dimensional Weight Calculator.</li><li><strong>Review the dim weight breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Dimensional Weight Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>A 12 × 10 × 8 in carton has 960 in³ of volume. Using a 139 divisor, its DIM weight is 6.91 lb, commonly rounded up to 7 lb for rating.</p><p><strong>Next action:</strong> After: compare with scale weight, then use Box Size or Box Utilization to investigate excess volume.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>Compare the unrounded DIM result with the packed scale weight using the current rating instructions. A high DIM result points to excess external volume; test a smaller carton or reduced headspace, then remeasure the finished package. When the result sits near a billing threshold, preserve the unrounded value and verify the required rounding sequence.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Using catalog internal dimensions instead of the closed external package.</li><li>Reusing a divisor from another service, unit system, or old rate sheet.</li><li>Rounding each dimension before the method tells you to do so.</li><li>Treating DIM weight as a live quote or guaranteed billable weight.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The result excludes service-specific minimums, additional handling rules, irregular-package measurement, actual scale weight, and account terms. Only the current official service documentation can define the applicable divisor and rounding method.</p>
+    <div class="caution"><strong>Dimensional Weight Calculator estimate only:</strong> verify the Dimensional Weight Calculator dim weight with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: measure the finished carton and confirm the applicable divisor.</li><li>After: compare with scale weight, then use Box Size or Box Utilization to investigate excess volume.</li></ol><ul class="related-register"><li><a href="/tools/box-volume.html">Box Volume Calculator</a></li><li><a href="/tools/length-girth.html">Length + Girth Calculator</a></li><li><a href="/reference/dimensional-weight-divisors.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: July 26, 2026</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-complete" defer></script><footer class="site-footer">
+</main><script src="/assets/calculators.js?v=20260726-content" defer></script><footer class="site-footer">
   <div class="footer-shell footer-main">
     <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
     <nav class="footer-links" aria-label="Footer">
@@ -62,6 +65,6 @@
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-complete" defer></script>
+<script src="/assets/site.js?v=20260726-content" defer></script>
 </body>
 </html>

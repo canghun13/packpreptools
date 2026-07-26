@@ -886,6 +886,58 @@ h1 {
   overflow-wrap: anywhere;
 }
 
+.inline-formula {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  color: var(--navy-950);
+}
+
+.content-table {
+  width: 100%;
+  margin: 1.25rem 0 2rem;
+  border-collapse: collapse;
+  font-size: 0.94rem;
+}
+
+.content-table th,
+.content-table td {
+  padding: 0.82rem 0.9rem;
+  border: 1px solid var(--slate-300);
+  text-align: left;
+  vertical-align: top;
+}
+
+.content-table thead th {
+  background: var(--slate-100);
+  color: var(--navy-950);
+}
+
+.content-table tbody th {
+  width: 28%;
+  color: var(--navy-900);
+}
+
+.procedure-list,
+.check-list {
+  margin: 1rem 0 2rem;
+  padding-left: 1.4rem;
+}
+
+.procedure-list li,
+.check-list li {
+  margin: 0 0 0.8rem;
+}
+
+.example-block {
+  margin: 1rem 0 2rem;
+  padding: 1.25rem 1.4rem;
+  border-left: 4px solid var(--blue-600);
+  background: var(--slate-100);
+}
+
+.example-block p:last-child {
+  margin-bottom: 0;
+}
+
 .caution {
   margin-top: 1.6rem;
   padding: 0.95rem 1rem;
@@ -1179,6 +1231,37 @@ h1 {
   .operations-table td {
     display: block;
     width: 100%;
+  }
+
+  .content-table,
+  .content-table tbody,
+  .content-table tr,
+  .content-table th,
+  .content-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .content-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .content-table tr {
+    margin-bottom: 0.8rem;
+    border: 1px solid var(--slate-300);
+  }
+
+  .content-table th,
+  .content-table td {
+    border: 0;
+  }
+
+  .content-table th {
+    background: var(--slate-100);
   }
 
   .operations-table thead {

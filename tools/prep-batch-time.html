@@ -12,8 +12,8 @@
   <meta property="og:title" content="Prep Batch Time Calculator">
   <meta property="og:description" content="Combine setup, per-unit preparation, and quality-check time.">
   <meta property="og:url" content="https://packpreptools.com/tools/prep-batch-time.html">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-content">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-content">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
   <script>
@@ -44,16 +44,19 @@
     <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
   <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
-    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
-    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">Batch time = setup + checks + units × seconds per unit ÷ 60</div>
-    <h2 id="example">Worked example</h2><p>Preparing 250 units at 35 seconds each plus 35 minutes of setup and checks takes about 180.8 minutes.</p>
-    <h2 id="interpretation">How to interpret the result</h2><p>Use the result as an operating plan, compare it with the relevant capacity or budget, and record the assumptions used for the batch.</p>
-    <h2 id="limits">Assumptions and limitations</h2><p>Inputs describe a simplified repeatable process. Validate yields, labor pace, fit, supplier lead time, and operating limits with current production data.</p>
-    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
-    <ul class="related-register"><li><a href="/tools/order-packing-time.html">Order Packing Time Calculator</a></li><li><a href="/tools/kitting-cost.html">Kitting Cost Calculator</a></li><li><a href="/guides/packing-station-workflow.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use Prep Batch Time for repeatable unit preparation that has a setup, a seconds-per-unit run, and a separate quality-check allowance. It suits labeling, folding, bagging, or component preparation before final packing. Order Packing Time instead models completed orders in minutes per order.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Define one prepared unit clearly, time several normal run segments in seconds, and separate setup activities that happen once. Enter quality-check time for the whole batch, not per unit, unless the per-unit observation already includes it.</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Batch units</th><td>Prep Batch Time Calculator: Count batch units in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr><tr><th>Seconds per unit</th><td>Prep Batch Time Calculator: Observe several cycles for seconds per unit, then use a representative pace rather than the single fastest cycle.</td></tr><tr><th>Setup minutes</th><td>Prep Batch Time Calculator: Time setup minutes across representative normal work and separate setup, exceptions, and breaks unless the definition includes them.</td></tr><tr><th>Quality check minutes</th><td>Prep Batch Time Calculator: Time quality check minutes across representative normal work and separate setup, exceptions, and breaks unless the definition includes them.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Batch time = setup + checks + units × seconds per unit ÷ 60</div><ol class="procedure-list"><li><strong>Validate the Prep Batch Time Calculator manifest:</strong> confirm that batch units, seconds per unit, setup minutes describe the same Prep Batch Time Calculator pack, batch, or planning period.</li><li><strong>Calculate preparation time:</strong> apply <span class="inline-formula">Batch time = setup + checks + units × seconds per unit ÷ 60</span> without rounding intermediate values for Prep Batch Time Calculator.</li><li><strong>Review the preparation time breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Prep Batch Time Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>Preparing 250 units at 35 seconds each plus 35 minutes of setup and checks takes about 180.8 minutes.</p><p><strong>Next action:</strong> After: feed prepared-unit availability into kitting or order packing schedules.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>Review setup and run time separately. A short batch with high setup share may benefit from campaign scheduling; a long batch is more sensitive to seconds per unit. Do not remove checks simply to improve the calculated time—change the approved method only after a controlled trial.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Mixing seconds per unit with minutes.</li><li>Counting setup inside the cycle and again in setup minutes.</li><li>Using finished-order count when several prepared units enter one order.</li><li>Ignoring changeovers between versions or materials.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The tool assumes one setup, constant cycle time, and a single batch-level check allowance. It excludes interruptions, rework, queueing, fatigue, equipment downtime, and variable component availability.</p>
+    <div class="caution"><strong>Prep Batch Time Calculator estimate only:</strong> verify the Prep Batch Time Calculator preparation time with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: define unit, batch boundary, setup, and check plan.</li><li>After: feed prepared-unit availability into kitting or order packing schedules.</li></ol><ul class="related-register"><li><a href="/tools/order-packing-time.html">Order Packing Time Calculator</a></li><li><a href="/tools/kitting-cost.html">Kitting Cost Calculator</a></li><li><a href="/guides/packing-station-workflow.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: July 26, 2026</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-complete" defer></script><footer class="site-footer">
+</main><script src="/assets/calculators.js?v=20260726-content" defer></script><footer class="site-footer">
   <div class="footer-shell footer-main">
     <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
     <nav class="footer-links" aria-label="Footer">
@@ -62,6 +65,6 @@
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-complete" defer></script>
+<script src="/assets/site.js?v=20260726-content" defer></script>
 </body>
 </html>

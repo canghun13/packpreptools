@@ -53,6 +53,20 @@ const titles = new Map();
 const descriptions = new Map();
 const canonicals = new Map();
 const indexableCanonicals = [];
+const contentWarnings = [];
+const paragraphOwners = new Map();
+const sentenceOwners = new Map();
+
+function plainText(html) {
+  return html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&[a-z0-9#]+;/gi, " ").replace(/\s+/g, " ").trim();
+}
+
+function addDuplicateCandidate(map, text, owner) {
+  const clean = plainText(text);
+  if (!clean || clean.length < 100) return;
+  if (!map.has(clean)) map.set(clean, []);
+  map.get(clean).push(owner);
+}
 
 for (const file of htmlFiles) {
   const name = rel(file);
@@ -133,6 +147,55 @@ for (const file of htmlFiles) {
   if (/(hero-grid|specimen|section-heading|tool-link|document-link|calculator-layout|worksheet-head|result-sheet|section-ink|workflow-step)/i.test(html)) {
     fail(`${name}: retired layout class found.`);
   }
+
+  const articleMatch = html.match(/<article class="article-body">([\s\S]*?)<\/article>/i);
+  if (articleMatch) {
+    const article = articleMatch[1];
+    const wordCount = (plainText(article).match(/[A-Za-z0-9][A-Za-z0-9’'%-]*/g) || []).length;
+    const threshold = name.startsWith("tools/") ? 330 : name.startsWith("guides/") ? 600 : name.startsWith("reference/") ? 450 : 0;
+    if (threshold && wordCount < threshold) contentWarnings.push(`${name}: ${wordCount} words (review target ${threshold}+).`);
+    const sections = article.split(/<h2\b[^>]*>/i).slice(1);
+    sections.forEach((section, index) => {
+      const parts = section.split(/<\/h2>/i);
+      if (!plainText(parts[0])) fail(`${name}: empty H2 at article section ${index + 1}.`);
+      if (plainText(parts.slice(1).join("</h2>")).length < 35) fail(`${name}: empty or negligible section after ${plainText(parts[0])}.`);
+    });
+    matches(article, /<p\b[^>]*>([\s\S]*?)<\/p>/gi).forEach((match) => addDuplicateCandidate(paragraphOwners, match[1], name));
+    const articleForSentences = article
+      .replace(/<nav class="document-toc"[\s\S]*?<\/nav>/gi, " ")
+      .replace(/<ul class="related-register"[\s\S]*?<\/ul>/gi, " ")
+      .replace(/<p class="meta-line"[\s\S]*?<\/p>/gi, " ");
+    const articleText = plainText(articleForSentences);
+    articleText.split(/(?<=[.!?])\s+/).forEach((sentence) => addDuplicateCandidate(sentenceOwners, sentence, name));
+  }
+
+  if (name.startsWith("tools/")) {
+    ["solves", "inputs", "method", "example", "interpretation", "mistakes", "limits", "workflow"].forEach((id) => {
+      if (!html.includes(`id="${id}"`)) fail(`${name}: content section #${id} missing.`);
+    });
+    if (!/<h2 id="example">Worked example<\/h2>/i.test(html)) fail(`${name}: worked example missing.`);
+    if (!/<h2 id="limits">Assumptions and limitations<\/h2>/i.test(html)) fail(`${name}: assumptions missing.`);
+    if (!/<h2 id="mistakes">Common mistakes<\/h2>/i.test(html) || !/<h2 id="inputs">How to choose the inputs<\/h2>/i.test(html)) fail(`${name}: mistakes or input guidance missing.`);
+    if ((matches(html, /<ul class="related-register">[\s\S]*?<\/ul>/gi)[0]?.[0].match(/href=/g) || []).length < 3) fail(`${name}: related workflow links incomplete.`);
+    if (!html.includes(`Last reviewed:`)) fail(`${name}: last reviewed missing.`);
+  }
+  if (name.startsWith("guides/")) {
+    ["prepare", "scenario", "decisions", "mistakes", "closeout", "evidence", "checklist"].forEach((id) => {
+      if (!html.includes(`id="${id}"`)) fail(`${name}: guide section #${id} missing.`);
+    });
+  }
+  if (name.startsWith("reference/")) {
+    ["overview", "definitions", "example", "differences", "use", "maintenance", "verification"].forEach((id) => {
+      if (!html.includes(`id="${id}"`)) fail(`${name}: reference section #${id} missing.`);
+    });
+  }
+}
+
+for (const [paragraph, owners] of paragraphOwners) {
+  if (owners.length > 1) fail(`Repeated long body paragraph in ${[...new Set(owners)].join(", ")}: ${paragraph.slice(0, 90)}…`);
+}
+for (const [sentence, owners] of sentenceOwners) {
+  if (new Set(owners).size > 1) fail(`Repeated long body sentence in ${[...new Set(owners)].join(", ")}: ${sentence.slice(0, 90)}…`);
 }
 
 const scriptFiles = allFiles.filter((file) => file.endsWith(".js"));
@@ -181,4 +244,9 @@ if (errors.length) {
   process.exit(1);
 }
 
+if (contentWarnings.length) {
+  console.warn(`CONTENT WORD-COUNT WARNINGS (${contentWarnings.length})`);
+  contentWarnings.forEach((warning) => console.warn(`- ${warning}`));
+}
 console.log(`AUTO QA PASS — ${htmlFiles.length} HTML, ${sitemapUrls.length} sitemap URLs, ${scriptFiles.length} JavaScript files`);
+console.log(`CONTENT QA PASS — ${toolFiles.length} calculators, ${guideFiles.length} guides, ${referenceFiles.length} references; duplicate long paragraphs 0; duplicate long sentences 0`);

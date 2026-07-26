@@ -12,8 +12,8 @@
   <meta property="og:title" content="Tape Usage Calculator">
   <meta property="og:description" content="Estimate tape use per carton and across a batch using center-seam or H-seal patterns.">
   <meta property="og:url" content="https://packpreptools.com/tools/tape-usage.html">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-content">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-content">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
   <script>
@@ -44,16 +44,19 @@
     <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
   <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
-    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
-    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">Center seam = 2 × (length + 2 × overhang); H-seal adds 4 × (width + 2 × overhang)</div>
-    <h2 id="example">Worked example</h2><p>For 100 cartons measuring 14 × 10 in with 2 in overhang, a center seam uses 3,600 in, or 300 ft, of tape.</p>
-    <h2 id="interpretation">How to interpret the result</h2><p>Compare the total with roll length and add a shop-specific setup and waste allowance before ordering.</p>
-    <h2 id="limits">Assumptions and limitations</h2><p>The model covers top and bottom seals. Reinforcement, poor adhesion, rework, tabs, and dispenser losses are excluded.</p>
-    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
-    <ul class="related-register"><li><a href="/tools/packaging-cost.html">Packaging Cost per Order Calculator</a></li><li><a href="/tools/box-size.html">Box Size Calculator</a></li><li><a href="/guides/reduce-packaging-cost.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use Tape Usage to plan carton-sealing length for either a top-and-bottom center seam or an H-seal pattern. It counts seam geometry and end overhang across a carton batch. It does not select tape construction or determine whether a seal pattern is adequate.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Measure the formed carton length and width along the actual seam paths. Set overhang from the approved closure instruction and count only cartons using this pattern. Choose H-seal only when the operating specification calls for edge seams; reinforcement strips must be calculated separately.</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Box length</th><td>Tape Usage Calculator: Measure box length on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Box width</th><td>Tape Usage Calculator: Measure box width on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>End overhang</th><td>Tape Usage Calculator: Measure end overhang on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Carton count</th><td>Tape Usage Calculator: Count carton count in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Center seam = 2 × (length + 2 × overhang); H-seal adds 4 × (width + 2 × overhang)</div><ol class="procedure-list"><li><strong>Validate the Tape Usage Calculator manifest:</strong> confirm that box length, box width, end overhang describe the same Tape Usage Calculator pack, batch, or planning period.</li><li><strong>Calculate tape length:</strong> apply <span class="inline-formula">Center seam = 2 × (length + 2 × overhang); H-seal adds 4 × (width + 2 × overhang)</span> without rounding intermediate values for Tape Usage Calculator.</li><li><strong>Review the tape length breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Tape Usage Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>For 100 cartons measuring 14 × 10 in with 2 in overhang, a center seam uses 3,600 in, or 300 ft, of tape.</p><p><strong>Next action:</strong> After: convert length to whole rolls and include roll loss in Packaging Material Budget.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>Review tape per carton before multiplying the batch. Convert total length into rolls using usable roll length and add measured start-up, splice, and dispenser loss separately. An unexpectedly high total may come from an H-seal choice, excessive overhang, or mixing carton sizes.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Counting only the top seam and forgetting the bottom.</li><li>Applying H-seal geometry while selecting center seam.</li><li>Using carton height where seam width is required.</li><li>Dividing by nominal roll length without allowing for unusable remnants.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The model covers straight top and bottom seams only. Tape width, adhesion, carton surface, temperature, tension, reinforcement, rework, and seal-performance testing are outside the length calculation.</p>
+    <div class="caution"><strong>Tape Usage Calculator estimate only:</strong> verify the Tape Usage Calculator tape length with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: approve tape type, pattern, and overhang.</li><li>After: convert length to whole rolls and include roll loss in Packaging Material Budget.</li></ol><ul class="related-register"><li><a href="/tools/packaging-cost.html">Packaging Cost per Order Calculator</a></li><li><a href="/tools/box-size.html">Box Size Calculator</a></li><li><a href="/guides/reduce-packaging-cost.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: July 26, 2026</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-complete" defer></script><footer class="site-footer">
+</main><script src="/assets/calculators.js?v=20260726-content" defer></script><footer class="site-footer">
   <div class="footer-shell footer-main">
     <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
     <nav class="footer-links" aria-label="Footer">
@@ -62,6 +65,6 @@
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-complete" defer></script>
+<script src="/assets/site.js?v=20260726-content" defer></script>
 </body>
 </html>

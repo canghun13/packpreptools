@@ -12,8 +12,8 @@
   <meta property="og:title" content="Order Packing Time Calculator">
   <meta property="og:description" content="Estimate batch duration from setup time and minutes per order.">
   <meta property="og:url" content="https://packpreptools.com/tools/order-packing-time.html">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-content">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-content">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
   <script>
@@ -44,16 +44,19 @@
     <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
   <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
-    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
-    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">Total time = setup minutes + orders × minutes per order</div>
-    <h2 id="example">Worked example</h2><p>A 120-order run at 3.5 minutes each plus 20 minutes setup takes 440 minutes.</p>
-    <h2 id="interpretation">How to interpret the result</h2><p>Use the result as an operating plan, compare it with the relevant capacity or budget, and record the assumptions used for the batch.</p>
-    <h2 id="limits">Assumptions and limitations</h2><p>Inputs describe a simplified repeatable process. Validate yields, labor pace, fit, supplier lead time, and operating limits with current production data.</p>
-    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
-    <ul class="related-register"><li><a href="/tools/labor-capacity-per-shift.html">Labor Capacity per Shift Calculator</a></li><li><a href="/tools/prep-batch-time.html">Prep Batch Time Calculator</a></li><li><a href="/guides/packing-station-workflow.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use Order Packing Time to schedule a defined batch of orders from one setup period and a representative per-order time. It estimates elapsed labor minutes for the batch. Labor Capacity per Shift reverses the question by estimating how many orders fit into available labor.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Count orders using a comparable pack method, measure hands-on minutes across normal operators and order variation, and enter setup only once for the batch. Keep long exceptions separate or use a weighted average supported by observed mix.</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Orders to pack</th><td>Order Packing Time Calculator: Count orders to pack in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr><tr><th>Minutes per order</th><td>Order Packing Time Calculator: Time minutes per order across representative normal work and separate setup, exceptions, and breaks unless the definition includes them.</td></tr><tr><th>Setup minutes</th><td>Order Packing Time Calculator: Time setup minutes across representative normal work and separate setup, exceptions, and breaks unless the definition includes them.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Total time = setup minutes + orders × minutes per order</div><ol class="procedure-list"><li><strong>Validate the Order Packing Time Calculator manifest:</strong> confirm that orders to pack, minutes per order, setup minutes describe the same Order Packing Time Calculator pack, batch, or planning period.</li><li><strong>Calculate batch duration:</strong> apply <span class="inline-formula">Total time = setup minutes + orders × minutes per order</span> without rounding intermediate values for Order Packing Time Calculator.</li><li><strong>Review the batch duration breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Order Packing Time Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>A 120-order run at 3.5 minutes each plus 20 minutes setup takes 440 minutes.</p><p><strong>Next action:</strong> After: compare required minutes with shift capacity and investigate the main time element.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>Use total minutes for release scheduling and average minutes per order for process comparison. If setup is a large share, larger batches may improve efficiency; if run time dominates, focus on motion, material staging, and pack design. Include verification steps in the observed method.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Using the single fastest cycle as the standard.</li><li>Multiplying setup time by every order.</li><li>Mixing simple and complex orders without recording the mix.</li><li>Excluding normal checks and replenishment from the defined process.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The estimate assumes a stable average pace and one setup event. It excludes breaks, absenteeism, equipment failure, queueing, training, unusual exceptions, and learning effects unless represented in the inputs.</p>
+    <div class="caution"><strong>Order Packing Time Calculator estimate only:</strong> verify the Order Packing Time Calculator batch duration with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: define the process boundary and time a representative sample.</li><li>After: compare required minutes with shift capacity and investigate the main time element.</li></ol><ul class="related-register"><li><a href="/tools/labor-capacity-per-shift.html">Labor Capacity per Shift Calculator</a></li><li><a href="/tools/prep-batch-time.html">Prep Batch Time Calculator</a></li><li><a href="/guides/packing-station-workflow.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: July 26, 2026</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-complete" defer></script><footer class="site-footer">
+</main><script src="/assets/calculators.js?v=20260726-content" defer></script><footer class="site-footer">
   <div class="footer-shell footer-main">
     <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
     <nav class="footer-links" aria-label="Footer">
@@ -62,6 +65,6 @@
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-complete" defer></script>
+<script src="/assets/site.js?v=20260726-content" defer></script>
 </body>
 </html>

@@ -12,8 +12,8 @@
   <meta property="og:title" content="Kitting Cost Calculator">
   <meta property="og:description" content="Estimate component, packaging, waste, and assembly labor cost per kit.">
   <meta property="og:url" content="https://packpreptools.com/tools/kitting-cost.html">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-content">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-content">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
   <script>
@@ -44,16 +44,19 @@
     <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
   <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
-    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
-    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">Kit cost = (components × component cost + packaging) × (1 + waste %) + assembly labor</div>
-    <h2 id="example">Worked example</h2><p>Three $1.20 components, $0.65 packaging, 2% waste, and four minutes at $18/hour cost about $5.54 per kit.</p>
-    <h2 id="interpretation">How to interpret the result</h2><p>Use the result as an operating plan, compare it with the relevant capacity or budget, and record the assumptions used for the batch.</p>
-    <h2 id="limits">Assumptions and limitations</h2><p>Inputs describe a simplified repeatable process. Validate yields, labor pace, fit, supplier lead time, and operating limits with current production data.</p>
-    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
-    <ul class="related-register"><li><a href="/tools/bundle-packing-cost.html">Bundle Packing Cost Calculator</a></li><li><a href="/tools/prep-batch-time.html">Prep Batch Time Calculator</a></li><li><a href="/reference/packaging-cost-components.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use Kitting Cost to estimate the cost of assembling a kit from a repeated number of similarly costed components, dedicated packaging, material waste, and assembly labor. It differs from Bundle Packing Cost, which focuses on handling already-valued items into a bundle.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Use an average component cost only when components are genuinely similar; otherwise sum them externally and enter an equivalent per-component average. Include packaging dedicated to the kit, representative assembly minutes, and a material waste rate based on component or packaging loss.</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Average component cost</th><td>Kitting Cost Calculator: Enter average component cost on the same currency and per-order or per-unit basis used by the other cost inputs.</td></tr><tr><th>Components per kit</th><td>Kitting Cost Calculator: Count components per kit in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr><tr><th>Kit packaging cost</th><td>Kitting Cost Calculator: Enter kit packaging cost on the same currency and per-order or per-unit basis used by the other cost inputs.</td></tr><tr><th>Assembly minutes</th><td>Kitting Cost Calculator: Time assembly minutes across representative normal work and separate setup, exceptions, and breaks unless the definition includes them.</td></tr><tr><th>Hourly labor rate</th><td>Kitting Cost Calculator: Use the documented loaded or direct hourly labor rate consistently; the calculator does not decide which accounting basis applies.</td></tr><tr><th>Material waste allowance</th><td>Kitting Cost Calculator: Base material waste allowance on measured comparable work, state what the percentage covers, and review it when the process changes.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Kit cost = (components × component cost + packaging) × (1 + waste %) + assembly labor</div><ol class="procedure-list"><li><strong>Validate the Kitting Cost Calculator manifest:</strong> confirm that average component cost, components per kit, kit packaging cost describe the same Kitting Cost Calculator pack, batch, or planning period.</li><li><strong>Calculate cost per kit:</strong> apply <span class="inline-formula">Kit cost = (components × component cost + packaging) × (1 + waste %) + assembly labor</span> without rounding intermediate values for Kitting Cost Calculator.</li><li><strong>Review the cost per kit breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Kitting Cost Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>Three $1.20 components, $0.65 packaging, 2% waste, and four minutes at $18/hour cost about $5.54 per kit.</p><p><strong>Next action:</strong> After: compare batch time and add final shipment packaging cost separately.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>Review material and labor subtotals before pricing or comparing an assembly method. A component-heavy kit is sensitive to scrap and count accuracy; a labor-heavy kit may benefit from staging or fixtures. Build and audit a batch before adopting the estimate.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Averaging unlike component costs without checking the total.</li><li>Including product margin or selling fees as assembly cost.</li><li>Applying waste to labor.</li><li>Using order-packing minutes instead of kit-assembly minutes.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The estimate assumes one average component cost and fixed components per kit. It excludes component-specific scrap, inventory carrying cost, equipment, supervision, quality failures, rework, and downstream shipping.</p>
+    <div class="caution"><strong>Kitting Cost Calculator estimate only:</strong> verify the Kitting Cost Calculator cost per kit with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: define bill of materials, kit packaging, and assembly boundary.</li><li>After: compare batch time and add final shipment packaging cost separately.</li></ol><ul class="related-register"><li><a href="/tools/bundle-packing-cost.html">Bundle Packing Cost Calculator</a></li><li><a href="/tools/prep-batch-time.html">Prep Batch Time Calculator</a></li><li><a href="/reference/packaging-cost-components.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: July 26, 2026</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-complete" defer></script><footer class="site-footer">
+</main><script src="/assets/calculators.js?v=20260726-content" defer></script><footer class="site-footer">
   <div class="footer-shell footer-main">
     <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
     <nav class="footer-links" aria-label="Footer">
@@ -62,6 +65,6 @@
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-complete" defer></script>
+<script src="/assets/site.js?v=20260726-content" defer></script>
 </body>
 </html>

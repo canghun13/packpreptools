@@ -12,8 +12,8 @@
   <meta property="og:title" content="Pallet Utilization Calculator">
   <meta property="og:description" content="Estimate pallet footprint utilization from case footprint and cases per layer.">
   <meta property="og:url" content="https://packpreptools.com/tools/pallet-utilization.html">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-content">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-content">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
   <script>
@@ -44,16 +44,19 @@
     <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
   <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
-    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
-    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">Footprint utilization = case footprint × cases per layer ÷ pallet footprint × 100</div>
-    <h2 id="example">Worked example</h2><p>Ten 16 × 12 in case footprints use 100% of a 48 × 40 in pallet footprint by area.</p>
-    <h2 id="interpretation">How to interpret the result</h2><p>Use the result as an operating plan, compare it with the relevant capacity or budget, and record the assumptions used for the batch.</p>
-    <h2 id="limits">Assumptions and limitations</h2><p>This planning estimate does not verify load stability, overhang, compression strength, weight distribution, equipment clearance, or regulatory compliance. Confirm the physical unit load.</p>
-    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
-    <ul class="related-register"><li><a href="/tools/cases-per-pallet.html">Cases per Pallet Calculator</a></li><li><a href="/tools/pallet-height.html">Pallet Height Calculator</a></li><li><a href="/reference/pallet-and-unit-load-terms.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use Pallet Utilization to compare the summed case footprint area in one layer with the pallet footprint. It is an area-efficiency indicator, not a pattern solver. Cases per Pallet determines a simple grid count; utilization shows how much nominal area that entered count represents.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Use the usable pallet length and width, finished case footprint, and the verified cases per layer. Keep all dimensions in one unit. If the pattern requires gaps, corner clearance, or no-load zones, reduce the usable footprint or evaluate the drawing separately.</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Pallet length</th><td>Pallet Utilization Calculator: Measure pallet length on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Pallet width</th><td>Pallet Utilization Calculator: Measure pallet width on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Case length</th><td>Pallet Utilization Calculator: Measure case length on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Case width</th><td>Pallet Utilization Calculator: Measure case width on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Cases per layer</th><td>Pallet Utilization Calculator: Count cases per layer in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Footprint utilization = case footprint × cases per layer ÷ pallet footprint × 100</div><ol class="procedure-list"><li><strong>Validate the Pallet Utilization Calculator manifest:</strong> confirm that pallet length, pallet width, case length describe the same Pallet Utilization Calculator pack, batch, or planning period.</li><li><strong>Calculate footprint utilization:</strong> apply <span class="inline-formula">Footprint utilization = case footprint × cases per layer ÷ pallet footprint × 100</span> without rounding intermediate values for Pallet Utilization Calculator.</li><li><strong>Review the footprint utilization breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Pallet Utilization Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>Ten 16 × 12 in case footprints use 100% of a 48 × 40 in pallet footprint by area.</p><p><strong>Next action:</strong> After: compare with the Cases per Pallet grid and validate a physical layer pattern.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>A low percentage may indicate a poor footprint match, but can be necessary for edge clearance or stability. A high percentage near 100% still does not prove the cases fit without overlap because area ignores arrangement. Compare the percentage with an actual layer diagram.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Treating 100% area as proof of a valid layout.</li><li>Ignoring pallet edge clearance or deck support.</li><li>Using case internal dimensions.</li><li>Comparing utilization across pallets without the same overhang and stability rules.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The calculation compares areas only and excludes placement geometry, mixed rotations, gaps, overhang, deck-board support, partial cases, containment, weight distribution, compression, and handling stability.</p>
+    <div class="caution"><strong>Pallet Utilization Calculator estimate only:</strong> verify the Pallet Utilization Calculator footprint utilization with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: verify case and usable pallet footprints.</li><li>After: compare with the Cases per Pallet grid and validate a physical layer pattern.</li></ol><ul class="related-register"><li><a href="/tools/cases-per-pallet.html">Cases per Pallet Calculator</a></li><li><a href="/tools/pallet-height.html">Pallet Height Calculator</a></li><li><a href="/reference/pallet-and-unit-load-terms.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: July 26, 2026</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-complete" defer></script><footer class="site-footer">
+</main><script src="/assets/calculators.js?v=20260726-content" defer></script><footer class="site-footer">
   <div class="footer-shell footer-main">
     <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
     <nav class="footer-links" aria-label="Footer">
@@ -62,6 +65,6 @@
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-complete" defer></script>
+<script src="/assets/site.js?v=20260726-content" defer></script>
 </body>
 </html>

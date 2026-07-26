@@ -12,8 +12,8 @@
   <meta property="og:title" content="Labor Capacity per Shift Calculator">
   <meta property="og:description" content="Estimate completed orders from staffing, shift time, utilization, and pack time.">
   <meta property="og:url" content="https://packpreptools.com/tools/labor-capacity-per-shift.html">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-content">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-content">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
   <script>
@@ -44,16 +44,19 @@
     <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
   <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
-    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
-    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">Capacity = workers × shift hours × 60 × utilization % ÷ minutes per order</div>
-    <h2 id="example">Worked example</h2><p>Three workers on an eight-hour shift at 80% utilization and four minutes per order can plan 288 orders.</p>
-    <h2 id="interpretation">How to interpret the result</h2><p>Use the result as an operating plan, compare it with the relevant capacity or budget, and record the assumptions used for the batch.</p>
-    <h2 id="limits">Assumptions and limitations</h2><p>Inputs describe a simplified repeatable process. Validate yields, labor pace, fit, supplier lead time, and operating limits with current production data.</p>
-    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
-    <ul class="related-register"><li><a href="/tools/order-packing-time.html">Order Packing Time Calculator</a></li><li><a href="/tools/prep-batch-time.html">Prep Batch Time Calculator</a></li><li><a href="/guides/packing-station-workflow.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use Labor Capacity per Shift to translate workers, scheduled hours, productive utilization, and minutes per order into a planning throughput. It is a capacity ceiling under entered assumptions, not a guaranteed dispatch commitment. Order Packing Time estimates the duration of a known order count.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Enter workers actually assigned to the process, paid shift length, and a productive-utilization rate derived from observed non-packing time. Use a representative pack time for the expected order mix. Do not use 100% utilization unless the defined shift truly excludes all nonproductive activity.</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Packing workers</th><td>Labor Capacity per Shift Calculator: Count packing workers in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr><tr><th>Shift hours</th><td>Labor Capacity per Shift Calculator: Use scheduled shift hours for the same shift boundary as the worker and utilization inputs.</td></tr><tr><th>Productive utilization</th><td>Labor Capacity per Shift Calculator: Base productive utilization on measured comparable work, state what the percentage covers, and review it when the process changes.</td></tr><tr><th>Minutes per order</th><td>Labor Capacity per Shift Calculator: Time minutes per order across representative normal work and separate setup, exceptions, and breaks unless the definition includes them.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Capacity = workers × shift hours × 60 × utilization % ÷ minutes per order</div><ol class="procedure-list"><li><strong>Validate the Labor Capacity per Shift Calculator manifest:</strong> confirm that packing workers, shift hours, productive utilization describe the same Labor Capacity per Shift Calculator pack, batch, or planning period.</li><li><strong>Calculate orders per shift:</strong> apply <span class="inline-formula">Capacity = workers × shift hours × 60 × utilization % ÷ minutes per order</span> without rounding intermediate values for Labor Capacity per Shift Calculator.</li><li><strong>Review the orders per shift breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Labor Capacity per Shift Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>Three workers on an eight-hour shift at 80% utilization and four minutes per order can plan 288 orders.</p><p><strong>Next action:</strong> After: compare with demand and use Order Packing Time for specific release batches.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>Compare planned demand with whole-order capacity and keep the unused productive minutes as a small buffer indicator. If demand is close to capacity, review breaks, replenishment, changeovers, and complexity mix. Adding workers may not scale linearly when space or equipment is constrained.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Treating paid time as fully productive time.</li><li>Using a time standard from a different SKU mix.</li><li>Assuming twice the workers always doubles output.</li><li>Ignoring shared equipment, staging, or quality-check constraints.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The arithmetic assumes parallel productive minutes combine without interference and average pack time remains stable. It excludes congestion, fatigue, breaks, learning, absenteeism, equipment limits, queueing, and overtime effects.</p>
+    <div class="caution"><strong>Labor Capacity per Shift Calculator estimate only:</strong> verify the Labor Capacity per Shift Calculator orders per shift with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: observe utilization and pack time for the expected mix.</li><li>After: compare with demand and use Order Packing Time for specific release batches.</li></ol><ul class="related-register"><li><a href="/tools/order-packing-time.html">Order Packing Time Calculator</a></li><li><a href="/tools/prep-batch-time.html">Prep Batch Time Calculator</a></li><li><a href="/guides/packing-station-workflow.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: July 26, 2026</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-complete" defer></script><footer class="site-footer">
+</main><script src="/assets/calculators.js?v=20260726-content" defer></script><footer class="site-footer">
   <div class="footer-shell footer-main">
     <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
     <nav class="footer-links" aria-label="Footer">
@@ -62,6 +65,6 @@
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-complete" defer></script>
+<script src="/assets/site.js?v=20260726-content" defer></script>
 </body>
 </html>

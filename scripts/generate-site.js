@@ -253,6 +253,269 @@ const phaseTools = [
 }));
 tools.push(...phaseTools);
 
+function profile(solves, inputs, decision, mistakes, limits, workflow) {
+  return { solves, inputs, decision, mistakes, limits, workflow };
+}
+
+const toolContent = {
+  "dimensional-weight": profile(
+    "Use this calculator before comparing a packed carton with a shipping service’s size-based rating method. It converts external package volume into a comparison weight; it does not measure scale weight or choose the billable weight. That makes it different from Box Volume, which reports capacity, and Length + Girth, which checks a package perimeter.",
+    "Measure the closed package at its maximum outside points, including bulging flaps or protrusions. Select the unit system that matches the divisor and enter the divisor from the current service, marketplace, or account rule. Do not combine centimeter dimensions with an inch-pound divisor.",
+    "Compare the unrounded DIM result with the packed scale weight using the current rating instructions. A high DIM result points to excess external volume; test a smaller carton or reduced headspace, then remeasure the finished package. When the result sits near a billing threshold, preserve the unrounded value and verify the required rounding sequence.",
+    ["Using catalog internal dimensions instead of the closed external package.", "Reusing a divisor from another service, unit system, or old rate sheet.", "Rounding each dimension before the method tells you to do so.", "Treating DIM weight as a live quote or guaranteed billable weight."],
+    "The result excludes service-specific minimums, additional handling rules, irregular-package measurement, actual scale weight, and account terms. Only the current official service documentation can define the applicable divisor and rounding method.",
+    ["Before: measure the finished carton and confirm the applicable divisor.", "After: compare with scale weight, then use Box Size or Box Utilization to investigate excess volume."]
+  ),
+  "length-girth": profile(
+    "Use Length + Girth when a carrier, marketplace, storage rule, or internal handling standard expresses size as the longest side plus the distance around the other two sides. It answers a perimeter-limit question, not a volume or dimensional-weight question. The calculator sorts the three entered sides so the longest becomes length automatically.",
+    "Measure the completed external package, not the empty carton’s nominal size. Record the widest point of flexible, bowed, cylindrical, or irregular packaging and keep all three sides in one unit. If a published rule defines length differently, follow that rule rather than the automatic longest-side convention.",
+    "A result far below a stated limit leaves measurement tolerance; a result close to the limit needs a second measurement after final closure and labeling. If the value is too high, identify whether the longest side or the two-side girth drives the total before changing the pack. Reducing either short side affects girth twice.",
+    ["Entering internal fit dimensions.", "Assuming the first field must already be the longest side.", "Ignoring bulges, handles, tubes, or protective corners.", "Comparing centimeters with a limit published in inches."],
+    "This rectangular calculation does not interpret a specific carrier’s oversize rule, rounding, irregular-shape method, or excluded-package policy. Confirm the definition and threshold in the current official source.",
+    ["Before: finish and externally measure the package.", "After: compare the total with the governing limit and use Box Size if a smaller packed profile is needed."]
+  ),
+  "box-size": profile(
+    "Use Box Size to shortlist an internal carton size after the product’s protective system is known. It adds wrap thickness and working clearance on both sides of each product dimension. Unlike Box Volume, it produces three minimum internal dimensions; unlike Multi-item Box Fit, it models one rectangular protected item rather than a grid of units.",
+    "Measure the product in its required shipping orientation. Enter actual compressed wrap thickness per side, not the uncompressed material roll specification. Use clearance for insertion tolerance, manufacturing variation, and handling room; do not hide protective thickness inside a vague clearance number.",
+    "Round every minimum dimension upward to a stocked carton’s published internal dimensions, then build a physical pack. If only one axis is tight, investigate orientation or a different stock size instead of adding space to every axis. Excessive clearance increases motion, fill demand, external cube, and possibly DIM exposure.",
+    ["Using external catalog dimensions to judge internal fit.", "Adding clearance once instead of on both opposite sides.", "Measuring bare product dimensions while forgetting its wrap.", "Selecting the mathematically closest box without a closure and movement test."],
+    "The model assumes one rectangular product, uniform wrap, and symmetric clearance. It does not model fragile projections, dividers, compression, diagonal insertion, carton tolerances, or orientation restrictions.",
+    ["Before: define the protection method and measure the wrapped product.", "After: test a real carton, then calculate Void Fill and final external shipping dimensions."]
+  ),
+  "box-volume": profile(
+    "Use Box Volume to compare rectangular capacity, storage cube, or the starting space available for a void calculation. It multiplies three dimensions and also reports liters and cubic feet. Volume alone cannot prove fit because two shapes with equal cube may have incompatible side lengths.",
+    "Choose internal dimensions for usable packing capacity and external dimensions for storage or transport footprint; label the record so the two are not confused. Measure formed cartons squarely and keep length, width, and height in the selected unit. Do not mix a centimeter side with inch sides.",
+    "Use the cubic result to compare candidate cartons or to feed a material-yield discussion. A large capacity relative to the product may indicate avoidable headspace, but a low empty-volume percentage can still fail at corners or during insertion. Retain each side dimension alongside the cube.",
+    ["Treating equal volumes as proof that an item fits.", "Mixing internal and external dimensions in one calculation.", "Using nominal carton codes as measured dimensions.", "Converting a rounded cubic value instead of the original dimensions."],
+    "The carton is modeled as a perfect rectangular prism. Flaps, board thickness, taper, gussets, inserts, deformation, and usable-space obstructions are outside the calculation.",
+    ["Before: decide whether the question is usable capacity or external footprint.", "After: use Box Utilization or Void Fill for occupancy, or Carton Cube for multiple external cartons."]
+  ),
+  "void-fill": profile(
+    "Use Void Fill to estimate the unoccupied rectangular volume after a stated quantity of products is placed in a carton. The fill factor converts that geometric void into an adjustable operational demand. It differs from Packing Paper, which turns void into sheets using a tested sheet yield.",
+    "Use internal box dimensions and protected product dimensions in the same unit. Enter the quantity actually sharing the carton and choose a fill factor from a documented packing trial: above 1.0 can cover compression or inaccessible pockets, while below 1.0 should only reflect a validated method.",
+    "A high empty share suggests checking a smaller carton, a different orientation, or structural inserts before ordering more loose fill. A low share does not guarantee protection; heavy or fragile items may need blocking, bracing, or suspension. Convert the volume through the material’s measured yield.",
+    ["Using external box dimensions.", "Multiplying product quantity but not checking whether the arrangement is physically possible.", "Treating loose-fill volume as structural cushioning performance.", "Keeping an old fill factor after changing paper, equipment, or operator method."],
+    "Products are simplified to rectangular blocks and all leftover volume is treated as accessible. The model excludes nesting, irregular pockets, compression recovery, product movement, impact performance, and material density.",
+    ["Before: confirm product fit and the protection function.", "After: calibrate the result with Packing Paper or a supplier-specific dispensing trial."]
+  ),
+  "bubble-wrap": profile(
+    "Use Bubble Wrap to estimate sheet or roll area needed to cover a rectangular product for a chosen layer count and overlap. It starts from surface area, so it is different from Void Fill, which estimates empty carton space. The output helps plan cut area, not cushioning performance.",
+    "Measure the product at its widest protected outline, choose whole or validated partial layers, and enter overlap for seams and secure closure. If bubble material is wrapped in a particular direction, record the roll width separately so area can be converted into a practical cut length.",
+    "Divide the required area by usable roll width, round the cut upward, and test corner coverage. A large overlap percentage may reveal an inefficient cut pattern or narrow roll; a small percentage risks open seams. Compare measured consumption across several operators before setting inventory demand.",
+    ["Counting only the two largest faces.", "Forgetting that layer count multiplies the full surface.", "Using nominal roll width when edges are unusable.", "Assuming area proves adequate bubble size or impact protection."],
+    "The product is a rectangular prism and wrap thickness does not change later layers’ surface area. Corner bunching, protrusions, seam tape, compression, bubble grade, static sensitivity, and drop performance are excluded.",
+    ["Before: select material grade and required coverage through a protection test.", "After: convert area to cut length and add measured process waste in the material budget."]
+  ),
+  "packing-paper": profile(
+    "Use Packing Paper after box and product dimensions are known and a repeatable crumpling method has been trialed. It converts geometric void into whole sheets through a user-entered yield depth. Unlike Void Fill, its primary result is a purchase and work quantity.",
+    "Use internal carton dimensions and the protected product outline. Measure the actual sheet size, then establish yield depth by packing several representative orders with the same paper weight, crumpling pattern, and operator instruction. Do not copy a yield from unrelated material.",
+    "The calculator divides the remaining volume by one sheet’s estimated filled volume and rounds up because partial requirements still consume a sheet in most operations. Compare predicted and actual sheets over a batch; if operators consistently use more, investigate technique or revise yield rather than concealing the difference.",
+    ["Using flat sheet thickness as crumpled yield depth.", "Ignoring void occupied by inserts or dividers.", "Applying one yield to different paper weights and machines.", "Reducing sheet count without rechecking movement and closure."],
+    "Paper does not occupy space as a solid rectangular block. The estimate excludes compression recovery, inaccessible voids, blocking performance, tearing, setup waste, and product-specific protection requirements.",
+    ["Before: calculate approximate void and approve the paper method.", "After: compare predicted sheets with batch consumption and feed the calibrated rate into inventory planning."]
+  ),
+  "tape-usage": profile(
+    "Use Tape Usage to plan carton-sealing length for either a top-and-bottom center seam or an H-seal pattern. It counts seam geometry and end overhang across a carton batch. It does not select tape construction or determine whether a seal pattern is adequate.",
+    "Measure the formed carton length and width along the actual seam paths. Set overhang from the approved closure instruction and count only cartons using this pattern. Choose H-seal only when the operating specification calls for edge seams; reinforcement strips must be calculated separately.",
+    "Review tape per carton before multiplying the batch. Convert total length into rolls using usable roll length and add measured start-up, splice, and dispenser loss separately. An unexpectedly high total may come from an H-seal choice, excessive overhang, or mixing carton sizes.",
+    ["Counting only the top seam and forgetting the bottom.", "Applying H-seal geometry while selecting center seam.", "Using carton height where seam width is required.", "Dividing by nominal roll length without allowing for unusable remnants."],
+    "The model covers straight top and bottom seams only. Tape width, adhesion, carton surface, temperature, tension, reinforcement, rework, and seal-performance testing are outside the length calculation.",
+    ["Before: approve tape type, pattern, and overhang.", "After: convert length to whole rolls and include roll loss in Packaging Material Budget."]
+  ),
+  "poly-mailer-size": profile(
+    "Use Poly Mailer Size to estimate usable internal width and length around a flexible or already protected product. Thickness consumes both face dimensions, so flat product length and width alone are insufficient. This tool is not a box-sizing calculation and provides no crush protection assessment.",
+    "Measure the packed item in the orientation used for insertion. Enter maximum thickness without compressing the product, usable insertion clearance, and the flap space that must remain above the item. Compare the result with the supplier’s usable dimensions below the adhesive line, not only the nominal cut size.",
+    "Round up to a stocked mailer and test insertion, seal engagement, corner stress, and label surface. If the recommendation jumps to a much larger size, consider rotating the item or using a gusseted format. A tight result needs allowance for seams and manufacturing tolerance.",
+    ["Using outside nominal mailer dimensions as usable space.", "Ignoring product thickness or rigid corners.", "Counting the adhesive flap as product cavity.", "Compressing a soft item without checking rebound and seal load."],
+    "The model assumes a regular flexible enclosure and simple thickness allowance. It excludes gusset geometry, seam width, stiffness, sharp edges, compression limits, closure strength, tamper requirements, and carrier acceptance.",
+    ["Before: decide whether the item is suitable for a flexible container.", "After: perform an insertion and seal trial, then compare finished external dimensions."]
+  ),
+  "packaging-cost": profile(
+    "Use Packaging Cost per Order to establish a repeatable unit-cost baseline for one pack method or SKU. It combines material line items, a material waste allowance, and hands-on labor. It differs from Monthly Packaging Spend, which scales a validated per-order cost over a period.",
+    "Use current landed or issued material costs on the same unit basis, count only quantities consumed by one order, and separate postage. Measure labor across a representative batch, excluding breaks but including normal handling. Use a loaded hourly rate only if that is the organization’s documented cost basis.",
+    "Compare totals only when protection level and service outcome are equivalent. A higher material cost can still lower total cost if pack time or damage falls. Review the material and labor subtotals to identify the driver before changing the method, then rerun after the trial.",
+    ["Mixing postage or product cost into the packaging baseline.", "Using the fastest observed pack time instead of a representative pace.", "Adding waste to labor as though it were material.", "Comparing methods that provide different protection or presentation."],
+    "The result excludes unentered overhead, equipment, storage, purchasing labor, damage, returns, taxes, and price breaks. Currency is a display choice and performs no exchange-rate conversion.",
+    ["Before: define the cost boundary and measure actual material use.", "After: scale the approved unit cost with Monthly Packaging Spend and monitor variance."]
+  ),
+  "carton-count": profile(
+    "Use Carton Count when a unit demand must be translated into whole shipping or storage cartons at a fixed capacity. It answers how many cartons are needed and how full the final carton is. Case Pack works in the opposite direction by totaling units already represented by cases and loose reserve.",
+    "Enter the number of saleable or packed units required for the dispatch and the approved units per carton. Keep the unit definition consistent—each, pair, kit, or inner pack—and do not substitute a supplier’s outer-case quantity unless that is the actual packing plan.",
+    "The division is rounded upward because any remainder needs another carton. Use the final-carton quantity to plan a partial-carton label, filler, or consolidation decision. A large unused capacity may justify adjusting the dispatch quantity, but do not overfill beyond the approved case pack.",
+    ["Mixing individual units with inner packs.", "Rounding down when a remainder exists.", "Assuming every carton may exceed the approved capacity.", "Ignoring a deliberately partial carton already open in inventory."],
+    "The calculation assumes identical units and a fixed count capacity. It does not check physical fit, carton weight, orientation, separators, partial-carton policy, or inventory already packed.",
+    ["Before: confirm the approved case quantity and unit definition.", "After: check Master Carton Weight and label the partial final carton."]
+  ),
+  "case-pack": profile(
+    "Use Case Pack to translate a known number of sealed cases plus loose reserve into total available units. It supports pick planning, allocation, and reconciliation. It does not calculate how many cartons a new order requires; Carton Count handles that question.",
+    "Enter only complete cases in the case field, the standard units inside each case, and physically verified loose units as reserve. If cases with different pack quantities are present, calculate each pack separately rather than averaging them.",
+    "Use sealed-case units and reserve units as separate audit lines. The total can be compared with demand, while the reserve shows whether open stock is carrying the short quantity. Investigate a mismatch before releasing the plan instead of changing the case pack to force agreement.",
+    ["Counting an open case as sealed and again as reserve.", "Mixing case packs from different suppliers or revisions.", "Treating damaged or quarantined units as available.", "Using weight-based estimates where an exact unit count is required."],
+    "The result assumes the entered case count and reserve are accurate and saleable. It does not verify physical carton contents, expiration, lot restrictions, allocation rules, or unit fit.",
+    ["Before: identify case-pack version and count usable loose stock.", "After: compare total units with demand and use Carton Count for the outbound plan."]
+  ),
+  "box-utilization": profile(
+    "Use Box Utilization to compare simplified product volume with internal carton volume. It is a quick signal for headspace and material-efficiency review, not a fit optimizer. Multi-item Box Fit checks an orthogonal grid; Void Fill estimates the remaining volume with an operational factor.",
+    "Use internal box dimensions and the protected dimensions of one item in the same unit, then enter the quantity intended for that box. If items nest or overlap, use a measured effective block rather than bare catalog dimensions and document the method.",
+    "A low percentage can indicate excess cube, but may be intentional for fragile suspension or irregular shapes. A high percentage may reduce fill while leaving no room for insertion, dividers, or tolerances. Review the unused cubic volume together with side-by-side fit and closure.",
+    ["Using external carton volume.", "Assuming volume percentage proves an arrangement exists.", "Using bare product dimensions while ignoring wrap.", "Targeting 100% utilization without insertion or protection clearance."],
+    "All items are rectangular blocks and total product volume is compared without arrangement logic. The percentage excludes inaccessible pockets, nesting, divider volume, compression, tolerances, and performance requirements.",
+    ["Before: verify protected item dimensions and carton internal size.", "After: run Multi-item Box Fit or a physical layout, then estimate Void Fill."]
+  ),
+  "multi-item-box-fit": profile(
+    "Use Multi-item Box Fit to screen whether identical rectangular items can fit in a box using one orthogonal orientation at a time. It checks six rotations and reports the best simple grid. It is intentionally not a mixed-orientation or three-dimensional bin-packing optimizer.",
+    "Use internal box dimensions and the finished protected item dimensions. Enter the required quantity separately so the result can state whether the grid capacity meets demand. Exclude any orientation prohibited by the product by testing only an allowed arrangement manually.",
+    "Read the best grid as columns along the three box axes. If capacity barely meets demand, allow for manufacturing tolerances, dividers, and loading clearance before approval. If it falls short, compare another box or explicit row-column-layer layout with Master Carton Dimensions.",
+    ["Using external box dimensions.", "Assuming mixed rotations or nesting are included.", "Ignoring required upright orientation or fragile faces.", "Treating volumetric fit as proof of a loadable sequence."],
+    "The calculation uses identical rectangular blocks in a single orientation. It excludes mixed orientations, nesting, interlocking, deformable products, cushioning, gaps, loading order, weight, stability, and compression.",
+    ["Before: define protected item dimensions and allowed orientations.", "After: build the reported grid physically and check weight with Master Carton Weight."]
+  ),
+  "packaging-material-budget": profile(
+    "Use Packaging Material Budget to reserve money for variable packaging demand before purchasing. It scales a chosen material cost per order and adds separate waste and contingency percentages. Monthly Packaging Spend includes fixed monthly cost, while this tool isolates the variable material envelope.",
+    "Enter planned orders for the same scope and a material-only cost per order derived from an approved pack method. Set waste from measured scrap or overuse; use contingency for demand or price uncertainty, not as a second hidden waste allowance.",
+    "Review base budget, waste, and contingency separately. If allowance dollars dominate, improve the underlying forecast rather than increasing both percentages. Compare the final amount with supplier pack sizes and minimum orders because the cash purchase may exceed calculated consumption.",
+    ["Including labor in material cost and again elsewhere.", "Applying waste and contingency without defining their causes.", "Using forecast orders that cover a different period.", "Treating calculated consumption cost as the exact purchase invoice."],
+    "The budget excludes supplier pack rounding, freight, taxes, price breaks, currency conversion, fixed equipment, and timing of cash payments unless embedded in the entered unit cost.",
+    ["Before: validate cost per order and forecast scope.", "After: translate quantities into supplier packs and compare with Monthly Packaging Spend."]
+  ),
+  "monthly-packaging-spend": profile(
+    "Use Monthly Packaging Spend to forecast the recurring packaging cash requirement from monthly order volume, variable cost per order, and fixed packaging cost. It is a period-level view, not a detailed unit-cost build. Packaging Cost per Order should establish the variable input first.",
+    "Use a realistic monthly order forecast for the same SKU mix as the cost baseline. Include recurring fixed packaging costs only once per month and choose a planning horizon for the period total. Do not enter annual costs as monthly values without allocation.",
+    "Compare variable and fixed spend to see which responds to volume. Scenario-test a low, expected, and high order month rather than relying on one point. If SKU mix changes, recalculate the weighted cost per order instead of assuming last month’s average remains valid.",
+    ["Mixing postage with packaging spend.", "Using revenue orders rather than orders actually requiring the pack method.", "Counting a fixed cost in both per-order and monthly fields.", "Projecting several months without considering seasonality or price changes."],
+    "The forecast assumes constant order mix, variable cost, and fixed cost through the chosen horizon. It excludes inventory timing, supplier minimums, tax, freight, payment terms, damage, and currency movements.",
+    ["Before: establish a comparable per-order baseline and monthly forecast.", "After: compare actual spend monthly and investigate price, mix, waste, and volume variance."]
+  ),
+  "label-cost": profile(
+    "Use Label Cost to plan both label quantity and consumable cost for an order run. It accounts for multiple labels per order and an adjustable waste rate. Insert Quantity performs a similar count for documents but does not include a unit-cost output.",
+    "Count every label intentionally applied to one order, including separate identification or handling labels when applicable. Use the landed consumable cost per label on a consistent roll, sheet, or individual basis. Set waste from misprints, setup, damaged stock, and unusable roll ends.",
+    "The quantity is rounded up before cost is calculated because fractional labels cannot be purchased or applied. Review labels per order before adjusting waste: duplicated labels may be a process issue. Convert required labels into whole supplier rolls separately and retain remaining stock.",
+    ["Dividing roll price by nominal labels while ignoring unusable labels.", "Forgetting secondary labels used only on some orders.", "Applying waste to order count instead of label quantity.", "Treating printer ribbon, ink, or maintenance as included when not entered."],
+    "The result excludes roll pack rounding, printer consumables, equipment, labor, freight, taxes, and label obsolescence. It does not determine label size, placement, content, adhesion, or regulatory suitability.",
+    ["Before: map labels by pack method and measure misprint loss.", "After: convert the requirement to rolls and set a supply reorder point."]
+  ),
+  "insert-quantity": profile(
+    "Use Insert Quantity to order cards, leaflets, instructions, or promotional pieces for a defined order run. It multiplies inserts per order and adds spoilage. Unlike Label Cost, it reports count only and does not assign a monetary value.",
+    "Enter only eligible orders—exclude channels or products that do not receive the insert. Count multiple language sheets or cards separately when they are not interchangeable. Base spoilage on trimming damage, outdated versions, setup loss, and handling, not an arbitrary buffer.",
+    "Use the allowance quantity to explain the difference between order demand and the purchase request. If inserts are versioned, split the calculation by version to avoid creating unusable surplus. Reconcile issued inserts with completed eligible orders after the run.",
+    ["Applying one insert to all orders when eligibility differs.", "Combining language or revision variants into one interchangeable total.", "Counting spoilage again in the base order forecast.", "Ignoring inventory already on hand or obsolete stock."],
+    "The tool assumes a fixed insert count per eligible order. It excludes supplier pack sizes, version allocation, existing usable inventory, minimum orders, cost, and future obsolescence.",
+    ["Before: define eligible orders, insert version, and issue quantity.", "After: subtract usable stock and set a reorder point for recurring inserts."]
+  ),
+  "packaging-waste-allowance": profile(
+    "Use Packaging Waste Allowance to turn a known base material quantity into a planned issue or purchase quantity with a transparent loss rate. It is deliberately a quantity tool; Packaging Material Budget converts cost assumptions into money.",
+    "Build the base quantity from expected good-pack consumption before waste. Choose the waste percentage from a comparable period and identify its causes—cuts, misprints, damaged cartons, setup, remnants, or rework. Keep demand contingency separate.",
+    "The tool rounds up to a whole unit so the allowance is actionable. Track allowance units against actual scrap and remaining usable material. A rising rate should trigger root-cause work; it should not become a permanent entitlement to overuse.",
+    ["Adding waste to a base quantity that already includes waste.", "Using one rate for cartons, tape, labels, and fill despite different loss causes.", "Confusing demand uncertainty with process waste.", "Failing to return usable remnants to inventory."],
+    "The percentage is user-defined and assumes proportional loss across the full quantity. It excludes supplier pack rounding, minimum orders, shelf life, price, variability by operator, and unusual rework events.",
+    ["Before: calculate good-pack demand and measure comparable losses.", "After: compare planned allowance with actual scrap and update the material budget."]
+  ),
+  "packaging-supply-reorder-point": profile(
+    "Use Packaging Supply Reorder Point to decide when usable stock should trigger replenishment. It combines average daily use during supplier lead time with safety stock and compares the trigger with current stock. It does not calculate an economic order quantity.",
+    "Measure daily use in the same unit as inventory, use an observed replenishment lead time from order release to usable receipt, and set safety stock for documented demand and lead-time variability. Current stock should exclude damaged, reserved, or obsolete material.",
+    "When on-hand stock is at or below the point, review open purchase orders before releasing another. If it is above the point, the displayed margin is not excess inventory by itself. Recalculate after order mix, supplier performance, pack method, or seasonality changes.",
+    ["Using calendar lead days when operations consume only working days without adjusting use.", "Counting quarantined or allocated stock as available.", "Setting safety stock as an unexplained percentage.", "Treating reorder point as the quantity to order."],
+    "The simple model uses average demand and a fixed safety-stock amount. It excludes demand distributions, service-level optimization, minimum order quantities, order review cycles, open orders, storage limits, and supplier capacity.",
+    ["Before: clean inventory records and measure use and lead time.", "After: determine order quantity from supplier packs, forecast demand, open orders, and storage."]
+  ),
+  "order-packing-time": profile(
+    "Use Order Packing Time to schedule a defined batch of orders from one setup period and a representative per-order time. It estimates elapsed labor minutes for the batch. Labor Capacity per Shift reverses the question by estimating how many orders fit into available labor.",
+    "Count orders using a comparable pack method, measure hands-on minutes across normal operators and order variation, and enter setup only once for the batch. Keep long exceptions separate or use a weighted average supported by observed mix.",
+    "Use total minutes for release scheduling and average minutes per order for process comparison. If setup is a large share, larger batches may improve efficiency; if run time dominates, focus on motion, material staging, and pack design. Include verification steps in the observed method.",
+    ["Using the single fastest cycle as the standard.", "Multiplying setup time by every order.", "Mixing simple and complex orders without recording the mix.", "Excluding normal checks and replenishment from the defined process."],
+    "The estimate assumes a stable average pace and one setup event. It excludes breaks, absenteeism, equipment failure, queueing, training, unusual exceptions, and learning effects unless represented in the inputs.",
+    ["Before: define the process boundary and time a representative sample.", "After: compare required minutes with shift capacity and investigate the main time element."]
+  ),
+  "labor-capacity-per-shift": profile(
+    "Use Labor Capacity per Shift to translate workers, scheduled hours, productive utilization, and minutes per order into a planning throughput. It is a capacity ceiling under entered assumptions, not a guaranteed dispatch commitment. Order Packing Time estimates the duration of a known order count.",
+    "Enter workers actually assigned to the process, paid shift length, and a productive-utilization rate derived from observed non-packing time. Use a representative pack time for the expected order mix. Do not use 100% utilization unless the defined shift truly excludes all nonproductive activity.",
+    "Compare planned demand with whole-order capacity and keep the unused productive minutes as a small buffer indicator. If demand is close to capacity, review breaks, replenishment, changeovers, and complexity mix. Adding workers may not scale linearly when space or equipment is constrained.",
+    ["Treating paid time as fully productive time.", "Using a time standard from a different SKU mix.", "Assuming twice the workers always doubles output.", "Ignoring shared equipment, staging, or quality-check constraints."],
+    "The arithmetic assumes parallel productive minutes combine without interference and average pack time remains stable. It excludes congestion, fatigue, breaks, learning, absenteeism, equipment limits, queueing, and overtime effects.",
+    ["Before: observe utilization and pack time for the expected mix.", "After: compare with demand and use Order Packing Time for specific release batches."]
+  ),
+  "prep-batch-time": profile(
+    "Use Prep Batch Time for repeatable unit preparation that has a setup, a seconds-per-unit run, and a separate quality-check allowance. It suits labeling, folding, bagging, or component preparation before final packing. Order Packing Time instead models completed orders in minutes per order.",
+    "Define one prepared unit clearly, time several normal run segments in seconds, and separate setup activities that happen once. Enter quality-check time for the whole batch, not per unit, unless the per-unit observation already includes it.",
+    "Review setup and run time separately. A short batch with high setup share may benefit from campaign scheduling; a long batch is more sensitive to seconds per unit. Do not remove checks simply to improve the calculated time—change the approved method only after a controlled trial.",
+    ["Mixing seconds per unit with minutes.", "Counting setup inside the cycle and again in setup minutes.", "Using finished-order count when several prepared units enter one order.", "Ignoring changeovers between versions or materials."],
+    "The tool assumes one setup, constant cycle time, and a single batch-level check allowance. It excludes interruptions, rework, queueing, fatigue, equipment downtime, and variable component availability.",
+    ["Before: define unit, batch boundary, setup, and check plan.", "After: feed prepared-unit availability into kitting or order packing schedules."]
+  ),
+  "kitting-cost": profile(
+    "Use Kitting Cost to estimate the cost of assembling a kit from a repeated number of similarly costed components, dedicated packaging, material waste, and assembly labor. It differs from Bundle Packing Cost, which focuses on handling already-valued items into a bundle.",
+    "Use an average component cost only when components are genuinely similar; otherwise sum them externally and enter an equivalent per-component average. Include packaging dedicated to the kit, representative assembly minutes, and a material waste rate based on component or packaging loss.",
+    "Review material and labor subtotals before pricing or comparing an assembly method. A component-heavy kit is sensitive to scrap and count accuracy; a labor-heavy kit may benefit from staging or fixtures. Build and audit a batch before adopting the estimate.",
+    ["Averaging unlike component costs without checking the total.", "Including product margin or selling fees as assembly cost.", "Applying waste to labor.", "Using order-packing minutes instead of kit-assembly minutes."],
+    "The estimate assumes one average component cost and fixed components per kit. It excludes component-specific scrap, inventory carrying cost, equipment, supervision, quality failures, rework, and downstream shipping.",
+    ["Before: define bill of materials, kit packaging, and assembly boundary.", "After: compare batch time and add final shipment packaging cost separately."]
+  ),
+  "bundle-packing-cost": profile(
+    "Use Bundle Packing Cost to price the incremental work of grouping several finished items into one sellable or shippable bundle. It combines per-item handling, bundle-specific materials, and bundle packing labor. It does not include the underlying product cost unless entered as handling.",
+    "Count items in the bundle, establish handling cost per item from the chosen cost method, enter only materials unique to bundling, and time the bundling action separately from final order packing. Use one currency basis throughout.",
+    "Review whether item handling, materials, or labor drives the total. If bundle count changes, rerun rather than applying a flat cost. Compare the bundled method with separate-item handling while also checking product protection, identification, and picking accuracy.",
+    ["Including the full product cost as handling cost by accident.", "Counting final shipment packaging in both bundle materials and order packaging.", "Using assembly time from a different bundle size.", "Ignoring extra labels, bands, or inserts unique to the bundle."],
+    "The model assumes identical handling cost per item and a fixed bundle method. It excludes product cost, final shipping container, picking travel, inventory risk, equipment, errors, returns, and promotional pricing.",
+    ["Before: define bundle contents and where the bundling process ends.", "After: add order-level packaging and compare monthly volume impact."]
+  ),
+  "master-carton-dimensions": profile(
+    "Use Master Carton Dimensions to design a minimum internal carton around an explicit columns-by-rows-by-layers arrangement. It includes user-entered gaps between units and outer clearance. Multi-item Box Fit screens an existing box; this tool builds dimensions from a chosen layout.",
+    "Measure the finished inner or retail pack in its permitted orientation. Enter whole columns, rows, and layers, a gap for dividers or handling between units, and outer clearance between the layout and carton walls. Keep board thickness outside this internal-dimension calculation.",
+    "Review the three calculated dimensions and the units-per-carton result together. Round each dimension up to a manufacturable internal size, then obtain or estimate external dimensions separately. If one axis becomes impractical, test a different row-column-layer arrangement rather than simply compressing clearance.",
+    ["Entering bare product dimensions instead of the finished inner pack.", "Applying outer clearance once instead of to both sides.", "Forgetting gaps between multiple rows or layers.", "Treating calculated internal size as the external shipping size."],
+    "The layout uses identical rectangular units in one orientation. It excludes mixed orientations, dividers with nonuniform thickness, carton board allowance, bulging, compression strength, stacking, loading sequence, and physical stability.",
+    ["Before: approve unit orientation, gaps, and per-carton count.", "After: build a full carton, measure external size, then check weight and cube."]
+  ),
+  "master-carton-weight": profile(
+    "Use Master Carton Weight to check product weight plus carton-and-packing tare against an internal planning maximum supplied by the user. It answers a weight question, not a dimensional capacity question. Master Carton Dimensions should establish the layout and unit count first.",
+    "Use the actual units per carton, a representative packed-unit weight in pounds, and tare measured from the carton, dividers, liners, labels, and closure. Set maximum planned weight from the applicable facility, customer, equipment, or service requirement rather than assuming a universal limit.",
+    "A result below the maximum reports remaining allowance, but that margin should cover normal product and material variation. A result close to the ceiling needs sample cartons weighed at the high end of tolerance. If the estimate exceeds the maximum, reduce case pack or redesign the pack.",
+    ["Using net product weight while forgetting retail or inner packaging.", "Omitting dividers, tape, and labels from tare.", "Treating a carrier limit as a safe manual-handling limit.", "Averaging unit weights when the upper tolerance controls compliance."],
+    "The tool adds weights linearly and does not evaluate weight distribution, lifting ergonomics, carton strength, pallet load, scale calibration, regulatory rules, or service-specific limits.",
+    ["Before: finalize unit count and measure unit and tare samples.", "After: weigh a completed carton and use the result in pallet load planning."]
+  ),
+  "carton-cube": profile(
+    "Use Carton Cube to calculate the external space occupied by one or more identical cartons in cubic meters and cubic feet. It supports storage, staging, and transport planning. Box Volume can use internal dimensions for capacity; Carton Cube should normally use finished external dimensions.",
+    "Measure the closed carton’s maximum external length, width, and height in one unit and enter the number of identical cartons. Split the calculation when carton sizes differ. Include normal bulge or protrusions when they affect occupied space.",
+    "Use cube per carton to compare pack designs and total cube to reserve staging or transport volume. The total is geometric and assumes cartons can occupy their full rectangular envelope. A lower cube can improve space use, but only if product protection and pallet pattern remain acceptable.",
+    ["Using internal dimensions for external space planning.", "Combining different carton sizes under one average dimension.", "Ignoring bulge, straps, or protruding closures.", "Treating cubic volume as a weight or freight quote."],
+    "The result excludes pallet gaps, aisle space, irregular stacking, orientation constraints, unusable vehicle volume, weight limits, and carrier pricing. It does not guarantee that the cartons tessellate in a given space.",
+    ["Before: measure finished external cartons by size group.", "After: use Cases per Pallet for a specific footprint and compare total shipment cube."]
+  ),
+  "cases-per-pallet": profile(
+    "Use Cases per Pallet to estimate a whole-case count from one straight-grid orientation per layer and a user-entered number of layers. It compares unrotated and 90-degree rotated footprints. Pallet Layer Count instead starts from required cases and known cases per layer.",
+    "Enter the usable pallet footprint, finished case footprint, and a layer count already screened for height and weight. Keep dimensions in one unit and use case length and width in the intended upright orientation. Reduce usable pallet size if edge clearance is required.",
+    "Review cases per layer, selected orientation, and total cases. A rotated grid can increase count, but the calculator does not mix orientations within a layer. Before approval, draw the pattern, check edge support and partial top layers, and verify loaded height and gross weight.",
+    ["Using nominal pallet or carton dimensions without measuring.", "Allowing unapproved overhang to make a case appear to fit.", "Entering layers before checking height and weight.", "Assuming the best area count creates a stable pattern."],
+    "The tool uses a single rectangular grid and excludes mixed orientations, pinwheel patterns, interlocking, gaps, deck-board support, overhang, compression, containment, weight, center of gravity, and handling stability.",
+    ["Before: define usable footprint and allowed case orientation.", "After: check Pallet Height, Pallet Utilization, gross weight, and a physical unit load."]
+  ),
+  "pallet-layer-count": profile(
+    "Use Pallet Layer Count when a shipment case quantity and an approved cases-per-layer pattern are already known. It calculates whole layers and the cases on the final partial layer while enforcing a user-entered maximum layer count. It does not design the footprint pattern.",
+    "Enter the exact case quantity for the load, cases per full layer from a verified pattern, and the maximum layers allowed by height, weight, compression, or operating policy. Do not increase cases per layer merely to force the load under the maximum.",
+    "A partial top layer may require a different stabilization or split-load decision. If required layers exceed the maximum, divide the shipment across additional pallets or revise the approved pattern. Use layer capacity to see unused case positions, not as permission to add unrelated cases.",
+    ["Using planned production units instead of packed cases.", "Counting a partial top layer as a full case count.", "Setting maximum layers without checking total height.", "Assuming every partial pattern has the same stability as a full layer."],
+    "The calculation assumes constant cases per full layer and does not assess partial-layer geometry, stacking strength, gross weight, containment, center of gravity, overhang, equipment, or regulatory constraints.",
+    ["Before: approve a cases-per-layer pattern and operating maximum.", "After: calculate Pallet Height and design the partial top layer physically."]
+  ),
+  "pallet-height": profile(
+    "Use Pallet Height to add empty pallet height, repeated case layers, and top allowance, then compare the load with a user-entered maximum. It isolates vertical clearance. Cases per Pallet and Pallet Utilization answer count and footprint questions instead.",
+    "Measure the pallet at the highest deck point, the finished case height under expected compression, and any top cap, corner board, or protective allowance. Set maximum height from the actual rack, doorway, vehicle, customer, or operating requirement; there is no universal default.",
+    "Use remaining height as tolerance, not automatically as room for another layer. Compare one additional case height with the margin and also check weight and compression. A result close to the maximum should be verified on a fully built, wrapped load.",
+    ["Using case internal height.", "Forgetting pallet base or top protection.", "Assuming nominal case height remains unchanged under stacking.", "Checking height while ignoring gross weight and equipment clearance."],
+    "The model adds vertical dimensions only. It excludes compression deformation, uneven layers, leaning, wrap, overhang, rack deflection, vehicle dynamics, gross weight, stability, and regulatory or customer rules.",
+    ["Before: confirm layer count and all vertical allowances.", "After: measure the restrained load and verify route, rack, equipment, and weight clearance."]
+  ),
+  "pallet-utilization": profile(
+    "Use Pallet Utilization to compare the summed case footprint area in one layer with the pallet footprint. It is an area-efficiency indicator, not a pattern solver. Cases per Pallet determines a simple grid count; utilization shows how much nominal area that entered count represents.",
+    "Use the usable pallet length and width, finished case footprint, and the verified cases per layer. Keep all dimensions in one unit. If the pattern requires gaps, corner clearance, or no-load zones, reduce the usable footprint or evaluate the drawing separately.",
+    "A low percentage may indicate a poor footprint match, but can be necessary for edge clearance or stability. A high percentage near 100% still does not prove the cases fit without overlap because area ignores arrangement. Compare the percentage with an actual layer diagram.",
+    ["Treating 100% area as proof of a valid layout.", "Ignoring pallet edge clearance or deck support.", "Using case internal dimensions.", "Comparing utilization across pallets without the same overhang and stability rules."],
+    "The calculation compares areas only and excludes placement geometry, mixed rotations, gaps, overhang, deck-board support, partial cases, containment, weight distribution, compression, and handling stability.",
+    ["Before: verify case and usable pallet footprints.", "After: compare with the Cases per Pallet grid and validate a physical layer pattern."]
+  )
+};
+
 const toolOperations = {
   "dimensional-weight": { category: "Package size and fit", output: "DIM weight", useWhen: "A light package may rate by volume." },
   "length-girth": { category: "Package size and fit", output: "Length + girth", useWhen: "Checking a published package-size limit." },
@@ -419,6 +682,105 @@ guides.push(
   }
 );
 
+const guideDepth = {
+  "how-to-measure-a-box": {
+    prepare: ["State whether the result will support product fit, storage, DIM weight, or a published size limit.", "Form and close the package with production materials before taking external measurements.", "Use a rigid rule or tape kept square to each face and record the maximum point.", "Record unit, internal or external status, package state, date, and measurer."],
+    scenario: "A seller receives a carton listed as 12 × 10 × 8 in. The product fits because those are supplier internal dimensions, but the closed carton measures 12.4 × 10.3 × 8.2 in after filling and taping. Fit calculations should retain the internal set; DIM and length-plus-girth checks should use the finished external set. The measurement record prevents the team from silently substituting one set for the other.",
+    decisions: [["Product fit", "Measure usable internal faces and account for dividers, liners, and closure intrusion."],["Shipping size", "Measure the finished external package at maximum points after normal closure."],["Flexible package", "Measure natural packed thickness and the widest bulge without artificial compression."],["Near a threshold", "Repeat the measurement and follow the current rule for dimensional rounding."]],
+    mistakes: ["Reading a printed carton code as a measured dimension.", "Measuring an empty flat or unclosed package.", "Tilting the tape across a face and recording a diagonal.", "Dropping decimals before the applicable method permits rounding."],
+    closeout: ["Both internal and external sets are labeled.", "The unit is written beside every dimension.", "Maximum bulge and protrusions are included.", "A second measurement confirms threshold-sensitive values."],
+    relatedGuide: "/guides/how-much-packaging-clearance.html", reference: "/reference/internal-vs-external-box-dimensions.html"
+  },
+  "dimensional-weight-explained": {
+    prepare: ["Obtain finished external dimensions, not the carton’s internal specification.", "Weigh the completed package separately so dimensional and actual weight can be compared.", "Identify the unit-specific divisor and rounding sequence from the current official method.", "Retain unrounded dimensions and the intermediate cubic volume for audit."],
+    scenario: "A light household item ships in a 16 × 12 × 10 in carton. At an example divisor of 139, its 1,920 in³ produces about 13.81 lb of dimensional weight. If the packed scale weight is 6.2 lb, volume may drive the applicable rating method. The operational response is not to edit the divisor; it is to test a smaller protective pack, remeasure it, and compare again under the same current rule.",
+    decisions: [["DIM exceeds scale weight", "Investigate avoidable external volume while preserving protection."],["Scale weight exceeds DIM", "Focus on product and material weight; a smaller box may still help handling."],["Values are close", "Check measurement and rounding instructions before quoting or comparing."],["Divisor is uncertain", "Stop the rating comparison and retrieve the current official value."]],
+    mistakes: ["Mixing centimeters with an inch-pound divisor.", "Assuming one carrier or service value applies everywhere.", "Using internal carton dimensions because they appear in a catalog.", "Calling dimensional weight a shipping price instead of a comparison weight."],
+    closeout: ["External packed dimensions are verified.", "Divisor source and review date are recorded.", "Scale weight is captured on a suitable scale.", "Any redesigned package is physically retested."],
+    relatedGuide: "/guides/how-to-measure-a-box.html", reference: "/reference/dimensional-weight-divisors.html"
+  },
+  "how-much-packaging-clearance": {
+    prepare: ["Classify the product’s fragility, mass, surface sensitivity, sharp points, and required orientation.", "Measure the product after its intended wrap or inner packaging is applied.", "Separate protective-material thickness from insertion and tolerance clearance.", "Identify carton dimensional tolerances and any divider or insert thickness."],
+    scenario: "A ceramic item measures 8 × 5 × 4 in bare and receives 0.5 in of tested wrap on every side. The operation also needs 0.25 in per side for insertion and normal variation. The Box Size calculation therefore adds 1.5 in to every bare dimension, producing an internal shortlist of 9.5 × 6.5 × 5.5 in. A stock 10 × 7 × 6 in carton is then trial-packed and checked for movement and closure.",
+    decisions: [["Insertion is difficult", "Check compressed wrap thickness, carton tolerance, and whether clearance is symmetric."],["Product moves after closure", "Reduce excess space or introduce approved blocking rather than simply adding loose fill."],["Flaps bow outward", "Reassess packed height and protection thickness before measuring shipping size."],["Corners remain exposed", "Change the protection system; extra empty clearance alone is not protection."]],
+    mistakes: ["Using one universal clearance for every product risk.", "Counting wrap thickness only once across a dimension.", "Choosing a carton by external dimensions.", "Approving fit without shaking, closure, and handling checks."],
+    closeout: ["Protected product dimensions are recorded.", "Clearance and wrap allowances remain separate.", "The production carton closes normally.", "Final external dimensions are remeasured."],
+    relatedGuide: "/guides/how-to-choose-void-fill.html", reference: "/reference/internal-vs-external-box-dimensions.html"
+  },
+  "reduce-packaging-cost": {
+    prepare: ["Choose a SKU and pack method with stable volume rather than mixing unrelated orders.", "Count material quantities and landed unit costs on a per-order basis.", "Time representative work and define the labor-rate boundary.", "Record damage, rework, finished dimensions, and customer requirements before changing anything."],
+    scenario: "A seller’s current pack uses a $1.10 carton, $0.40 fill, $0.12 tape and label supplies, plus five minutes at $18 per hour. A smaller carton adds $0.10 to the container price but cuts fill by $0.22 and reduces packing time by one minute. The comparison should include the new finished dimensions and protection test; the cheaper-looking fill reduction is rejected if damage or closure performance worsens.",
+    decisions: [["Material dominates", "Review size range, actual consumption, purchasing packs, and avoidable waste."],["Labor dominates", "Study staging, decisions, reach, changeovers, and rework before removing checks."],["DIM exposure changes", "Remeasure the finished pack and separate packaging cost from shipping cost."],["Damage rises", "Stop the release and restore or redesign protection before counting savings."]],
+    mistakes: ["Comparing different protection levels.", "Excluding labor because it is already paid.", "Using catalog consumption instead of actual issue quantities.", "Declaring savings before observing a representative post-change batch."],
+    closeout: ["Baseline and trial share the same scope.", "Material, labor, waste, and outcomes are retained.", "Pack instruction and inventory settings are updated.", "Post-release damage and rework are monitored."],
+    relatedGuide: "/guides/packaging-cost-reduction-checklist.html", reference: "/reference/packaging-cost-components.html"
+  },
+  "box-vs-poly-mailer": {
+    prepare: ["Classify crush, puncture, moisture, privacy, tamper, and presentation needs.", "Measure the product in its protected shipping condition.", "Identify whether the item can bend or tolerate pressure in sorting and delivery.", "List available box and mailer usable dimensions, closure areas, and storage packs."],
+    scenario: "A folded textile can tolerate compression and has no sharp hardware. The protected item measures 11 × 8 × 2 in, so a mailer trial may reduce cube and assembly time. A boxed cosmetic set of similar face dimensions has crush-sensitive corners and presentation surfaces; its volume alone does not justify a mailer. The team records why each SKU is assigned a container rather than treating weight as the only decision.",
+    decisions: [["Crush-sensitive or rigid", "Start with a structured box and design movement control."],["Flexible and non-fragile", "Trial a mailer using published usable space and seal depth."],["Sharp or protruding", "Add suitable protection or reject the mailer option."],["Return-ready requirement", "Check opening, reseal, and presentation needs before selecting format."]],
+    mistakes: ["Choosing the lowest unit price without pack-time and damage data.", "Comparing nominal mailer size with box internal size.", "Assuming soft goods cannot be punctured.", "Ignoring label surface and adhesive contamination."],
+    closeout: ["Container choice is tied to product risk.", "Insertion and closure trials pass.", "Finished dimensions are recorded.", "Exceptions and approved alternates are documented."],
+    relatedGuide: "/guides/how-much-packaging-clearance.html", reference: "/reference/common-packaging-materials.html"
+  },
+  "how-to-choose-void-fill": {
+    prepare: ["Define whether the material must block movement, wrap surfaces, brace weight, or only occupy headspace.", "Calculate approximate void using internal box and protected-product dimensions.", "Collect supplier instructions and create a small calibration batch.", "Record material quantity, dispensing setting, pack time, movement, and closure result."],
+    scenario: "A 14 × 10 × 8 in carton around a protected 10 × 6 × 4 in item has substantial geometric void. Paper may be suitable when folded and crumpled to block movement; air pillows may fill upper space quickly but may not brace a dense item. The choice is made from the protection job, measured yield, storage, and handling outcome—not from liters of void alone.",
+    decisions: [["Heavy product shifts", "Use designed blocking or bracing; loose fill volume is not enough."],["Large upper void", "Evaluate lightweight fill while confirming compression recovery and closure."],["Surface is sensitive", "Separate wrapping protection from space filling."],["Yield varies widely", "Standardize method and recalibrate before setting inventory demand."]],
+    mistakes: ["Calling every cushioning material interchangeable void fill.", "Using supplier yield as guaranteed production yield.", "Filling space while leaving the product free to move.", "Changing material without updating quantity and work instructions."],
+    closeout: ["Protection function is named.", "Actual yield is documented.", "Movement and closure checks pass.", "Inventory rate matches the approved method."],
+    relatedGuide: "/guides/packaging-inventory-basics.html", reference: "/reference/void-fill-yield-factors.html"
+  },
+  "packing-station-workflow": {
+    prepare: ["Map the present sequence from order release through dispatch handoff.", "Separate standard orders, exceptions, and replenishment work.", "Count walking, searching, touches, decisions, checks, and rework.", "Define the SKU mix and observation period before timing."],
+    scenario: "A two-person operation packs 120 mixed orders each afternoon. Observation shows cartons stored behind the label printer, tape changes during the run, and exception orders interrupting standard work. The revised flow stages the approved carton set, replenishes tape before release, sends exceptions to a separate queue, and keeps SKU and closure checks in the standard sequence. Capacity is recalculated from the observed post-change pace.",
+    decisions: [["Searching dominates", "Change storage location, labeling, and replenishment ownership."],["Decisions dominate", "Create approved pack rules and a clear exception route."],["Queues form at one device", "Treat equipment as the constraint before adding labor."],["Defects rise with speed", "Restore control points and investigate method clarity or workload."]],
+    mistakes: ["Drawing an ideal flow without observing actual work.", "Removing quality checks as nonproductive time.", "Timing only easy orders.", "Adding inventory around the station until movement is restricted."],
+    closeout: ["Standard and exception routes are visible.", "Materials have owners and reorder signals.", "Time and quality are measured together.", "The instruction is reviewed after layout or SKU changes."],
+    relatedGuide: "/guides/packaging-cost-reduction-checklist.html", reference: "/reference/packaging-cost-components.html"
+  },
+  "packaging-inventory-basics": {
+    prepare: ["Create one stock record for each usable size, material, and revision.", "Map which pack methods consume each item and in what quantity.", "Measure daily use, supplier lead time, pack quantity, minimum order, and usable on-hand stock.", "Separate damaged, obsolete, reserved, and quarantined material."],
+    scenario: "A seller uses 80 mailers per working day. Replenishment has recently taken 8 to 12 days, and 300 mailers are held as safety stock. Using a 10-day planning lead produces a 1,100-unit reorder point, but the purchase quantity still depends on open orders, supplier case packs, storage space, and the next month’s forecast. A cycle count finds 120 damaged mailers that must not remain available.",
+    decisions: [["Stock reaches reorder point", "Review open orders and release replenishment under the purchasing rule."],["Usage rises after promotion", "Update forecast and safety assumptions instead of waiting for a stockout."],["Lead time becomes variable", "Record actual receipt history and review the safety-stock basis."],["Obsolete stock grows", "Strengthen revision control and avoid treating it as available coverage."]],
+    mistakes: ["Using purchase history as consumption without adjusting inventory change.", "Counting supplier packs and individual units interchangeably.", "Ignoring open purchase orders.", "Setting safety stock once and never reviewing it."],
+    closeout: ["Usable on-hand quantity is credible.", "Unit, lead time, and demand period match.", "Reorder point and order quantity are distinguished.", "Critical items have a cycle-count schedule."],
+    relatedGuide: "/guides/packing-station-workflow.html", reference: "/reference/packaging-cost-components.html"
+  },
+  "tape-types-and-seal-patterns": {
+    prepare: ["Identify carton surface, board condition, packed weight, storage temperature, and handling environment.", "Obtain the tape supplier’s application and conditioning instructions.", "Select the closure pattern and define overhang on the finished carton.", "Inspect dispenser condition, wipe-down pressure, and cut consistency."],
+    scenario: "A team changes from a center seam to an H-seal for a carton that needs edge-seam coverage. On a 14 × 10 in carton with 2 in overhang, the additional four cross seams materially increase tape per carton. The Tape Usage Calculator quantifies length, while a conditioned closure trial determines whether the selected tape actually bonds to the recycled corrugated surface.",
+    decisions: [["Edges lift after storage", "Review surface, temperature, pressure, tape choice, and application—not only length."],["Tape use rises", "Check pattern selection, overhang, rework, and dispenser cuts."],["Carton opens under load", "Escalate the closure specification and structural pack review."],["Labels cross seams", "Reposition labels so required closure and identification remain effective."]],
+    mistakes: ["Selecting tape by color or price alone.", "Confusing tape width with length requirement.", "Counting top closure but not bottom.", "Approving adhesion immediately without relevant conditioning."],
+    closeout: ["Tape product and width are recorded.", "Pattern and overhang are visible in the instruction.", "Top and bottom closures pass inspection.", "Batch usage is compared with calculated demand."],
+    relatedGuide: "/guides/packing-station-workflow.html", reference: "/reference/box-style-and-closure-glossary.html"
+  },
+  "packaging-cost-reduction-checklist": {
+    prepare: ["Select a stable product and define the current pack method.", "Collect material issue quantities, prices, labor observations, waste, rework, damage, and finished dimensions.", "Choose one change and a comparison sample.", "Set acceptance criteria for protection, appearance, throughput, and cost."],
+    scenario: "A shop suspects tape and paper are overused. The audit finds that carton size variation, not operator carelessness, creates most extra paper, while inconsistent dispenser cuts create tape loss. The trial standardizes two cartons and a cut length, then compares 100 orders before and after. Savings are released only after damage, closure, dimensions, and labor remain acceptable.",
+    decisions: [["Many carton sizes", "Measure usage and decision time before reducing the approved range."],["High waste allowance", "Separate trim, damage, setup, and overuse so the cause is actionable."],["Lower material cost raises labor", "Compare total cost per order, not one component."],["Shipping dimensions grow", "Keep packaging and transport consequences visible as separate measures."]],
+    mistakes: ["Starting with supplier price instead of total operating cost.", "Changing several variables in one uncontrolled trial.", "Ignoring transition waste and retraining.", "Annualizing a saving from an unrepresentative sample."],
+    closeout: ["Baseline and trial data are retained.", "Protection and service outcomes pass.", "Instructions and inventory are updated.", "Savings are checked again after normal operations resume."],
+    relatedGuide: "/guides/reduce-packaging-cost.html", reference: "/reference/packaging-cost-components.html"
+  },
+  "master-carton-planning": {
+    prepare: ["Measure the finished inner pack and record allowed orientation.", "Choose proposed columns, rows, layers, gaps, dividers, and outer clearance.", "Measure unit weight and all carton-and-packing tare.", "Identify handling, customer, storage, pallet, height, and weight constraints."],
+    scenario: "Twelve retail packs measuring 8 × 5 × 3 in are arranged three columns by two rows by two layers. With 0.25 in internal gaps and 0.5 in clearance at outer walls, the minimum internal estimate is 25.5 × 11.25 × 7.25 in. The plan is not released from arithmetic alone: a prototype carton is packed, external dimensions and 24 lb gross weight are measured, and the pallet pattern is reviewed.",
+    decisions: [["One dimension is impractical", "Compare another row-column-layer arrangement without violating orientation."],["Weight exceeds the planning maximum", "Reduce case pack or redesign materials; do not force the carton."],["Units move", "Design separators or blocking and recalculate their space and tare."],["Carton bulges", "Revise internal fit and board/closure design before using external cube."]],
+    mistakes: ["Using bare product rather than finished inner-pack dimensions.", "Calling calculated internal size an external shipping dimension.", "Checking count but not gross weight.", "Selecting board and stacking strength from dimensions alone."],
+    closeout: ["Layout and unit orientation are documented.", "Prototype fit and closure pass.", "External dimensions and gross weight are measured.", "Pallet and handling reviews are complete."],
+    relatedGuide: "/guides/pallet-planning-basics.html", reference: "/reference/master-carton-terms.html"
+  },
+  "pallet-planning-basics": {
+    prepare: ["Measure the usable pallet footprint and empty pallet height.", "Measure finished case footprint, height, gross weight, and orientation restrictions.", "Collect user-approved maximum height, weight, edge, rack, doorway, vehicle, and equipment constraints.", "Define containment and partial-layer rules before selecting a count."],
+    scenario: "A 48 × 40 in pallet is screened with 16 × 12 × 10 in cases. A single-orientation grid fits nine cases per layer; six layers plus a 6 in pallet and 2 in top allowance reach 68 in. The calculation still does not approve the load. The operation checks gross weight, deck support, column alignment, partial-layer handling, wrap, fork access, and the actual movement route.",
+    decisions: [["Area utilization is high but count fails", "Draw the geometry; area alone cannot prove placement."],["Top layer is partial", "Design its pattern and containment rather than scattering cases."],["Height margin is small", "Build and measure a restrained load at production tolerances."],["Load leans or cases crush", "Stop and review structure, pattern, weight distribution, and containment."]],
+    mistakes: ["Assuming a common pallet size without measuring the actual platform.", "Allowing unapproved overhang.", "Checking height but not weight.", "Calling a calculated footprint a stable unit load."],
+    closeout: ["Pattern drawing matches the counted layer.", "Height and gross weight are verified.", "Containment and handling route pass.", "A qualified physical load review is recorded."],
+    relatedGuide: "/guides/master-carton-planning.html", reference: "/reference/pallet-and-unit-load-terms.html"
+  }
+};
+
 const references = [
   {
     slug: "package-measurement-terms",
@@ -513,6 +875,79 @@ references.push(
   }
 );
 
+const referenceDepth = {
+  "package-measurement-terms": {
+    overview: "Package measurements serve different decisions. Internal dimensions describe usable fit space; external dimensions describe the finished envelope presented to storage, handling, and shipping systems. Length, width, and height may be ordered by a published method rather than by the carton supplier’s naming convention, so the record must state both the surface measured and the rule used.",
+    example: "A carton listed internally as 12 × 10 × 8 in may close at 12.4 × 10.3 × 8.2 in after board, product, and tape are present. Use the first set for a basic fit study and the second set for external cube, DIM weight, and length-plus-girth work. Preserve decimals until the applicable method instructs otherwise.",
+    differences: [["Internal vs external", "Internal values support fit; external values support occupied-space and shipping checks."],["Girth vs volume", "Girth is a perimeter around two sides; volume multiplies three sides."],["Actual vs dimensional weight", "Actual weight comes from a scale; DIM weight converts volume through a divisor."],["Clearance vs void", "Clearance is planned room around an item; void is the remaining unoccupied space."]],
+    use: ["Name the decision before measuring.", "Choose the correct package state and surfaces.", "Record unit and unrounded values.", "Link the measurement set to the calculation or pack instruction."],
+    cautions: ["Supplier terminology can differ.", "Flexible packages require maximum finished points.", "Nominal size is not a substitute for measurement.", "Published carrier definitions must be checked in their current source."]
+  },
+  "common-packaging-materials": {
+    overview: "Packaging materials perform different functions: containment, structural protection, surface protection, blocking, void occupation, closure, and identification. A material should be selected for the function demonstrated in the pack design rather than because it is familiar or inexpensive. Substitutions can change dimensions, labor, recovery, storage, and damage performance.",
+    example: "A corrugated box can provide a stacking shell while paper blocks a wrapped product from moving. Replacing the paper with lightweight pillows may occupy similar volume but provide different resistance to a dense item. The substitution therefore requires a movement and handling trial, not only a comparison of liters or unit price.",
+    differences: [["Box vs mailer", "A box supplies structure; a flexible mailer mainly contains and covers suitable goods."],["Wrap vs void fill", "Wrap protects a surface or object; void fill occupies space and may block movement."],["Blocking vs cushioning", "Blocking restrains position; cushioning manages shock through a tested system."],["Closure vs identification", "Tape or adhesive closes the pack; labels communicate and route information."]],
+    use: ["Define product hazards and required functions.", "Shortlist materials with supplier specifications.", "Build representative packs with production equipment.", "Record quantities, method, conditions, and inspection results."],
+    cautions: ["Material names do not guarantee performance.", "Recycled content and surfaces can affect adhesion.", "Yield changes with operator and equipment.", "Protection claims require appropriate testing."]
+  },
+  "dimensional-weight-divisors": {
+    overview: "A dimensional-weight divisor converts cubic package volume into a comparison weight. It is unit-specific and can vary by carrier, service, route, marketplace, account, and date. Values such as 139, 166, or 5000 are useful only as identified examples; none should be presented as a permanent universal rule.",
+    example: "A 12 × 10 × 8 in package contains 960 in³. With an example divisor of 139, the unrounded result is about 6.906 lb; with 166, it is about 5.783 lb. The change comes from the selected method, not from the physical package. The current official method must also determine dimensional rounding and comparison with scale weight.",
+    differences: [["Inch-pound divisor", "Cubic inches are divided by an in³-per-pound value to produce pounds."],["Metric divisor", "Cubic centimeters are divided by a cm³-per-kilogram value to produce kilograms."],["Divisor vs conversion", "A divisor is a rating factor, not a general inch-to-centimeter conversion."],["DIM vs billable weight", "DIM is one calculated value; the applicable rule decides how it interacts with actual weight."]],
+    use: ["Measure the finished external package.", "Retrieve the current method from an official service or account source.", "Match dimensions and divisor units.", "Retain volume, unrounded DIM result, rounding, and review date."],
+    cautions: ["Do not infer a divisor from another carrier.", "Do not mix unit systems.", "Do not assume old blog examples remain current.", "This reference does not quote a shipment or determine a tariff."]
+  },
+  "internal-vs-external-box-dimensions": {
+    overview: "Internal and external carton dimensions are both valid, but they answer different questions. Internal dimensions describe the usable cavity between carton walls and closure features. External dimensions describe the finished outside envelope after forming, filling, and closing. Board construction, tolerances, contents, and bulging create the difference.",
+    example: "A product and cushioning system needs at least 11.5 × 7.5 × 5.5 in internally. A supplier’s 12 × 8 × 6 in internal carton may fit, but its finished external size will be larger and must be measured before DIM or storage planning. Substituting external dimensions into the fit check overstates usable space.",
+    differences: [["Fit work", "Use internal dimensions for product, dividers, wrap, and insertion clearance."],["Shipping work", "Use finished external dimensions for DIM, girth, and occupied space."],["Nominal carton size", "The catalog convention must be identified; it may not be the measurement set needed."],["Manufacturing tolerance", "Published values and physical cartons can vary, so threshold-sensitive work needs samples."]],
+    use: ["State whether the decision is fit or occupied space.", "Obtain the supplier’s dimension convention.", "Measure a formed production sample.", "Retain both sets when the carton enters multiple calculations."],
+    cautions: ["Do not subtract a guessed board thickness.", "Do not measure an unclosed carton for shipping size.", "Account for liners and inserts inside.", "Recheck after material or closure changes."]
+  },
+  "packaging-unit-conversion": {
+    overview: "Unit conversion keeps dimensions, areas, volumes, and weights comparable across supplier records and calculators. Linear conversion factors must be squared for area and cubed for volume. Conversion should happen before the main calculation, with unrounded values retained until the displayed result.",
+    example: "A 12 × 10 × 8 in carton converts to 30.48 × 25.4 × 20.32 cm. Multiplying the converted dimensions produces about 15,732 cm³, matching 960 in³ × 16.387064. Multiplying 960 only by 2.54 would be incorrect because volume requires the cubic conversion factor.",
+    differences: [["Length", "Multiply inches by 2.54 to obtain centimeters."],["Area", "Multiply square inches by 6.4516 because the length factor is squared."],["Volume", "Multiply cubic inches by 16.387064 because the factor is cubed."],["Weight", "Multiply pounds by 0.45359237 to obtain kilograms."]],
+    use: ["Identify the source and target unit.", "Convert every related input at full precision.", "Run the calculation in one unit system.", "Round only the final operational display."],
+    cautions: ["A converted dimension does not convert a DIM divisor.", "Mixed units can produce plausible but wrong values.", "Currency symbols are not exchange-rate conversion.", "Supplier nominal units may already be rounded."]
+  },
+  "packaging-cost-components": {
+    overview: "A packaging cost record needs a declared boundary. Direct materials, process waste, and hands-on labor are usually visible per order; equipment, storage, supervision, freight, and damage may be allocated separately. Comparisons are only meaningful when the same components and outcome are included on both sides.",
+    example: "Materials of $1.42 per order become $1.49 after a 5% material allowance. Four minutes at $18 per hour adds $1.20, producing about $2.69 before any unentered overhead. If equipment depreciation is included for one method but omitted for another, the comparison is not controlled.",
+    differences: [["Unit cost", "Cost consumed by one order or pack under a defined method."],["Budget", "Planned money for a forecast volume and allowance."],["Spend", "Actual or forecast cost accumulated over a period."],["Postage", "Transport charge that should remain separate unless the stated boundary includes it."]],
+    use: ["Define scope and currency basis.", "Measure actual material quantities.", "Time representative labor and document rate basis.", "Review variance by price, usage, labor, waste, and order mix."],
+    cautions: ["Do not hide product cost in packaging.", "Do not apply material waste to labor.", "Price breaks and freight change landed cost.", "Damage and returns can reverse apparent savings."]
+  },
+  "box-style-and-closure-glossary": {
+    overview: "Box style describes how a corrugated blank forms flaps, panels, and joints; closure describes how the formed pack is secured. Similar supplier names can represent different drawings or dimensions. The drawing, board specification, usable cavity, and approved closure must travel together in the pack specification.",
+    example: "A regular slotted carton with meeting major flaps can use a center-seam tape length based on carton length and overhang. An H-seal adds the two edge seams on top and bottom. A die-cut mailer may close through tabs and adhesive areas whose geometry cannot be represented by the same seam formula.",
+    differences: [["Major vs minor flaps", "Major flaps span the larger opening dimension; minor flaps close first in many styles."],["Manufacturer joint", "This forms the carton body and is not the same as the packer-applied top closure."],["Center seam", "Tape follows the meeting line of major flaps."],["H-seal", "Tape covers the center and two edge seams on both top and bottom."]],
+    use: ["Confirm style from a drawing or sample.", "Record internal and external dimension convention.", "Specify closure material, width, pattern, and overhang.", "Condition and inspect a production pack."],
+    cautions: ["Names vary among suppliers.", "Tape length does not prove adhesion.", "Board grade and compression require separate review.", "Modified styles need their own measured closure path."]
+  },
+  "void-fill-yield-factors": {
+    overview: "A yield factor links geometric empty space to an operational material quantity. It depends on material, paper weight or pillow size, equipment setting, crumpling method, compression, product geometry, and operator technique. A supplier figure can begin a trial but should not be treated as guaranteed production consumption.",
+    example: "An 880 in³ geometric void may not consume exactly 880 in³ of dispensed material. Paper packed firmly into narrow pockets can require a factor above 1.0, while structural inserts may remove part of the accessible void. A calibration batch records predicted void, actual sheets or dispense length, movement result, and revised factor.",
+    differences: [["Geometric void", "Simplified box volume minus simplified product volume."],["Fill factor", "User-set multiplier that adjusts geometric void for the operating method."],["Sheet yield", "Measured filled volume attributed to one paper sheet."],["Waste allowance", "Extra quantity for setup, damage, remnants, and normal loss; it is separate from filled-volume yield."]],
+    use: ["Define the material’s protection function.", "Pack a representative calibration batch.", "Measure actual issue quantity and outcome.", "Update calculator input and inventory rate after changes."],
+    cautions: ["Yield is not cushioning performance.", "Irregular inaccessible pockets distort geometry.", "Compression and recovery matter over time.", "Material or equipment changes require recalibration."]
+  },
+  "master-carton-terms": {
+    overview: "Master-carton planning connects a finished inner pack with case quantity, row-column-layer arrangement, internal carton size, tare, gross weight, and external cube. These terms should remain distinct because changing one can affect fit, handling, pallet count, and storage even when the saleable unit is unchanged.",
+    example: "Twelve 8 × 5 × 3 in inner packs arranged 3 × 2 × 2 require layout space plus specified gaps and outer clearance. The resulting internal dimensions are not the external carton dimensions. Gross weight adds twelve packed-unit weights to carton, divider, label, and closure tare.",
+    differences: [["Case pack", "Standard saleable units assigned to one sealed carton."],["Layout", "Columns, rows, and layers describing the intended physical arrangement."],["Tare", "All carton and packing weight without product."],["Cube", "Finished external length × width × height used for occupied-space planning."]],
+    use: ["Measure the finished inner pack.", "Choose and record an allowed layout.", "Calculate internal size and prototype the carton.", "Measure external dimensions and gross weight before pallet planning."],
+    cautions: ["Dimensions do not select board strength.", "Weight margin must cover variation.", "Mixed orientations need explicit design.", "A prototype is required before release."]
+  },
+  "pallet-and-unit-load-terms": {
+    overview: "A pallet pattern describes case placement on a supporting platform; a unit load is the complete restrained assembly moved through storage and transport. Footprint utilization, case count, layer count, height, weight, containment, and stability are related but not interchangeable measures.",
+    example: "Ten 16 × 12 in case footprints equal the 1,920 in² area of a 48 × 40 in pallet, producing 100% area utilization. That arithmetic does not prove ten rectangles can be arranged without overlap in the permitted orientation. A pattern drawing and physical load must confirm placement, support, and containment.",
+    differences: [["Cases per layer", "Whole case positions in one approved pattern."],["Layer count", "Vertical tiers, including a partial top layer when present."],["Footprint utilization", "Case area divided by pallet area; it is not a stability score."],["Containment", "Wrap, straps, caps, or other systems intended to keep the assembled load together."]],
+    use: ["Measure usable pallet and finished case dimensions.", "Draw and count the layer pattern.", "Check height, gross weight, and partial layers.", "Build and evaluate the restrained load through its handling route."],
+    cautions: ["Avoid unapproved overhang.", "Area does not prove geometry.", "Compression and center of gravity are outside simple calculators.", "Facility, equipment, customer, and regulatory limits must be confirmed."]
+  }
+};
+
 const basicPages = [
   {
     file: "about.html",
@@ -588,8 +1023,8 @@ function head({ file, title, description, type = "website", noindex = false, sch
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${canonical}">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-complete">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-complete">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-content">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260726-content">
   ${ga()}
   <script type="application/ld+json">${JSON.stringify(schema)}</script>
 </head>`;
@@ -621,7 +1056,7 @@ function footer() {
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-complete" defer></script>
+<script src="/assets/site.js?v=20260726-content" defer></script>
 </body>
 </html>`;
 }
@@ -741,6 +1176,25 @@ function suffix(type) {
   return labels[type] || "";
 }
 
+function fieldAdvice(tool, field) {
+  const [id, label, , type] = field;
+  const guidance = {
+    length: `Measure ${label.toLowerCase()} on the finished item or container surface named here; keep it in the selected unit and include normal production variation.`,
+    count: `Count ${label.toLowerCase()} in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.`,
+    ratio: `Set ${label.toLowerCase()} from a documented trial or approved method and retain the value with the calculation record.`,
+    percent: `Base ${label.toLowerCase()} on measured comparable work, state what the percentage covers, and review it when the process changes.`,
+    currency: `Enter ${label.toLowerCase()} on the same currency and per-order or per-unit basis used by the other cost inputs.`,
+    minutes: `Time ${label.toLowerCase()} across representative normal work and separate setup, exceptions, and breaks unless the definition includes them.`,
+    hours: `Use scheduled ${label.toLowerCase()} for the same shift boundary as the worker and utilization inputs.`,
+    seconds: `Observe several cycles for ${label.toLowerCase()}, then use a representative pace rather than the single fastest cycle.`,
+    weight: `Weigh ${label.toLowerCase()} on a suitable scale and use the same weight unit for every weight field.`,
+    "currency-hour": `Use the documented loaded or direct ${label.toLowerCase()} consistently; the calculator does not decide which accounting basis applies.`,
+    divisor: `Obtain ${label.toLowerCase()} from the current official service, marketplace, or account method and match its unit system.`
+  };
+  const advice = guidance[type] || `Enter ${label.toLowerCase()} from the current pack specification or measured operating record.`;
+  return `${tool.title}: ${advice}`;
+}
+
 function calculatorPage(tool) {
   const file = `tools/${tool.slug}.html`;
   const title = tool.title;
@@ -761,6 +1215,11 @@ function calculatorPage(tool) {
     const match = tools.find((item) => item.slug === slug);
     return `<li><a href="/tools/${slug}.html">${match.title}</a></li>`;
   }).join("");
+  const content = toolContent[tool.slug];
+  if (!content) throw new Error(`Missing content profile for ${tool.slug}`);
+  const inputRows = tool.fields.map((field) => `<tr><th>${field[1]}</th><td>${fieldAdvice(tool, field)}</td></tr>`).join("");
+  const calculationFlow = `<ol class="procedure-list"><li><strong>Validate the ${tool.title} manifest:</strong> confirm that ${tool.fields.slice(0, 3).map((field) => field[1].toLowerCase()).join(", ")} describe the same ${tool.title} pack, batch, or planning period.</li><li><strong>Calculate ${toolOperations[tool.slug].output.toLowerCase()}:</strong> apply <span class="inline-formula">${tool.formula}</span> without rounding intermediate values for ${tool.title}.</li><li><strong>Review the ${toolOperations[tool.slug].output.toLowerCase()} breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this ${tool.title} result.</li></ol>`;
+  const workflowLinks = content.workflow.map((item) => `<li>${item}</li>`).join("");
   return `${head({ file, title, description: tool.description, schema })}${header("Tools")}
 <main id="main">
   <header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: title }])}<p class="dispatch-meta"><span>${toolOperations[tool.slug].category}</span><span>Calculation utility</span></p><h1>${title}</h1><p class="lede">${tool.description}</p></div></header>
@@ -771,16 +1230,19 @@ function calculatorPage(tool) {
     <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
   <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
-    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#method">Method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#limits">Assumptions and limitations</a></li></ul></nav>
-    <h2 id="method">Calculation method</h2><p>This calculator uses the following planning method:</p><div class="formula">${tool.formula}</div>
-    <h2 id="example">Worked example</h2><p>${tool.example}</p>
-    <h2 id="interpretation">How to interpret the result</h2><p>${tool.interpretation}</p>
-    <h2 id="limits">Assumptions and limitations</h2><p>${tool.assumptions}</p>
-    <div class="caution"><strong>Estimate only.</strong> Verify the packed result with actual materials and the current requirements of your supplier, marketplace, or carrier.</div>
-    <ul class="related-register">${related}<li><a href="${tool.doc}">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>${content.solves}</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>${content.inputs}</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody>${inputRows}</tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">${tool.formula}</div>${calculationFlow}
+    <h2 id="example">Worked example</h2><div class="example-block"><p>${tool.example}</p><p><strong>Next action:</strong> ${content.workflow[1]}</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>${content.decision}</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list">${content.mistakes.map((mistake) => `<li>${mistake}</li>`).join("")}</ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>${content.limits}</p>
+    <div class="caution"><strong>${tool.title} estimate only:</strong> verify the ${tool.title} ${toolOperations[tool.slug].output.toLowerCase()} with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list">${workflowLinks}</ol><ul class="related-register">${related}<li><a href="${tool.doc}">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: ${REVIEWED}</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-complete" defer></script>${footer()}`;
+</main><script src="/assets/calculators.js?v=20260726-content" defer></script>${footer()}`;
 }
 
 function indexPage(kind, items) {
@@ -827,9 +1289,13 @@ function articlePage(item, kind) {
       ] }
     ]
   };
+  const guideDetail = kind === "Guides" ? guideDepth[item.slug] : null;
+  if (kind === "Guides" && !guideDetail) throw new Error(`Missing guide depth for ${item.slug}`);
+  const referenceDetail = kind === "Reference" ? referenceDepth[item.slug] : null;
+  if (kind === "Reference" && !referenceDetail) throw new Error(`Missing reference depth for ${item.slug}`);
   const body = kind === "Guides"
-    ? `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul>${item.sections.map(([heading], index) => `<li><a href="#section-${index + 1}">${heading}</a></li>`).join("")}<li><a href="#checklist">Checklist</a></li></ul></nav>${item.sections.map(([heading, text], index) => `<h2 id="section-${index + 1}">${heading}</h2><p>${text}</p>`).join("")}<h2 id="checklist">Dispatch checklist</h2><ul>${item.checklist.map((x) => `<li>${x}</li>`).join("")}</ul><div class="caution"><strong>Planning note.</strong> Packaging performance depends on the product, materials, handling environment, and current shipping requirements. Test the finished pack.</div>`
-    : `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#definitions">Definitions and operating notes</a></li><li><a href="#verification">Verification</a></li></ul></nav><h2 id="definitions">Definitions and operating notes</h2><dl class="reference-ledger">${item.rows.map(([term, text]) => `<div><dt>${term}</dt><dd>${text}</dd></div>`).join("")}</dl><div class="caution" id="verification"><strong>Reference note.</strong> Confirm current supplier and carrier specifications before using a term or value operationally.</div>`;
+    ? `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#prepare">Prepare the record</a></li>${item.sections.map(([heading], index) => `<li><a href="#section-${index + 1}">${heading}</a></li>`).join("")}<li><a href="#scenario">Working scenario</a></li><li><a href="#decisions">Decision guide</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#closeout">Close-out</a></li><li><a href="#evidence">Evidence and review</a></li><li><a href="#checklist">Checklist</a></li></ul></nav><h2 id="prepare">Prepare the operating record</h2><ol class="procedure-list">${guideDetail.prepare.map((step) => `<li>${step}</li>`).join("")}</ol>${item.sections.map(([heading, text], index) => `<h2 id="section-${index + 1}">${heading}</h2><p>${text}</p><p>In ${item.title}, document the ${heading.toLowerCase()} choice, its measured basis, and any exception that changes the standard procedure.</p>`).join("")}<h2 id="scenario">Working scenario</h2><div class="example-block"><p>${guideDetail.scenario}</p></div><h2 id="decisions">Decision guide</h2><table class="content-table"><thead><tr><th>Observation</th><th>Operational response</th></tr></thead><tbody>${guideDetail.decisions.map(([signal, action]) => `<tr><th>${signal}</th><td>${action}</td></tr>`).join("")}</tbody></table><h2 id="mistakes">Common mistakes</h2><ul class="check-list">${guideDetail.mistakes.map((mistake) => `<li>${mistake}</li>`).join("")}</ul><h2 id="closeout">Complete and verify the work</h2><p>Close ${item.title} only after its physical result, controlled instruction, and recorded measurements agree with the decision criteria above.</p><ul class="check-list">${guideDetail.closeout.map((check) => `<li>${check}</li>`).join("")}</ul><h2 id="evidence">Evidence, ownership, and review triggers</h2><p>The ${item.title} record should connect the initial requirement—${guideDetail.prepare[0].replace(/\.$/, "").toLowerCase()}—to the released evidence that ${guideDetail.closeout[0].replace(/\.$/, "").toLowerCase()}. Keep the ${item.title} inputs, sample identification, material or equipment revision, date, operator or reviewer role, and exception decision together so a later result can be compared on the same basis.</p><p>Reopen ${item.title} when ${guideDetail.mistakes[0].replace(/\.$/, "").toLowerCase()} is observed, when the product or packaging specification changes, or when damage, rework, time, or consumption moves outside the accepted range. The ${item.title} owner should compare the new condition with the working scenario, repeat the relevant physical check, and issue a revised instruction rather than silently changing an input.</p><p>For periodic review, sample normal work as well as known exceptions. Confirm that the response to “${guideDetail.decisions[0][0]}” still follows the recorded action: ${guideDetail.decisions[0][1]} Retain the ${item.title} evidence long enough to explain inventory settings, cost changes, and any customer or carrier inquiry tied to the pack method.</p><h2 id="checklist">Dispatch checklist</h2><ul>${item.checklist.map((x) => `<li>${x}</li>`).join("")}</ul><div class="caution"><strong>${item.title} planning note:</strong> validate the ${item.title} method with the actual product, materials, handling path, and current shipping requirements.</div>`
+    : `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#overview">Operational meaning</a></li><li><a href="#definitions">Definitions</a></li><li><a href="#example">Applied example</a></li><li><a href="#differences">Key distinctions</a></li><li><a href="#use">How to use this reference</a></li><li><a href="#maintenance">Record and maintenance</a></li><li><a href="#verification">Verification cautions</a></li></ul></nav><h2 id="overview">Operational meaning</h2><p>${referenceDetail.overview}</p><h2 id="definitions">Definitions and operating notes</h2><dl class="reference-ledger">${item.rows.map(([term, text]) => `<div><dt>${term}</dt><dd>${text}</dd></div>`).join("")}</dl><h2 id="example">Applied example</h2><div class="example-block"><p>${referenceDetail.example}</p></div><h2 id="differences">Key distinctions</h2><table class="content-table"><thead><tr><th>Term or question</th><th>Operational distinction</th></tr></thead><tbody>${referenceDetail.differences.map(([term, text]) => `<tr><th>${term}</th><td>${text}</td></tr>`).join("")}</tbody></table><h2 id="use">How to use this reference</h2><ol class="procedure-list">${referenceDetail.use.map((step) => `<li>${step}</li>`).join("")}</ol><h2 id="maintenance">Record structure and maintenance</h2><p>A working ${item.title} record should identify the source document or measurement, unit and scope, effective date, reviewer role, and the calculator or pack instruction that consumes the value. Start by ${referenceDetail.use[0].replace(/\.$/, "").toLowerCase()}, then preserve the unrounded or source value before any operational rounding or simplification.</p><p>Do not treat the glossary entry “${item.rows[0][0]}” as self-approving data. Link the ${item.title} entry to the applicable drawing, supplier specification, official method, measured sample, or controlled procedure. When ${referenceDetail.cautions[0].replace(/\.$/, "").toLowerCase()} becomes relevant, mark the old record superseded, update linked calculations, and recheck downstream fit, cost, inventory, or handling decisions.</p><p>The ${item.title} applied example shows the minimum audit trail: original inputs, intermediate relationship, displayed result, and the action it supports. A periodic ${item.title} review should also verify that the distinction between “${referenceDetail.differences[0][0]}” and its paired operating meaning remains clear to people entering data.</p><h2 id="verification">Verification cautions</h2><ul class="check-list">${referenceDetail.cautions.map((note) => `<li>${note}</li>`).join("")}</ul><div class="caution"><strong>${item.title} reference note:</strong> recheck every changing ${item.title} value in the current supplier, carrier, marketplace, facility, or regulatory source before operational use.</div>`;
   const related = kind === "Guides" ? item.related : item.slug.includes("dimensional") ? "/tools/dimensional-weight.html" : item.slug.includes("internal") ? "/tools/box-size.html" : "/tools.html";
   const crossDocument = kind === "Guides" ? (guideReferences[item.slug] || "/reference.html") : (referenceGuides[item.slug] || "/guides.html");
   return `${head({ file, title, description: item.description, type: "article", schema })}${header(kind)}
