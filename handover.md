@@ -23,7 +23,7 @@
 | 연락 이메일 | canghun13@naver.com |
 | 이미지 정책 | 원칙적으로 이미지 없이 구성 |
 | 수익화 | Google AdSense 우선 |
-| 기준일 | 2026-07-26 |
+| 기준일 | 2026-08-02 |
 
 ### 변경 금지
 
@@ -37,13 +37,13 @@
 
 ## 2. 현재 저장소 상태
 
-2026-07-26 Phase 1–3 1차 완성 기준:
+2026-08-02 품질·손상 관리 클러스터 확장 기준:
 
-- 실제 공개 HTML 62개
-- 기본 페이지 8개
-- 계산기 32개
-- Guides 12개
-- Reference 10개
+- 실제 공개 HTML 69개
+- 기본·허브 페이지 9개
+- 계산기 36개
+- Guides 13개
+- Reference 11개
 - 공통 스타일: `assets/styles.css`
 - 공통 UI 동작: `assets/site.js`
 - 계산 로직: `assets/calculators.js`
@@ -55,11 +55,11 @@
 
 ### 현재 상태 판정
 
-- Phase 1 Foundation·디자인 차별화와 Phase 2·3 기능/콘텐츠 확장 완료
-- GitHub `main`에 1차 완성 구현 push 완료
-- GitHub Pages / Cloudflare 실도메인에서 Homepage와 대표 계산기 응답 및 동작 확인 완료
+- Phase 1 Foundation·디자인 차별화와 Phase 2·3 기능/콘텐츠 확장 완료 후 Packaging Quality & Damage Control 소규모 클러스터 추가
+- GitHub `main` 배포 상태는 아래 최신 작업 기록을 우선 확인
+- GitHub Pages / Cloudflare 실도메인 상태는 아래 최신 작업 기록을 우선 확인
 - 모든 공개 HTML에 고유 SEO 메타데이터, Open Graph, favicon, GA4, 정적 JSON-LD 적용
-- 자동 QA, 계산기 32개·독립 검사 160개, 62페이지 × 5개 반응형 폭 브라우저 QA 통과
+- 자동 QA, 계산기 36개·독립 검사 181개, 69페이지 × 5개 반응형 폭 브라우저 QA 통과
 - HIGH 위험 0
 
 ---
@@ -619,3 +619,85 @@ git status
 ## 2026-07-30
 
 - 메인 페이지 푸터 아래의 디렉토리 뱃지 영역은 사용자가 직접 관리하는 영역이므로 수정·삭제·리팩터링하지 않는다.- https://twelve.tools, https://findly.tools/에 등록 (내가 직접함)
+
+## 2026-08-02 — Packaging Quality & Damage Control 클러스터 검토 및 구현
+
+### 결론
+
+- 구현 결정: 채택. 기존 32개 계산기와 핵심 계산 목적이 다른 반복 업무 도구 4개가 확인되었고, 무료·무계정·사용자 입력 기반으로 동일한 기록 경계를 유지하는 비교 도구라는 차별점이 있다.
+- 구현 범위: 클러스터 허브 1개, 계산기 4개, Guide 1개, Reference 1개로 총 7페이지.
+- 최종 수량: 공개 HTML 69개, 계산기 36개, Guides 13개, Reference 11개, sitemap 색인 URL 68개(404 제외).
+- 안전 경계: 모든 결과는 관찰·기록·비교용 계획 자료다. AQL 합격/불합격, ISTA 인증·통과, 손상 방지 보증, 운송사 책임, 계약상 판정을 제공하지 않는다.
+
+### 수요 및 검색 결과 검토
+
+정확한 검색량 도구에는 접근하지 못했으므로 검색량 수치를 만들지 않았다. 다음 대표 검색어의 검색 결과 구성, 도구형 결과, 공식 절차, 현업 질문을 확인했다.
+
+- `shipping damage rate calculator ecommerce packaging`
+- `shipping damage rate formula calculator`
+- `packaging failure cost calculator damaged shipments cost`
+- `packaging trial comparison tool packaging test comparison cost damage rate`
+- `pack out inspection checklist generator packaging quality`
+- `package weight variance calculator shipping dimensions variance`
+- `parcel weight dimension discrepancy checker shipping audit tool`
+- `package testing software trial data packaging comparison SaaS`
+
+확인된 반복 의도는 손상 건수의 기간별 비율화, 손상 1건의 직접 비용 범위 기록, 두 포장 시험안의 공통 기준 비교, 저장된 manifest와 재측정값의 차이 확인이었다. 검색 결과에는 계산기·템플릿·전문 시험 절차·기업용 감사 SaaS가 모두 존재해 실제 문제 상황은 확인되었지만, 네 가지 기록을 한 사이트에서 무료·무계정으로 연결하는 중립적 소형 도구 묶음은 드물었다.
+
+### 확인한 주요 경쟁 도구·SaaS·전문 문서
+
+- Smithers Package Testing Calculator — 포장비와 손상률로 시험 투자 효과를 설명하는 시험기관 계산기. https://www.smithers.com/en-gb/industries/packaging/manufacturers-and-users/distribution-testing/package-testing-calculator
+- Boxes Etc Bottle Damage Calculator — 특정 포장 제품 제안과 결합된 손상 비용 계산기이며 자체 목표값을 사용한다. https://boxes-etc.co.uk/damage-calculator
+- ISTA Test Procedures / PackSight — 공식 시험 절차와 시험 계획·보고 SaaS 범위. 7-Series는 둘 이상의 설계 상대 성능 비교를 다루지만 보호 적합성 판정 자체를 목적으로 하지 않는다는 경계가 있다. https://ista.org/test_procedures.php
+- ISTA Getting Started with Design — 대표 미사용 시료, 손상 허용 정의, 복수 시험 비교, 일탈 기록, 현장 모니터링과 변경 시 재시험 절차를 확인했다. https://ista.org/getting_started_with_design.php#row-2
+- FedEx Packaging Lab — 공식 시험 신청·절차를 제공하며 PASS도 손상·손실 방지 보증이 아니라는 경계를 확인했다. https://www.fedex.com/en-us/shipping/packaging/testing/application-instructions.html
+- SafetyCulture Packaging Quality Control Checklist — 편집 가능한 검사 템플릿과 결함 분류 중심. https://safetyculture.com/library/transport-and-logistics/packaging-quality-control-checklist
+- Jotform Packaging Line Quality Inspection Checklist — 폼 템플릿 중심. https://www.jotform.com/form-templates/packaging-line-quality-inspection-checklist-form
+- GoAudits AI Checklist Generator — 범용 체크리스트 생성·감사 앱 범위. https://goaudits.com/ai-checklist-generator/
+- DIMS-it — 중량·치수·바코드 캡처와 감사 추적을 제공하는 하드웨어·클라우드 제품. https://www.dims-it.com/
+- LateShipment OneAudit — 운송사 청구 불일치, 감사와 환급을 다루는 기업용 SaaS. https://www.lateshipment.com/platform/oneaudit/
+
+### 기존 페이지 중복 검토와 후보별 결정
+
+- Shipping Damage Rate Calculator — 채택. 기존 계산기에는 정의된 배송 모집단의 손상 건수·비율·빈도를 계산하는 도구가 없었다.
+- Packaging Failure Cost Calculator — 채택. 기존 Packaging Cost per Order는 정상 계획 원가이며, 이 도구는 기록된 실패 건수의 교체·재배송·반송·처리·지원 직접 비용을 계산하므로 목적과 입력 경계가 다르다.
+- Packaging Trial Comparison Tool — 수정 채택. 두 시험안을 손상 건수/검사 수량, 재료비, 작업 시간, 인건비, 완성 중량으로 비교한다. 임의 종합 점수·승자·통계적 유의성·인증 판정은 넣지 않았다.
+- Package Weight & Dimension Variance Checker — 수정 채택. 기존 DIM Weight·Box Size와 달리 저장 기록과 동일 상태의 재측정값 차이를 축별로 보여준다. 운송사 기본 허용오차는 제공하지 않고 사용자가 통제 문서의 허용오차를 입력한다.
+- Pack-Out Inspection Checklist Generator — 기각. SafetyCulture, Jotform, GoAudits 등 무료 템플릿·생성기 경쟁이 강하고, 현재 범위에서 차별화하려면 검사 정책·저장·승인 워크플로가 필요해 정적 무계정 도구의 안전한 범위를 넘어간다. 페이지 수를 맞추기 위해 추가하지 않았다.
+- 클러스터 허브 — 채택. 측정 → 보호 → 봉합 → 비용 → 카톤·팔레트 이후의 관찰 → 비용화 → 시험 비교 → 현장 재측정 흐름으로 연결했다.
+- Guide / Reference — 각 1개 채택. 시험 계획과 손상 검토 절차, 관찰률·직접 비용·percentage point·variance·tolerance의 정의와 증거 경계를 분리했다.
+
+### 구현 및 연결 범위
+
+- 신규 페이지: `/quality.html`, `/tools/shipping-damage-rate.html`, `/tools/packaging-failure-cost.html`, `/tools/packaging-trial-comparison.html`, `/tools/package-weight-dimension-variance.html`, `/guides/packaging-trial-and-damage-review.html`, `/reference/packaging-quality-metrics.html`.
+- `scripts/generate-site.js`의 도구·문서 원장과 생성 결과, Tools·Guides·Reference 목록, breadcrumb, 관련 페이지, sitemap, llms를 함께 갱신했다.
+- 신규 도구는 모든 값과 허용오차를 사용자가 직접 입력한다. 빈 값, 0/음수, 분모 0, 손상 건수 초과, 빈 비교안, 과도한 값과 잘못된 기준값을 거부한다.
+- 홈페이지에는 추가 홍보 블록을 만들지 않고 실제 도구·문서 수만 갱신했다.
+- KittyLaunch, sellwithboost, twelve.tools, findly.tools 배지 HTML·링크의 diff는 0이며 기존 footer 다음 위치를 데스크톱과 모바일에서 확인했다.
+- 구현 파일 변경: 75개. 이 handover 갱신을 포함한 전체 변경 파일: 76개.
+
+### QA 결과
+
+- 생성 및 자동 QA: PASS — 공개 HTML 69개, sitemap URL 68개, JavaScript 5개, title/description/canonical/H1/GA4/JSON-LD, 중복 ID, 내부 링크, orphan page, robots/sitemap/llms, 404 noindex 일치.
+- 콘텐츠 QA: PASS — 계산기 36개, Guides 13개, Reference 11개, 긴 문단·문장 중복 0.
+- 계산 검증: PASS — 계산기 36개, 독립 검사 181개. 신규 정상·경계·오류·결정성 사례 21개 포함.
+- 브라우저 렌더 QA: PASS — 공개 HTML 69개 × 1440/1280/1024/768/390 = 345회. 가로 넘침, 잘린 조작 요소, H1/Header/Footer 누락, NaN/Infinity, 과도한 빈 본문 실패 0. 최종 생성 후 신규 7페이지 × 5개 폭 35회 재확인.
+- 계산기 UI QA: PASS — 기존 32개와 신규 4개 모두 Calculate·Reset·오류 표시 통과. 신규 기준 결과는 1.12% observed damage rate, $867.60, Trial B 1.67 pp lower, Within entered tolerances.
+- 모바일 QA: PASS — 36개 계산기의 입력 suffix, 모바일 메뉴 열림, 표·폼 변환, 가로 넘침 0.
+- 콘솔 오류: 0.
+- `git diff --check`: PASS.
+
+### Git 및 배포
+
+- 구현 커밋: `822989015e6e600fed11ba2010997e75e5a98b68` — Add packaging quality and damage control tools
+- handover 커밋과 push·GitHub Pages·실도메인 확인 결과는 이 섹션의 후속 기록에서 갱신한다.
+
+### 남은 위험과 운영 관찰
+
+- HIGH: 없음.
+- MEDIUM: 정확한 검색량 자료 없이 검색 결과 구성과 실무 의도로 수요를 판단했다. 배포 후 GA4의 도구 진입·계산 실행 분포와 Search Console 노출/검색어로 실제 수요를 재평가해야 한다.
+- MEDIUM: 관찰률과 비교 결과는 사용자 데이터의 모집단 정의, 신고 지연, 표본 크기, 원인 분류, 측정 장비와 단위 일관성에 민감하다. 계산기는 통계적 유의성이나 원인을 판정하지 않는다.
+- LOW: 조직별 비용 경계와 허용오차가 다르므로 운영 문서의 최신 값으로 입력해야 한다. 운송사·시험기관·계약 규칙은 해당 공식 출처에서 별도 확인한다.
+- 추후 확인 데이터: 신규 4개 도구별 진입·계산 실행, 빈 입력·오류 패턴, trial sample size 분포, damage definition 일관성, 재측정 tolerance 사용 범위, 관련 Guide/Reference 이동률.
+- 다음 권장 작업: 최소 30일 운영 데이터를 수집한 뒤 클러스터 유지·보강·축소를 판단한다. 체크리스트 생성기는 저장·승인 워크플로 없이 재검토하지 않는다.
+- 다음 권장 모델: Sol / 추론 강도 중간.
