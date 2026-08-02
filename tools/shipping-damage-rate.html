@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shipping Damage Rate Calculator | Pack Prep Tools</title>
+  <meta name="description" content="Calculate an observed shipping damage rate, unaffected shipment count, and incident frequency from your own records.">
+  
+  <link rel="canonical" href="https://packpreptools.com/tools/shipping-damage-rate.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pack Prep Tools">
+  <meta property="og:title" content="Shipping Damage Rate Calculator">
+  <meta property="og:description" content="Calculate an observed shipping damage rate, unaffected shipment count, and incident frequency from your own records.">
+  <meta property="og:url" content="https://packpreptools.com/tools/shipping-damage-rate.html">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260802-quality">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260802-quality">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XR7JWJ36CD');
+  </script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Shipping Damage Rate Calculator","applicationCategory":"BusinessApplication","operatingSystem":"Any","url":"https://packpreptools.com/tools/shipping-damage-rate.html","description":"Calculate an observed shipping damage rate, unaffected shipment count, and incident frequency from your own records.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://packpreptools.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://packpreptools.com/tools.html"},{"@type":"ListItem","position":3,"name":"Shipping Damage Rate Calculator","item":"https://packpreptools.com/tools/shipping-damage-rate.html"}]}]}</script>
+</head><body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="header-status"><div class="header-shell"><span>Shipping operations utilities</span><span class="system-state">Calculators online</span></div></div>
+  <div class="header-shell header-main">
+    <a class="brand" href="/" aria-label="Pack Prep Tools home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-button>Menu</button>
+    <nav class="site-nav" id="site-nav" aria-label="Primary" data-site-nav>
+      <a href="/">Home</a><a href="/tools.html" aria-current="page">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <header class="page-banner"><div class="page-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/tools.html">Tools</a> <span aria-hidden="true">/</span> <span>Shipping Damage Rate Calculator</span></nav><p class="dispatch-meta"><span>Quality and damage control</span><span>Calculation utility</span></p><h1>Shipping Damage Rate Calculator</h1><p class="lede">Calculate an observed shipping damage rate, unaffected shipment count, and incident frequency from your own records.</p></div></header>
+  <section class="calculator-console"><div class="page-shell">
+    <div class="manifest-panel"><div class="manifest-header"><span>Shipment input manifest</span><span>Required fields / visible units</span></div>
+      <form class="calculator-form" data-calculator="shipping-damage-rate" novalidate><div class="manifest-grid"><div class="field"><label for="shipments">Shipments reviewed</label><div class="input-shell"><input id="shipments" name="shipments" type="number" inputmode="decimal" min="0" step="any" value="" required aria-describedby="shipments-unit"><span class="suffix" id="shipments-unit">count</span></div></div><div class="field"><label for="damaged">Shipments with observed damage</label><div class="input-shell"><input id="damaged" name="damaged" type="number" inputmode="decimal" min="0" step="any" value="" required aria-describedby="damaged-unit"><span class="suffix" id="damaged-unit">count</span></div></div></div><div class="form-actions"><button class="button button-primary" type="submit">Calculate</button><button class="button button-quiet" type="reset">Reset</button></div><p class="form-error" data-error role="alert" aria-live="polite"></p></form>
+    </div>
+    <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
+  </div></section>
+  <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use Shipping Damage Rate after a defined review period to convert a shipment count and a consistently classified damage count into an observed operational rate. It differs from Packaging Failure Cost, which values direct consequences, and from Packaging Trial Comparison, which compares two controlled variants on multiple criteria.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Choose one population boundary—for example delivered parcels for one SKU family and one month—and apply the same rule to the numerator and denominator. Count each shipment once even if it contains several damaged units, unless the written metric explicitly uses units instead. Enter zero damage only when the complete reviewed sample has no recorded incident.</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Shipments reviewed</th><td>Shipping Damage Rate Calculator: Count shipments reviewed in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr><tr><th>Shipments with observed damage</th><td>Shipping Damage Rate Calculator: Count shipments with observed damage in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Observed damage rate = damaged shipments ÷ shipments reviewed × 100</div><ol class="procedure-list"><li><strong>Validate the Shipping Damage Rate Calculator manifest:</strong> confirm that shipments reviewed, shipments with observed damage describe the same Shipping Damage Rate Calculator pack, batch, or planning period.</li><li><strong>Calculate observed damage rate:</strong> apply <span class="inline-formula">Observed damage rate = damaged shipments ÷ shipments reviewed × 100</span> without rounding intermediate values for Shipping Damage Rate Calculator.</li><li><strong>Review the observed damage rate breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Shipping Damage Rate Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>In a documented 30-day review, 14 of 1,250 delivered shipments had product or package damage under the team’s written definition. The observed rate is 1.12%, with 1,236 shipments not recorded as damaged and one observed incident per 89.3 reviewed shipments.</p><p><strong>Next action:</strong> After: review direct failure cost and compare any packaging change through a documented trial and ongoing field monitoring.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>Trend the rate only across periods with the same damage definition, delivery-status boundary, and data completeness. A lower rate is favorable evidence, but a small sample or reporting delay can move it sharply. Investigate by SKU, pack method, fulfillment location, or handling path before attributing a change to packaging alone.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Mixing damaged units with total shipments.</li><li>Counting replacements while omitting the original damaged shipment population.</li><li>Changing the damage definition between periods.</li><li>Treating an observed rate as a guarantee of future shipment performance.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The calculation is descriptive and does not adjust for claim lag, unreported damage, returns unrelated to packaging, carrier mix, product mix, exposure severity, or statistical uncertainty. It does not diagnose cause or establish an acceptable industry rate.</p>
+    <div class="caution"><strong>Shipping Damage Rate Calculator estimate only:</strong> verify the Shipping Damage Rate Calculator observed damage rate with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: define the population, observation window, and damage rule.</li><li>After: review direct failure cost and compare any packaging change through a documented trial and ongoing field monitoring.</li></ol><ul class="related-register"><li><a href="/tools/packaging-failure-cost.html">Packaging Failure Cost Calculator</a></li><li><a href="/tools/packaging-trial-comparison.html">Packaging Trial Comparison Tool</a></li><li><a href="/reference/packaging-quality-metrics.html">Related guide or reference</a></li><li><a href="/quality.html">Quality &amp; damage control cluster</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <p class="meta-line">Last reviewed: August 2, 2026</p>
+  </article></div></section>
+</main><script src="/assets/calculators.js?v=20260802-quality" defer></script><footer class="site-footer">
+  <div class="footer-shell footer-main">
+    <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="/tools.html">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a>
+    </nav>
+  </div>
+  <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
+</footer>
+
+<script src="/assets/site.js?v=20260802-quality" defer></script>
+</body>
+</html>

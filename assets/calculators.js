@@ -472,6 +472,121 @@
     return { primary: `${round(rate,1)}% footprint utilization`, values: { "Used footprint": `${round(caseL*caseW*cases,2)} ${input.unit || "in"}²`, "Pallet footprint": `${round(palletL*palletW,2)} ${input.unit || "in"}²`, "Unused footprint": `${round(palletL*palletW-caseL*caseW*cases,2)} ${input.unit || "in"}²` } };
   }
 
+  function whole(value, label, options) {
+    const number = positive(value, label, options);
+    if (!Number.isInteger(number)) throw new Error(`${label} must be a whole number.`);
+    return number;
+  }
+
+  function signed(value, places) {
+    const rounded = round(value, places == null ? 2 : places);
+    if (rounded > 0) return `+${rounded}`;
+    if (rounded < 0) return `−${Math.abs(rounded)}`;
+    return "0";
+  }
+
+  function signedMoney(value, currency) {
+    const rounded = round(value, 2);
+    const sign = rounded > 0 ? "+" : rounded < 0 ? "−" : "";
+    return `${sign}${currency || "$"}${Math.abs(rounded).toFixed(2)}`;
+  }
+
+  function shippingDamageRate(input) {
+    const shipments = whole(input.shipments, "Shipments reviewed", { max: 1000000000 });
+    const damaged = whole(input.damaged, "Damaged shipments", { allowZero: true, max: 1000000000 });
+    if (damaged > shipments) throw new Error("Damaged shipments cannot exceed shipments reviewed.");
+    const rate = damaged / shipments * 100;
+    return {
+      primary: `${round(rate, 2)}% observed damage rate`,
+      values: {
+        "Damaged shipments": `${damaged}`,
+        "Shipments without recorded damage": `${shipments - damaged}`,
+        "Observed incident frequency": damaged === 0 ? "No observed damage in this sample" : `1 per ${round(shipments / damaged, 1)} shipments`
+      }
+    };
+  }
+
+  function packagingFailureCost(input) {
+    const currency = input.currency || "$";
+    const shipments = whole(input.shipments, "Shipments reviewed", { max: 1000000000 });
+    const failures = whole(input.failures, "Packaging-related failures", { allowZero: true, max: 1000000000 });
+    if (failures > shipments) throw new Error("Packaging-related failures cannot exceed shipments reviewed.");
+    const replacement = positive(input.replacement, "Replacement product cost", { allowZero: true, max: 100000000 });
+    const reship = positive(input.reship, "Outbound reshipment", { allowZero: true, max: 100000000 });
+    const returnShipping = positive(input.returnShipping, "Return shipping", { allowZero: true, max: 100000000 });
+    const handlingMinutes = positive(input.handlingMinutes, "Warehouse handling minutes", { allowZero: true, max: 100000 });
+    const supportMinutes = positive(input.supportMinutes, "Customer support minutes", { allowZero: true, max: 100000 });
+    const hourly = positive(input.hourly, "Loaded labor rate", { allowZero: true, max: 1000000 });
+    const other = positive(input.other, "Other direct cost", { allowZero: true, max: 100000000 });
+    const labor = (handlingMinutes + supportMinutes) / 60 * hourly;
+    const perFailure = replacement + reship + returnShipping + labor + other;
+    const total = failures * perFailure;
+    return {
+      primary: money(total, currency),
+      values: {
+        "Observed failure rate": `${round(failures / shipments * 100, 2)}%`,
+        "Direct cost per failure": money(perFailure, currency),
+        "Direct cost per reviewed shipment": money(total / shipments, currency),
+        "Labor cost per failure": money(labor, currency)
+      }
+    };
+  }
+
+  function packagingTrialComparison(input) {
+    const currency = input.currency || "$";
+    const inspectedA = whole(input.inspectedA, "Trial A packages inspected", { max: 100000000 });
+    const damagedA = whole(input.damagedA, "Trial A damaged packages", { allowZero: true, max: 100000000 });
+    const inspectedB = whole(input.inspectedB, "Trial B packages inspected", { max: 100000000 });
+    const damagedB = whole(input.damagedB, "Trial B damaged packages", { allowZero: true, max: 100000000 });
+    if (damagedA > inspectedA || damagedB > inspectedB) throw new Error("Damaged packages cannot exceed inspected packages for either trial.");
+    const materialA = positive(input.materialCostA, "Trial A material cost", { allowZero: true, max: 1000000 });
+    const materialB = positive(input.materialCostB, "Trial B material cost", { allowZero: true, max: 1000000 });
+    const minutesA = positive(input.minutesA, "Trial A packing time", { allowZero: true, max: 100000 });
+    const minutesB = positive(input.minutesB, "Trial B packing time", { allowZero: true, max: 100000 });
+    const weightA = positive(input.weightA, "Trial A package weight", { max: 1000000 });
+    const weightB = positive(input.weightB, "Trial B package weight", { max: 1000000 });
+    const hourly = positive(input.hourly, "Loaded labor rate", { allowZero: true, max: 1000000 });
+    const rateA = damagedA / inspectedA * 100;
+    const rateB = damagedB / inspectedB * 100;
+    const pointDifference = rateB - rateA;
+    const costA = materialA + minutesA / 60 * hourly;
+    const costB = materialB + minutesB / 60 * hourly;
+    let primary = "Same observed damage rate";
+    if (Math.abs(pointDifference) >= 0.005) primary = `${pointDifference < 0 ? "Trial B" : "Trial A"}: ${round(Math.abs(pointDifference), 2)} pp lower observed damage`;
+    return {
+      primary,
+      values: {
+        "Trial A observed damage": `${round(rateA, 2)}% (${damagedA}/${inspectedA})`,
+        "Trial B observed damage": `${round(rateB, 2)}% (${damagedB}/${inspectedB})`,
+        "Pack cost difference (B − A)": signedMoney(costB - costA, currency),
+        "Packing time difference (B − A)": `${signed(minutesB - minutesA, 2)} min`,
+        "Package weight difference (B − A)": `${signed(weightB - weightA, 3)} entered units`
+      }
+    };
+  }
+
+  function packageWeightDimensionVariance(input) {
+    const recorded = ["recordedLength", "recordedWidth", "recordedHeight", "recordedWeight"].map((key) => positive(input[key], key.replace(/([A-Z])/g, " $1"), { max: 100000000 }));
+    const observed = ["observedLength", "observedWidth", "observedHeight", "observedWeight"].map((key) => positive(input[key], key.replace(/([A-Z])/g, " $1"), { max: 100000000 }));
+    const dimensionTolerance = positive(input.dimensionTolerance, "Dimension tolerance", { allowZero: true, max: 1000 });
+    const weightTolerance = positive(input.weightTolerance, "Weight tolerance", { allowZero: true, max: 1000 });
+    const differences = observed.map((value, index) => value - recorded[index]);
+    const percentages = differences.map((value, index) => value / recorded[index] * 100);
+    const maxDimensionVariance = Math.max(...percentages.slice(0, 3).map(Math.abs));
+    const weightVariance = percentages[3];
+    const within = maxDimensionVariance <= dimensionTolerance + 1e-9 && Math.abs(weightVariance) <= weightTolerance + 1e-9;
+    return {
+      primary: within ? "Within entered tolerances" : "Review measurement variance",
+      values: {
+        "Dimension differences (L / W / H)": differences.slice(0, 3).map((value) => signed(value, 3)).join(" / ") + " entered units",
+        "Largest dimension variance": `${round(maxDimensionVariance, 2)}%`,
+        "Weight difference": `${signed(differences[3], 3)} entered units`,
+        "Weight variance": `${signed(weightVariance, 2)}%`,
+        "Tolerance comparison": within ? "No entered tolerance exceeded" : "At least one entered tolerance exceeded"
+      }
+    };
+  }
+
   return {
     constants: { IN_TO_CM, LB_TO_KG, CUIN_TO_L },
     helpers: { positive, round, lengthToIn, lengthFromIn, areaFromSqIn, volumeFromCuIn },
@@ -507,7 +622,11 @@
       "cases-per-pallet": casesPerPallet,
       "pallet-layer-count": palletLayerCount,
       "pallet-height": palletHeight,
-      "pallet-utilization": palletUtilization
+      "pallet-utilization": palletUtilization,
+      "shipping-damage-rate": shippingDamageRate,
+      "packaging-failure-cost": packagingFailureCost,
+      "packaging-trial-comparison": packagingTrialComparison,
+      "package-weight-dimension-variance": packageWeightDimensionVariance
     }
   };
 });

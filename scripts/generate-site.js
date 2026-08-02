@@ -253,6 +253,111 @@ const phaseTools = [
 }));
 tools.push(...phaseTools);
 
+const qualityTools = [
+  {
+    slug: "shipping-damage-rate",
+    title: "Shipping Damage Rate Calculator",
+    reviewed: "August 2, 2026",
+    short: "Calculate an observed shipment damage rate from a defined review period.",
+    description: "Calculate an observed shipping damage rate, unaffected shipment count, and incident frequency from your own records.",
+    unit: false,
+    currency: false,
+    fields: [
+      ["shipments", "Shipments reviewed", "", "count"],
+      ["damaged", "Shipments with observed damage", "", "count"]
+    ],
+    formula: "Observed damage rate = damaged shipments ÷ shipments reviewed × 100",
+    example: "In a documented 30-day review, 14 of 1,250 delivered shipments had product or package damage under the team’s written definition. The observed rate is 1.12%, with 1,236 shipments not recorded as damaged and one observed incident per 89.3 reviewed shipments.",
+    interpretation: "Compare like-for-like review periods and preserve the damage definition used for each count.",
+    assumptions: "The result describes the entered sample only and is not a prediction, warranty, or certification.",
+    related: ["packaging-failure-cost", "packaging-trial-comparison"],
+    doc: "/reference/packaging-quality-metrics.html"
+  },
+  {
+    slug: "packaging-failure-cost",
+    title: "Packaging Failure Cost Calculator",
+    reviewed: "August 2, 2026",
+    short: "Estimate the recorded direct cost of packaging-related shipment failures.",
+    description: "Estimate direct packaging failure cost from incidents, replacement, reshipment, handling, support labor, and other entered costs.",
+    unit: false,
+    currency: true,
+    fields: [
+      ["shipments", "Shipments reviewed", "", "count"],
+      ["failures", "Packaging-related failures", "", "count"],
+      ["replacement", "Replacement product per failure", "", "currency"],
+      ["reship", "Outbound reshipment per failure", "", "currency"],
+      ["returnShipping", "Return shipping per failure", "", "currency"],
+      ["handlingMinutes", "Warehouse handling per failure", "", "minutes"],
+      ["supportMinutes", "Customer support per failure", "", "minutes"],
+      ["hourly", "Loaded labor rate", "", "currency-hour"],
+      ["other", "Other direct cost per failure", "", "currency"]
+    ],
+    formula: "Total failure cost = failures × [replacement + reshipment + return shipping + labor + other direct cost]",
+    example: "For 18 packaging-related failures among 2,000 shipments, enter $24 replacement product, $11 outbound reshipment, $6 return shipping, 12 combined labor minutes at $21 per hour, and $3 other direct cost per failure. Direct cost is $48.20 per failure and $867.60 for the review period.",
+    interpretation: "Use the breakdown to identify which recorded cost component changes after a packaging correction.",
+    assumptions: "Only entered direct costs are included; lost demand, reputation, claim recovery, and unmeasured overhead remain outside the result.",
+    related: ["shipping-damage-rate", "packaging-cost"],
+    doc: "/guides/packaging-trial-and-damage-review.html"
+  },
+  {
+    slug: "packaging-trial-comparison",
+    title: "Packaging Trial Comparison Tool",
+    reviewed: "August 2, 2026",
+    short: "Compare two pack trials on observed damage, cost, time, and weight.",
+    description: "Compare two packaging trial variants on the same observed damage, material cost, packing time, and package-weight criteria.",
+    unit: false,
+    currency: true,
+    fields: [
+      ["inspectedA", "Trial A packages inspected", "", "count"],
+      ["damagedA", "Trial A damaged packages", "", "count"],
+      ["materialCostA", "Trial A material cost per pack", "", "currency"],
+      ["minutesA", "Trial A packing time per pack", "", "minutes"],
+      ["weightA", "Trial A finished package weight", "", "weight-any"],
+      ["inspectedB", "Trial B packages inspected", "", "count"],
+      ["damagedB", "Trial B damaged packages", "", "count"],
+      ["materialCostB", "Trial B material cost per pack", "", "currency"],
+      ["minutesB", "Trial B packing time per pack", "", "minutes"],
+      ["weightB", "Trial B finished package weight", "", "weight-any"],
+      ["hourly", "Loaded labor rate", "", "currency-hour"]
+    ],
+    formula: "Compare observed damage rate and pack cost, where pack cost = material cost + packing minutes ÷ 60 × labor rate",
+    example: "Trial A records 3 damaged packages in 120 inspections, $1.40 materials, 4.2 minutes, and 2.8 weight units. Trial B records 1 in 120, $1.62 materials, 3.8 minutes, and 2.7 units. At $21 per labor hour, B has a 1.67 percentage-point lower observed damage rate and a lower combined pack cost despite higher materials.",
+    interpretation: "Review every difference together; the tool does not assign an arbitrary score or declare a winning design.",
+    assumptions: "The comparison is descriptive, not a significance test, laboratory result, ISTA determination, or guarantee of field performance.",
+    related: ["shipping-damage-rate", "packaging-failure-cost"],
+    doc: "/guides/packaging-trial-and-damage-review.html"
+  },
+  {
+    slug: "package-weight-dimension-variance",
+    title: "Package Weight & Dimension Variance Checker",
+    reviewed: "August 2, 2026",
+    short: "Compare recorded and observed package measurements against user-set tolerances.",
+    description: "Compare recorded and observed package dimensions and weight using absolute, percentage, and user-entered tolerance differences.",
+    unit: false,
+    currency: false,
+    fields: [
+      ["recordedLength", "Recorded length", "", "generic-unit"],
+      ["recordedWidth", "Recorded width", "", "generic-unit"],
+      ["recordedHeight", "Recorded height", "", "generic-unit"],
+      ["recordedWeight", "Recorded weight", "", "generic-unit"],
+      ["observedLength", "Observed length", "", "generic-unit"],
+      ["observedWidth", "Observed width", "", "generic-unit"],
+      ["observedHeight", "Observed height", "", "generic-unit"],
+      ["observedWeight", "Observed weight", "", "generic-unit"],
+      ["dimensionTolerance", "Dimension tolerance", "", "percent"],
+      ["weightTolerance", "Weight tolerance", "", "percent"]
+    ],
+    formula: "Variance % = (observed − recorded) ÷ recorded × 100; compare absolute percentages with entered tolerances",
+    example: "A manifest records 12 × 10 × 8 and 4.0 weight units; a finished audit reads 12.3 × 10.1 × 8.4 and 4.2 in the same respective units. The largest dimensional variance is 5.0% and weight variance is 5.0%, which can be compared with the operation’s own documented tolerances.",
+    interpretation: "Use a flagged result to remeasure, inspect pack variation, and correct the source record before investigating any external adjustment.",
+    assumptions: "The checker does not apply carrier rules, rounding, contract tolerances, calibration status, or dispute eligibility.",
+    related: ["dimensional-weight", "shipping-damage-rate"],
+    doc: "/reference/packaging-quality-metrics.html"
+  }
+];
+
+tools.push(...qualityTools);
+
 function profile(solves, inputs, decision, mistakes, limits, workflow) {
   return { solves, inputs, decision, mistakes, limits, workflow };
 }
@@ -513,6 +618,38 @@ const toolContent = {
     ["Treating 100% area as proof of a valid layout.", "Ignoring pallet edge clearance or deck support.", "Using case internal dimensions.", "Comparing utilization across pallets without the same overhang and stability rules."],
     "The calculation compares areas only and excludes placement geometry, mixed rotations, gaps, overhang, deck-board support, partial cases, containment, weight distribution, compression, and handling stability.",
     ["Before: verify case and usable pallet footprints.", "After: compare with the Cases per Pallet grid and validate a physical layer pattern."]
+  ),
+  "shipping-damage-rate": profile(
+    "Use Shipping Damage Rate after a defined review period to convert a shipment count and a consistently classified damage count into an observed operational rate. It differs from Packaging Failure Cost, which values direct consequences, and from Packaging Trial Comparison, which compares two controlled variants on multiple criteria.",
+    "Choose one population boundary—for example delivered parcels for one SKU family and one month—and apply the same rule to the numerator and denominator. Count each shipment once even if it contains several damaged units, unless the written metric explicitly uses units instead. Enter zero damage only when the complete reviewed sample has no recorded incident.",
+    "Trend the rate only across periods with the same damage definition, delivery-status boundary, and data completeness. A lower rate is favorable evidence, but a small sample or reporting delay can move it sharply. Investigate by SKU, pack method, fulfillment location, or handling path before attributing a change to packaging alone.",
+    ["Mixing damaged units with total shipments.", "Counting replacements while omitting the original damaged shipment population.", "Changing the damage definition between periods.", "Treating an observed rate as a guarantee of future shipment performance."],
+    "The calculation is descriptive and does not adjust for claim lag, unreported damage, returns unrelated to packaging, carrier mix, product mix, exposure severity, or statistical uncertainty. It does not diagnose cause or establish an acceptable industry rate.",
+    ["Before: define the population, observation window, and damage rule.", "After: review direct failure cost and compare any packaging change through a documented trial and ongoing field monitoring."]
+  ),
+  "packaging-failure-cost": profile(
+    "Use Packaging Failure Cost to turn a documented count of packaging-related shipment failures into a direct-cost record for a review period. It extends beyond Packaging Cost per Order, which estimates the planned pack itself, by counting replacement, reshipment, return transport, handling, support labor, and other entered consequences.",
+    "Use only incidents attributed under the team’s written packaging-failure rule. Enter per-failure averages from invoices, product cost records, labor observations, and support records on the same currency basis. Separate warehouse and support minutes if they use the same loaded labor rate; place any verified direct component not listed in the other-cost field.",
+    "Compare total and per-shipment cost before and after a pack change using the same scope. A high per-failure cost may justify prioritizing a low-frequency fragile SKU, while a low per-incident cost can still matter at high volume. Keep recovered claims separate so gross operating exposure and reimbursement remain visible.",
+    ["Using retail price when the cost boundary calls for replacement product cost.", "Counting the original outbound postage twice.", "Mixing total-period costs with per-failure inputs.", "Adding speculative lifetime value or reputation costs as if they were recorded direct costs."],
+    "The result excludes any component not entered and does not estimate lost sales, legal liability, insurance coverage, refunds, carrier recovery, tax, or causal attribution. It is an internal planning record, not a damages claim or accounting determination.",
+    ["Before: calculate a consistent observed failure count and define the direct-cost boundary.", "After: compare packaging trials and monitor the released method over an equivalent shipment period."]
+  ),
+  "packaging-trial-comparison": profile(
+    "Use Packaging Trial Comparison when two pack variants have been observed under the same trial plan and need a side-by-side operating record. It compares damage counts and sample sizes separately from material cost, packing labor, and finished weight; it does not collapse unlike outcomes into an arbitrary score.",
+    "Prepare representative, unused product and package samples for both variants. Use the same damage definition, inspection point, currency, labor-rate basis, time-observation method, and weight unit. Enter each variant’s actual inspected and damaged counts rather than projecting a preferred rate or copying an industry benchmark.",
+    "Review percentage-point damage difference together with sample size, pack-cost difference, time, and weight. A lower observed damage rate from a small trial is evidence to investigate, not proof of superiority. Select a follow-up only after checking product condition, package condition, deviations, external dimensions, and the distribution hazards represented.",
+    ["Comparing trials with different damage definitions or inspection stages.", "Using one unusually fast pack cycle as the labor input.", "Calling a zero-damage small sample risk-free.", "Declaring a certified pass or winner from this descriptive comparison."],
+    "The tool performs no statistical significance test, hazard simulation, certification review, AQL decision, or causal analysis. It cannot show whether the chosen trial represents actual distribution, and it does not replace the current procedure of an accredited or qualified test program.",
+    ["Before: write the trial objective, damage tolerance, sample identity, and common observation method.", "After: retain photos and deviations, run the appropriate physical verification, and monitor actual shipments after release."]
+  ),
+  "package-weight-dimension-variance": profile(
+    "Use Package Weight & Dimension Variance Checker to compare a stored manifest or pack specification with a fresh observation of the same package. Unlike Dimensional Weight, it does not convert volume into weight; it shows absolute and percentage measurement drift against tolerances entered by the operation.",
+    "Use the same dimension unit for all six dimension fields and the same weight unit for both weight fields. Measure the same package state and maximum external points with suitable, checked equipment. Set tolerances from a controlled internal specification or applicable current agreement—the tool supplies no carrier or industry default.",
+    "A flagged result means the entered observation exceeds at least one user-set percentage tolerance. Remeasure before changing a record, then inspect carton substitution, bulging, cushioning quantity, moisture, scale or dimensioner setup, and data-entry source. Preserve signed differences to show whether the package grew, shrank, gained, or lost weight.",
+    ["Mixing internal recorded dimensions with external observed dimensions.", "Using centimeters for one record and inches for the other.", "Treating measurement tolerance as an allowed shipping limit.", "Using the flag alone as proof that a carrier invoice or supplier record is wrong."],
+    "The checker does not apply dimensional rounding, equipment uncertainty, calibration acceptance, carrier audit rules, contract tolerances, surcharge logic, or dispute eligibility. Percentage change can be sensitive when a recorded value is small, so every zero or invalid baseline is rejected.",
+    ["Before: retrieve the controlled record and confirm units, package state, and measurement method.", "After: remeasure flagged axes, correct the source record if justified, and retain independent evidence for any external review."]
   )
 };
 
@@ -550,7 +687,11 @@ Object.assign(toolOperations, {
   "cases-per-pallet": { category: "Pallet planning", output: "Cases per pallet", useWhen: "Estimating a straight-grid unit load." },
   "pallet-layer-count": { category: "Pallet planning", output: "Layers required", useWhen: "Converting case demand into layers." },
   "pallet-height": { category: "Pallet planning", output: "Loaded height", useWhen: "Checking a user-entered height ceiling." },
-  "pallet-utilization": { category: "Pallet planning", output: "Footprint utilization", useWhen: "Comparing case area with pallet area." }
+  "pallet-utilization": { category: "Pallet planning", output: "Footprint utilization", useWhen: "Comparing case area with pallet area." },
+  "shipping-damage-rate": { category: "Quality and damage control", output: "Observed damage rate", useWhen: "Reviewing a defined shipment population." },
+  "packaging-failure-cost": { category: "Quality and damage control", output: "Direct failure cost", useWhen: "Valuing recorded packaging-related incidents." },
+  "packaging-trial-comparison": { category: "Quality and damage control", output: "Two-trial comparison", useWhen: "Comparing pack variants on common criteria." },
+  "package-weight-dimension-variance": { category: "Quality and damage control", output: "Measurement variance", useWhen: "Auditing a manifest against a finished pack." }
 });
 
 const documentRelations = {
@@ -577,7 +718,9 @@ Object.assign(documentRelations, {
   "box-style-and-closure-glossary": "Tape Usage Calculator",
   "void-fill-yield-factors": "Void Fill Calculator",
   "master-carton-terms": "Master carton tools",
-  "pallet-and-unit-load-terms": "Pallet planning tools"
+  "pallet-and-unit-load-terms": "Pallet planning tools",
+  "packaging-trial-and-damage-review": "Packaging Trial Comparison Tool",
+  "packaging-quality-metrics": "Quality and damage-control tools"
 });
 
 const guides = [
@@ -679,6 +822,11 @@ guides.push(
     slug: "pallet-planning-basics", title: "Pallet Planning Basics for Small Shipments", description: "Estimate layers, height, footprint use, and load limits before physical pallet verification.", intro: "Pallet calculations create a planning layout; they do not prove that a unit load is stable or compliant.",
     sections: [["Collect limits", "Enter the actual pallet footprint and height, case dimensions and weight, user-approved maximum height and weight, equipment clearances, and orientation constraints."],["Plan each layer", "Compare straight and rotated grids, avoid unsupported overhang unless specifically approved, and identify partial top layers. Area utilization alone does not show stability."],["Build the vertical plan", "Add pallet base, case layers, top protection, and wrap or cap allowance. Check total case count and estimated weight against user-entered limits."],["Verify the unit load", "Build a representative load and assess compression, column alignment, interlock, center of gravity, containment, fork access, and handling route with qualified personnel."]],
     checklist: ["Use actual pallet and case dimensions.", "Set maximums as inputs.", "Review partial layers.", "Physically validate stability."], related: "/tools/cases-per-pallet.html"
+  },
+  {
+    slug: "packaging-trial-and-damage-review", title: "Packaging Trial and Shipping Damage Review", reviewed: "August 2, 2026", description: "Plan comparable packaging trials, define damage observations, record deviations, and monitor field results without claiming certification.", intro: "A useful packaging trial begins with a written question and ends with comparable evidence, not a preferred design looking for approval.",
+    sections: [["Define the decision before packing", "State the product and package variants, distribution question, observation point, damage definition, package-degradation allowance, direct-cost boundary, and who owns the decision. Keep a screening exercise separate from any formal protocol or certification work."],["Build comparable trial records", "Use representative, unused products and production packaging. Apply the same conditioning, packing instructions, inspection timing, cost basis, labor observation, and measurement units to both variants. Record every deviation rather than correcting it silently."],["Read results without overclaiming", "Compare sample counts and observed damage rates alongside material cost, pack time, weight, external dimensions, and direct failure cost. A difference in a small sample can guide the next test but cannot prove future performance or statistical significance."],["Release with field monitoring", "If qualified stakeholders approve a pack method, update the controlled instruction and measurement record. Monitor actual shipments using the same damage definition, investigate exceptions, and retest when product, material, closure, process, or distribution conditions change."]],
+    checklist: ["Write the question and damage definition first.", "Use comparable samples and observation methods.", "Keep cost, time, weight, damage, and deviations visible.", "Document approval scope and monitor actual shipments."], related: "/tools/packaging-trial-comparison.html"
   }
 );
 
@@ -778,6 +926,14 @@ const guideDepth = {
     mistakes: ["Assuming a common pallet size without measuring the actual platform.", "Allowing unapproved overhang.", "Checking height but not weight.", "Calling a calculated footprint a stable unit load."],
     closeout: ["Pattern drawing matches the counted layer.", "Height and gross weight are verified.", "Containment and handling route pass.", "A qualified physical load review is recorded."],
     relatedGuide: "/guides/master-carton-planning.html", reference: "/reference/pallet-and-unit-load-terms.html"
+  },
+  "packaging-trial-and-damage-review": {
+    prepare: ["Write the operational question, candidate pack variants, and decision owner.", "Define product damage, package degradation, observation timing, and the shipment or test population before work begins.", "Choose representative unused samples and record product, container, protection, closure, label, and process revisions.", "Set common measurement, cost, time, and deviation records without inventing an acceptable damage rate."],
+    scenario: "A seller compares two protective packs for the same ceramic SKU. Each variant uses 120 unused products from the same production condition and the same inspection definition. Trial A records three damaged products, $1.40 materials, 4.2 packing minutes, and 2.8 weight units; Trial B records one, $1.62, 3.8 minutes, and 2.7 units. The comparison supports further review, but the seller does not call B certified or guaranteed from this sample.",
+    decisions: [["Samples or methods differ", "Stop the comparison or document why the populations remain comparable."],["Damage improves but cost rises", "Calculate direct failure exposure and decide what additional evidence is needed."],["No damage is observed", "Record the sample size and continue monitoring; zero observations do not prove zero risk."],["Product, package, or process changes", "Open a new controlled trial and retain the superseded record."]],
+    mistakes: ["Writing acceptance criteria after seeing the result.", "Reusing previously tested or unrepresentative samples without disclosure.", "Combining cosmetic package wear and functional product damage without definitions.", "Treating a field trial or internal screen as an ISTA certification result."],
+    closeout: ["Inputs, samples, conditions, deviations, and observations are traceable.", "Both variants use the same cost and time boundary.", "Decision language states the limited evidence and approval scope.", "A field-monitoring owner and review trigger are assigned."],
+    relatedGuide: "/guides/packaging-cost-reduction-checklist.html", reference: "/reference/packaging-quality-metrics.html"
   }
 };
 
@@ -872,6 +1028,10 @@ references.push(
   {
     slug: "pallet-and-unit-load-terms", title: "Pallet and Unit Load Terms", description: "Define pallet footprint, layers, utilization, overhang, containment, and load limits.", intro: "A calculated pallet pattern is only the first step in physical unit-load design.",
     rows: [["Pallet footprint", "Usable plan-view length and width entered for the pallet or platform."],["Case footprint", "Case length × width in the selected load orientation."],["Cases per layer", "Whole case positions placed on one layer by the chosen pattern."],["Layer count", "Number of vertical case tiers, including a partial top layer when present."],["Footprint utilization", "Total case footprint area divided by pallet footprint area; it does not measure stability."],["Overhang", "Any case extension beyond the supporting pallet edge; avoid unless specifically engineered and approved."],["Containment", "Wrap, straps, caps, corner boards, or other systems used to hold the unit load together."],["Maximum planned height or weight", "A user-entered operating constraint that must be confirmed for equipment, facility, transport, and applicable rules."]]
+  },
+  {
+    slug: "packaging-quality-metrics", title: "Packaging Quality and Damage Metrics", reviewed: "August 2, 2026", description: "Define observed damage rate, failure cost, trial comparison, measurement variance, and evidence boundaries for packaging reviews.", intro: "Quality metrics are useful only when the population, event definition, observation point, units, and decision boundary are recorded with the value.",
+    rows: [["Observed damage rate", "Damaged shipments divided by all shipments in the same defined review population, multiplied by 100."],["Damage event", "A shipment classified under a written product-damage or package-degradation definition at a stated observation point."],["Percentage-point difference", "The arithmetic difference between two percentages; it is not the percent change between them."],["Direct failure cost", "Recorded replacement, transport, handling, support labor, and other scoped cost caused by classified failures."],["Pack cost", "Materials plus labor and other explicitly included cost for one pack method; keep its boundary consistent across trials."],["Measurement variance", "Observed minus recorded measurement, shown as an absolute difference and as a percentage of the recorded baseline."],["Tolerance", "A user-approved comparison boundary from a controlled specification or agreement; it is not supplied by the calculator."],["Field monitoring", "Post-release observation of actual shipments using the same definitions so trial evidence can be checked against operations."]]
   }
 );
 
@@ -945,6 +1105,13 @@ const referenceDepth = {
     differences: [["Cases per layer", "Whole case positions in one approved pattern."],["Layer count", "Vertical tiers, including a partial top layer when present."],["Footprint utilization", "Case area divided by pallet area; it is not a stability score."],["Containment", "Wrap, straps, caps, or other systems intended to keep the assembled load together."]],
     use: ["Measure usable pallet and finished case dimensions.", "Draw and count the layer pattern.", "Check height, gross weight, and partial layers.", "Build and evaluate the restrained load through its handling route."],
     cautions: ["Avoid unapproved overhang.", "Area does not prove geometry.", "Compression and center of gravity are outside simple calculators.", "Facility, equipment, customer, and regulatory limits must be confirmed."]
+  },
+  "packaging-quality-metrics": {
+    overview: "Packaging quality metrics connect a defined shipment or trial population with observed damage, direct failure cost, pack inputs, and measurement variance. They support repeatable review only when the event definition, observation point, unit basis, date range, and record owner remain attached to every value.",
+    example: "A review contains 1,250 delivered shipments and 14 classified packaging-related damage incidents, producing a 1.12% observed rate. A later packaging trial may compare two smaller samples, but its percentages should not be blended into the field population. If each field incident has $48.20 of recorded direct cost, total direct exposure for that period is $674.80 before any separately recorded recovery.",
+    differences: [["Rate vs count", "Count is the number of classified events; rate divides that count by its matching population."],["Percentage points vs percent change", "A move from 2% to 1% is one percentage point lower and 50% lower relative to the original rate."],["Trial result vs field result", "A controlled trial describes its samples and represented conditions; field monitoring describes actual operational shipments."],["Tolerance flag vs acceptance", "A calculator can compare with a user-entered boundary, but approval requires the governing specification and responsible reviewer."]],
+    use: ["Write the population and event definitions before collecting counts.", "Retain raw counts, measurements, costs, units, and observation dates.", "Use one common basis when comparing periods or pack variants.", "Escalate flagged results to physical inspection, source-record review, and the responsible decision process."],
+    cautions: ["Small samples can move rates sharply.", "Unreported or delayed incidents reduce completeness.", "Correlation does not identify packaging as the cause.", "No metric on this page provides certification, AQL acceptance, carrier liability, or a damage guarantee."]
   }
 };
 
@@ -1023,8 +1190,8 @@ function head({ file, title, description, type = "website", noindex = false, sch
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${canonical}">
-  <link rel="icon" type="image/png" href="/favicon.png?v=20260726-content">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260726-content">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260802-quality">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260802-quality">
   ${ga()}
   <script type="application/ld+json">${JSON.stringify(schema)}</script>
 </head>`;
@@ -1046,7 +1213,22 @@ function header(current) {
 </header>`;
 }
 
-function footer() {
+const USER_MANAGED_HOME_BADGES = `<div class="page-shell" style="text-align:center;padding:30px 0;">
+  <a href="https://kittylaunch.com/p/packprep-tools" target="_blank" rel="noopener" style="display:inline-block;margin:0 2px;">
+    <img src="https://kittylaunch.com/api/public/badges/launch_badge.svg?theme=light&name=PackPrep%20Tools" alt="PackPrep Tools on KittyLaunch" data-kittylaunch-badge="1" style="height:36px;" />
+  </a>
+  <a href="https://sellwithboost.com" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin:0 2px;">
+    <img src="https://sellwithboost.com/badge/listing.svg" alt="Listed on Sell With boost" style="height: 36px; width: auto;" />
+  </a>
+  <a href="https://twelve.tools" target="_blank" style="display:inline-block;margin:0 2px;">
+    <img src="https://twelve.tools/badge0-white.svg" alt="Featured on Twelve Tools" height="36px">
+  </a>
+  <a href="https://findly.tools/packpreptools?utm_source=packpreptools" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin:0 2px;">
+    <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="Featured on Findly.tools" height="36px" />
+  </a>
+</div>`;
+
+function footer(afterFooter = "") {
   return `<footer class="site-footer">
   <div class="footer-shell footer-main">
     <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
@@ -1056,7 +1238,8 @@ function footer() {
   </div>
   <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
 </footer>
-<script src="/assets/site.js?v=20260726-content" defer></script>
+${afterFooter}
+<script src="/assets/site.js?v=20260802-quality" defer></script>
 </body>
 </html>`;
 }
@@ -1077,7 +1260,7 @@ function breadcrumbs(parts) {
 }
 
 function operationsTable(items) {
-  const categoryOrder = ["Package size and fit", "Materials and usage", "Cost and inventory", "Labor and workflow", "Master cartons", "Pallet planning"];
+  const categoryOrder = ["Package size and fit", "Materials and usage", "Cost and inventory", "Labor and workflow", "Master cartons", "Pallet planning", "Quality and damage control"];
   const orderedItems = [...items].sort((a, b) => categoryOrder.indexOf(toolOperations[a.slug].category) - categoryOrder.indexOf(toolOperations[b.slug].category));
   return `<table class="operations-table">
     <thead><tr><th>Category</th><th>Tool</th><th>Primary output</th><th>Use when</th></tr></thead>
@@ -1148,7 +1331,18 @@ function homepage() {
     <div class="document-index"><section class="document-group"><h3>Guides / procedures</h3>${documentRegister(guides, "G")}</section><section class="document-group"><h3>Reference / definitions</h3>${documentRegister(references, "R")}</section></div>
   </div></section>
   <section class="operations-notice"><div class="page-shell operations-notice-grid"><div><h2>Estimate, verify, dispatch.</h2><p>Results support packaging decisions; they do not replace a physical pack test or current carrier rules.</p></div><ol class="verify-list"><li><b>01 / Estimate</b>Use accurate dimensions and documented assumptions.</li><li><b>02 / Verify</b>Pack the real item and measure the finished package.</li><li><b>03 / Release</b>Confirm protection, closure, and current service limits.</li></ol></div></section>
-</main>${footer()}`;
+</main>${footer(USER_MANAGED_HOME_BADGES)}`;
+}
+
+function qualityHub() {
+  const file = "quality.html";
+  const title = "Packaging Quality & Damage Control Tools";
+  const description = "Review observed shipping damage, direct failure cost, packaging trials, and package measurement variance with user-entered operating data.";
+  return `${head({ file, title, description, schema: websiteSchema(file, title, description) })}${header("Tools")}
+<main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: "Quality & damage control" }])}<p class="dispatch-meta"><span>Operations cluster</span><span>${qualityTools.length} record-based tools</span></p><h1>${title}</h1><p class="lede">Use observed counts, costs, trial records, and fresh measurements to investigate packaging performance without turning the result into a certification or guarantee.</p></div></header>
+<section class="content-section"><div class="page-shell"><div class="section-title"><span class="section-code">Quality review / 04 records</span><h2>Move from an observed issue to a controlled comparison.</h2><p>Define the review population first, preserve raw evidence, compare a change on common criteria, and monitor actual shipments after release.</p></div>${operationsTable(qualityTools)}</div></section>
+<section class="content-section content-section-muted"><div class="page-shell"><div class="document-index"><section class="document-group"><h3>Procedure</h3><ol class="document-register"><li><a href="/guides/packaging-trial-and-damage-review.html"><code>G13</code><span><strong>Packaging Trial and Shipping Damage Review</strong><small>Prepare comparable trials, record deviations, and monitor field performance.</small></span></a></li></ol></section><section class="document-group"><h3>Reference</h3><ol class="document-register"><li><a href="/reference/packaging-quality-metrics.html"><code>R11</code><span><strong>Packaging Quality and Damage Metrics</strong><small>Define rates, costs, percentage-point differences, variance, and evidence boundaries.</small></span></a></li></ol></section></div></div></section>
+<section class="operations-notice"><div class="page-shell operations-notice-grid"><div><h2>Record, compare, then verify.</h2><p>These tools organize user-entered observations. They do not provide AQL acceptance, ISTA certification, carrier liability, or protection guarantees.</p></div><ol class="verify-list"><li><b>01 / Define</b>Write the population, damage rule, units, and tolerance source.</li><li><b>02 / Compare</b>Keep counts, costs, measurements, and deviations on the same basis.</li><li><b>03 / Verify</b>Inspect the physical pack and use the responsible approval process.</li></ol></div></section></main>${footer()}`;
 }
 
 function unitOptions(tool) {
@@ -1171,7 +1365,9 @@ function suffix(type) {
     "currency-hour": "per hr",
     hours: "hr",
     seconds: "sec",
-    weight: "lb"
+    weight: "lb",
+    "weight-any": "weight unit",
+    "generic-unit": "same unit"
   };
   return labels[type] || "";
 }
@@ -1188,6 +1384,8 @@ function fieldAdvice(tool, field) {
     hours: `Use scheduled ${label.toLowerCase()} for the same shift boundary as the worker and utilization inputs.`,
     seconds: `Observe several cycles for ${label.toLowerCase()}, then use a representative pace rather than the single fastest cycle.`,
     weight: `Weigh ${label.toLowerCase()} on a suitable scale and use the same weight unit for every weight field.`,
+    "weight-any": `Weigh ${label.toLowerCase()} on a suitable scale and use one weight unit for both trial variants.`,
+    "generic-unit": `Measure ${label.toLowerCase()} with the same unit and package state as its recorded or observed counterpart.`,
     "currency-hour": `Use the documented loaded or direct ${label.toLowerCase()} consistently; the calculator does not decide which accounting basis applies.`,
     divisor: `Obtain ${label.toLowerCase()} from the current official service, marketplace, or account method and match its unit system.`
   };
@@ -1239,10 +1437,10 @@ function calculatorPage(tool) {
     <h2 id="mistakes">Common mistakes</h2><ul class="check-list">${content.mistakes.map((mistake) => `<li>${mistake}</li>`).join("")}</ul>
     <h2 id="limits">Assumptions and limitations</h2><p>${content.limits}</p>
     <div class="caution"><strong>${tool.title} estimate only:</strong> verify the ${tool.title} ${toolOperations[tool.slug].output.toLowerCase()} with the physical pack or operating record and the current requirements governing this decision.</div>
-    <h2 id="workflow">Related workflow</h2><ol class="procedure-list">${workflowLinks}</ol><ul class="related-register">${related}<li><a href="${tool.doc}">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
-    <p class="meta-line">Last reviewed: ${REVIEWED}</p>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list">${workflowLinks}</ol><ul class="related-register">${related}<li><a href="${tool.doc}">Related guide or reference</a></li>${qualityTools.some(({ slug }) => slug === tool.slug) ? '<li><a href="/quality.html">Quality &amp; damage control cluster</a></li>' : ""}<li><a href="/tools.html">All calculators</a></li></ul>
+    <p class="meta-line">Last reviewed: ${tool.reviewed || REVIEWED}</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260726-content" defer></script>${footer()}`;
+</main><script src="/assets/calculators.js?v=20260802-quality" defer></script>${footer()}`;
 }
 
 function indexPage(kind, items) {
@@ -1252,7 +1450,7 @@ function indexPage(kind, items) {
   const description = isTools ? `Browse ${tools.length} practical calculators for package fit, materials, cost, labor, master cartons, and pallet planning.` : kind === "Guides" ? `Read ${guides.length} practical guides for repeatable packaging and dispatch work.` : `Use ${references.length} detailed reference records for packaging terms, units, materials, costs, cartons, and pallet loads.`;
   return `${head({ file, title, description, schema: websiteSchema(file, title, description) })}${header(kind)}
 <main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: kind }])}<p class="dispatch-meta"><span>${isTools ? "Operations register" : "Controlled documents"}</span><span>${items.length} active records</span></p><h1>${title}</h1><p class="lede">${description}</p></div></header>
-<section class="content-section"><div class="page-shell">${isTools ? operationsTable(items) : documentTable(items, kind)}</div></section></main>${footer()}`;
+<section class="content-section"><div class="page-shell">${isTools ? `${operationsTable(items)}<div class="button-row"><a class="button button-primary" href="/quality.html">Open quality &amp; damage control cluster</a></div>` : documentTable(items, kind)}</div></section></main>${footer()}`;
 }
 
 const guideReferences = {
@@ -1263,7 +1461,8 @@ const guideReferences = {
   "tape-types-and-seal-patterns": "/reference/box-style-and-closure-glossary.html",
   "packaging-cost-reduction-checklist": "/reference/packaging-cost-components.html",
   "master-carton-planning": "/reference/master-carton-terms.html",
-  "pallet-planning-basics": "/reference/pallet-and-unit-load-terms.html"
+  "pallet-planning-basics": "/reference/pallet-and-unit-load-terms.html",
+  "packaging-trial-and-damage-review": "/reference/packaging-quality-metrics.html"
 };
 const referenceGuides = {
   "packaging-unit-conversion": "/guides/how-to-measure-a-box.html",
@@ -1271,7 +1470,12 @@ const referenceGuides = {
   "box-style-and-closure-glossary": "/guides/tape-types-and-seal-patterns.html",
   "void-fill-yield-factors": "/guides/how-to-choose-void-fill.html",
   "master-carton-terms": "/guides/master-carton-planning.html",
-  "pallet-and-unit-load-terms": "/guides/pallet-planning-basics.html"
+  "pallet-and-unit-load-terms": "/guides/pallet-planning-basics.html",
+  "packaging-quality-metrics": "/guides/packaging-trial-and-damage-review.html"
+};
+
+const referenceTools = {
+  "packaging-quality-metrics": "/tools/shipping-damage-rate.html"
 };
 
 function articlePage(item, kind) {
@@ -1281,7 +1485,7 @@ function articlePage(item, kind) {
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "Article", headline: title, description: item.description, datePublished: "2026-07-26", dateModified: "2026-07-26", mainEntityOfPage: pageUrl(file), author: { "@type": "Organization", name: "Pack Prep Tools" }, publisher: { "@type": "Organization", name: "Pack Prep Tools" } },
+      { "@type": "Article", headline: title, description: item.description, datePublished: "2026-07-26", dateModified: item.reviewed ? "2026-08-02" : "2026-07-26", mainEntityOfPage: pageUrl(file), author: { "@type": "Organization", name: "Pack Prep Tools" }, publisher: { "@type": "Organization", name: "Pack Prep Tools" } },
       { "@type": "BreadcrumbList", itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
         { "@type": "ListItem", position: 2, name: kind, item: `${SITE}/${folder}.html` },
@@ -1296,11 +1500,11 @@ function articlePage(item, kind) {
   const body = kind === "Guides"
     ? `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#prepare">Prepare the record</a></li>${item.sections.map(([heading], index) => `<li><a href="#section-${index + 1}">${heading}</a></li>`).join("")}<li><a href="#scenario">Working scenario</a></li><li><a href="#decisions">Decision guide</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#closeout">Close-out</a></li><li><a href="#evidence">Evidence and review</a></li><li><a href="#checklist">Checklist</a></li></ul></nav><h2 id="prepare">Prepare the operating record</h2><ol class="procedure-list">${guideDetail.prepare.map((step) => `<li>${step}</li>`).join("")}</ol>${item.sections.map(([heading, text], index) => `<h2 id="section-${index + 1}">${heading}</h2><p>${text}</p><p>In ${item.title}, document the ${heading.toLowerCase()} choice, its measured basis, and any exception that changes the standard procedure.</p>`).join("")}<h2 id="scenario">Working scenario</h2><div class="example-block"><p>${guideDetail.scenario}</p></div><h2 id="decisions">Decision guide</h2><table class="content-table"><thead><tr><th>Observation</th><th>Operational response</th></tr></thead><tbody>${guideDetail.decisions.map(([signal, action]) => `<tr><th>${signal}</th><td>${action}</td></tr>`).join("")}</tbody></table><h2 id="mistakes">Common mistakes</h2><ul class="check-list">${guideDetail.mistakes.map((mistake) => `<li>${mistake}</li>`).join("")}</ul><h2 id="closeout">Complete and verify the work</h2><p>Close ${item.title} only after its physical result, controlled instruction, and recorded measurements agree with the decision criteria above.</p><ul class="check-list">${guideDetail.closeout.map((check) => `<li>${check}</li>`).join("")}</ul><h2 id="evidence">Evidence, ownership, and review triggers</h2><p>The ${item.title} record should connect the initial requirement—${guideDetail.prepare[0].replace(/\.$/, "").toLowerCase()}—to the released evidence that ${guideDetail.closeout[0].replace(/\.$/, "").toLowerCase()}. Keep the ${item.title} inputs, sample identification, material or equipment revision, date, operator or reviewer role, and exception decision together so a later result can be compared on the same basis.</p><p>Reopen ${item.title} when ${guideDetail.mistakes[0].replace(/\.$/, "").toLowerCase()} is observed, when the product or packaging specification changes, or when damage, rework, time, or consumption moves outside the accepted range. The ${item.title} owner should compare the new condition with the working scenario, repeat the relevant physical check, and issue a revised instruction rather than silently changing an input.</p><p>For periodic review, sample normal work as well as known exceptions. Confirm that the response to “${guideDetail.decisions[0][0]}” still follows the recorded action: ${guideDetail.decisions[0][1]} Retain the ${item.title} evidence long enough to explain inventory settings, cost changes, and any customer or carrier inquiry tied to the pack method.</p><h2 id="checklist">Dispatch checklist</h2><ul>${item.checklist.map((x) => `<li>${x}</li>`).join("")}</ul><div class="caution"><strong>${item.title} planning note:</strong> validate the ${item.title} method with the actual product, materials, handling path, and current shipping requirements.</div>`
     : `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#overview">Operational meaning</a></li><li><a href="#definitions">Definitions</a></li><li><a href="#example">Applied example</a></li><li><a href="#differences">Key distinctions</a></li><li><a href="#use">How to use this reference</a></li><li><a href="#maintenance">Record and maintenance</a></li><li><a href="#verification">Verification cautions</a></li></ul></nav><h2 id="overview">Operational meaning</h2><p>${referenceDetail.overview}</p><h2 id="definitions">Definitions and operating notes</h2><dl class="reference-ledger">${item.rows.map(([term, text]) => `<div><dt>${term}</dt><dd>${text}</dd></div>`).join("")}</dl><h2 id="example">Applied example</h2><div class="example-block"><p>${referenceDetail.example}</p></div><h2 id="differences">Key distinctions</h2><table class="content-table"><thead><tr><th>Term or question</th><th>Operational distinction</th></tr></thead><tbody>${referenceDetail.differences.map(([term, text]) => `<tr><th>${term}</th><td>${text}</td></tr>`).join("")}</tbody></table><h2 id="use">How to use this reference</h2><ol class="procedure-list">${referenceDetail.use.map((step) => `<li>${step}</li>`).join("")}</ol><h2 id="maintenance">Record structure and maintenance</h2><p>A working ${item.title} record should identify the source document or measurement, unit and scope, effective date, reviewer role, and the calculator or pack instruction that consumes the value. Start by ${referenceDetail.use[0].replace(/\.$/, "").toLowerCase()}, then preserve the unrounded or source value before any operational rounding or simplification.</p><p>Do not treat the glossary entry “${item.rows[0][0]}” as self-approving data. Link the ${item.title} entry to the applicable drawing, supplier specification, official method, measured sample, or controlled procedure. When ${referenceDetail.cautions[0].replace(/\.$/, "").toLowerCase()} becomes relevant, mark the old record superseded, update linked calculations, and recheck downstream fit, cost, inventory, or handling decisions.</p><p>The ${item.title} applied example shows the minimum audit trail: original inputs, intermediate relationship, displayed result, and the action it supports. A periodic ${item.title} review should also verify that the distinction between “${referenceDetail.differences[0][0]}” and its paired operating meaning remains clear to people entering data.</p><h2 id="verification">Verification cautions</h2><ul class="check-list">${referenceDetail.cautions.map((note) => `<li>${note}</li>`).join("")}</ul><div class="caution"><strong>${item.title} reference note:</strong> recheck every changing ${item.title} value in the current supplier, carrier, marketplace, facility, or regulatory source before operational use.</div>`;
-  const related = kind === "Guides" ? item.related : item.slug.includes("dimensional") ? "/tools/dimensional-weight.html" : item.slug.includes("internal") ? "/tools/box-size.html" : "/tools.html";
+  const related = kind === "Guides" ? item.related : referenceTools[item.slug] || (item.slug.includes("dimensional") ? "/tools/dimensional-weight.html" : item.slug.includes("internal") ? "/tools/box-size.html" : "/tools.html");
   const crossDocument = kind === "Guides" ? (guideReferences[item.slug] || "/reference.html") : (referenceGuides[item.slug] || "/guides.html");
   return `${head({ file, title, description: item.description, type: "article", schema })}${header(kind)}
-<main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: kind, href: `/${folder}.html` }, { label: title }])}<p class="dispatch-meta"><span>${kind === "Guides" ? "Procedure" : "Reference record"}</span><span>Reviewed July 2026</span></p><h1>${title}</h1></div></header>
-<section class="article-zone"><div class="page-shell article-shell"><article class="article-body">${body}<ul class="related-register"><li><a href="${related}">Related calculator</a></li><li><a href="${crossDocument}">Related ${kind === "Guides" ? "reference" : "guide"}</a></li><li><a href="/${folder}.html">All ${folder}</a></li></ul><p class="meta-line">Last reviewed: ${REVIEWED}</p></article></div></section></main>${footer()}`;
+<main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: kind, href: `/${folder}.html` }, { label: title }])}<p class="dispatch-meta"><span>${kind === "Guides" ? "Procedure" : "Reference record"}</span><span>Reviewed ${item.reviewed ? "August 2026" : "July 2026"}</span></p><h1>${title}</h1></div></header>
+<section class="article-zone"><div class="page-shell article-shell"><article class="article-body">${body}<ul class="related-register"><li><a href="${related}">Related calculator</a></li><li><a href="${crossDocument}">Related ${kind === "Guides" ? "reference" : "guide"}</a></li><li><a href="/${folder}.html">All ${folder}</a></li></ul><p class="meta-line">Last reviewed: ${item.reviewed || REVIEWED}</p></article></div></section></main>${footer()}`;
 }
 
 function basicPage(page) {
@@ -1363,7 +1567,7 @@ function favicon() {
 
 function indexableFiles() {
   return [
-    "index.html", "tools.html", "guides.html", "reference.html", "about.html", "contact.html", "privacy.html",
+    "index.html", "tools.html", "guides.html", "reference.html", "quality.html", "about.html", "contact.html", "privacy.html",
     ...tools.map((tool) => `tools/${tool.slug}.html`),
     ...guides.map((guide) => `guides/${guide.slug}.html`),
     ...references.map((reference) => `reference/${reference.slug}.html`)
@@ -1386,6 +1590,7 @@ function generate() {
   write("tools.html", indexPage("Tools", tools));
   write("guides.html", indexPage("Guides", guides));
   write("reference.html", indexPage("Reference", references));
+  write("quality.html", qualityHub());
   tools.slice(1).forEach((tool) => write(`tools/${tool.slug}.html`, calculatorPage(tool)));
   guides.forEach((guide) => write(`guides/${guide.slug}.html`, articlePage(guide, "Guides")));
   references.forEach((reference) => write(`reference/${reference.slug}.html`, articlePage(reference, "Reference")));

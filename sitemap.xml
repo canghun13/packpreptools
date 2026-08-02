@@ -4,6 +4,7 @@
   <url><loc>https://packpreptools.com/tools.html</loc></url>
   <url><loc>https://packpreptools.com/guides.html</loc></url>
   <url><loc>https://packpreptools.com/reference.html</loc></url>
+  <url><loc>https://packpreptools.com/quality.html</loc></url>
   <url><loc>https://packpreptools.com/about.html</loc></url>
   <url><loc>https://packpreptools.com/contact.html</loc></url>
   <url><loc>https://packpreptools.com/privacy.html</loc></url>
@@ -39,6 +40,10 @@
   <url><loc>https://packpreptools.com/tools/pallet-layer-count.html</loc></url>
   <url><loc>https://packpreptools.com/tools/pallet-height.html</loc></url>
   <url><loc>https://packpreptools.com/tools/pallet-utilization.html</loc></url>
+  <url><loc>https://packpreptools.com/tools/shipping-damage-rate.html</loc></url>
+  <url><loc>https://packpreptools.com/tools/packaging-failure-cost.html</loc></url>
+  <url><loc>https://packpreptools.com/tools/packaging-trial-comparison.html</loc></url>
+  <url><loc>https://packpreptools.com/tools/package-weight-dimension-variance.html</loc></url>
   <url><loc>https://packpreptools.com/guides/how-to-measure-a-box.html</loc></url>
   <url><loc>https://packpreptools.com/guides/dimensional-weight-explained.html</loc></url>
   <url><loc>https://packpreptools.com/guides/how-much-packaging-clearance.html</loc></url>
@@ -51,6 +56,7 @@
   <url><loc>https://packpreptools.com/guides/packaging-cost-reduction-checklist.html</loc></url>
   <url><loc>https://packpreptools.com/guides/master-carton-planning.html</loc></url>
   <url><loc>https://packpreptools.com/guides/pallet-planning-basics.html</loc></url>
+  <url><loc>https://packpreptools.com/guides/packaging-trial-and-damage-review.html</loc></url>
   <url><loc>https://packpreptools.com/reference/package-measurement-terms.html</loc></url>
   <url><loc>https://packpreptools.com/reference/common-packaging-materials.html</loc></url>
   <url><loc>https://packpreptools.com/reference/dimensional-weight-divisors.html</loc></url>
@@ -61,4 +67,5 @@
   <url><loc>https://packpreptools.com/reference/void-fill-yield-factors.html</loc></url>
   <url><loc>https://packpreptools.com/reference/master-carton-terms.html</loc></url>
   <url><loc>https://packpreptools.com/reference/pallet-and-unit-load-terms.html</loc></url>
+  <url><loc>https://packpreptools.com/reference/packaging-quality-metrics.html</loc></url>
 </urlset>

@@ -41,13 +41,13 @@ function pageUrlForQa(file) {
 
 const allFiles = walk(ROOT);
 const htmlFiles = allFiles.filter((file) => file.endsWith(".html"));
-if (htmlFiles.length < 62) fail(`Expected at least 62 public HTML files; found ${htmlFiles.length}.`);
+if (htmlFiles.length !== 69) fail(`Expected exactly 69 public HTML files; found ${htmlFiles.length}.`);
 const toolFiles = htmlFiles.filter((file) => rel(file).startsWith("tools/"));
 const guideFiles = htmlFiles.filter((file) => rel(file).startsWith("guides/"));
 const referenceFiles = htmlFiles.filter((file) => rel(file).startsWith("reference/"));
-if (toolFiles.length < 32) fail(`Expected at least 32 calculators; found ${toolFiles.length}.`);
-if (guideFiles.length < 12) fail(`Expected at least 12 guides; found ${guideFiles.length}.`);
-if (referenceFiles.length < 10) fail(`Expected at least 10 reference pages; found ${referenceFiles.length}.`);
+if (toolFiles.length !== 36) fail(`Expected exactly 36 calculators; found ${toolFiles.length}.`);
+if (guideFiles.length !== 13) fail(`Expected exactly 13 guides; found ${guideFiles.length}.`);
+if (referenceFiles.length !== 11) fail(`Expected exactly 11 reference pages; found ${referenceFiles.length}.`);
 
 const titles = new Map();
 const descriptions = new Map();
@@ -217,7 +217,7 @@ if (!stylesheet.includes("--navy-950") || !stylesheet.includes("--blue-600") || 
 
 const sitemap = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
 const sitemapUrls = matches(sitemap, /<loc>([^<]+)<\/loc>/g).map((match) => match[1]);
-if (sitemapUrls.length < 61) fail(`sitemap.xml: expected at least 61 URLs; found ${sitemapUrls.length}.`);
+if (sitemapUrls.length !== 68) fail(`sitemap.xml: expected exactly 68 URLs; found ${sitemapUrls.length}.`);
 if (new Set(sitemapUrls).size !== sitemapUrls.length) fail("sitemap.xml: duplicate URL.");
 if (sitemapUrls.includes(`${SITE}/404.html`)) fail("sitemap.xml: 404 must not be listed.");
 for (const url of indexableCanonicals) if (!sitemapUrls.includes(url)) fail(`sitemap.xml: missing ${url}.`);
@@ -237,6 +237,20 @@ for (const file of guideFiles) if (!guidesHub.includes(`href="/${rel(file)}"`)) 
 const referenceHub = fs.readFileSync(path.join(ROOT, "reference.html"), "utf8");
 for (const file of referenceFiles) if (!referenceHub.includes(`href="/${rel(file)}"`)) fail(`reference.html: reference ${rel(file)} is unreachable.`);
 if (fs.readFileSync(path.join(ROOT, "CNAME"), "utf8").trim() !== "packpreptools.com") fail("CNAME: domain is incorrect.");
+
+const home = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+[
+  "https://kittylaunch.com/p/packprep-tools",
+  "https://sellwithboost.com",
+  "https://twelve.tools",
+  "https://findly.tools/packpreptools?utm_source=packpreptools"
+].forEach((url) => {
+  if (!home.includes(url)) fail(`index.html: user-managed directory badge link missing: ${url}`);
+});
+const qualityHub = fs.readFileSync(path.join(ROOT, "quality.html"), "utf8");
+for (const slug of ["shipping-damage-rate", "packaging-failure-cost", "packaging-trial-comparison", "package-weight-dimension-variance"]) {
+  if (!qualityHub.includes(`href="/tools/${slug}.html"`)) fail(`quality.html: quality tool ${slug} missing.`);
+}
 
 if (errors.length) {
   console.error(`AUTO QA FAIL (${errors.length})`);

@@ -140,6 +140,42 @@ for (const [id, cases] of Object.entries(phaseCases)) {
   checks += 1;
 }
 
-assert.strictEqual(Object.keys(calculators).length, 32, "Expected 32 calculator implementations");
-assert.ok(checks >= 160, `Expected at least 160 independent checks; found ${checks}`);
+primary("shipping-damage-rate", { shipments: 1250, damaged: 14 }, 1.12, 0.001, "observed rate");
+primary("shipping-damage-rate", { shipments: 100, damaged: 0 }, 0, 0.001, "zero-damage boundary");
+throws("shipping-damage-rate", { shipments: 10, damaged: 11 });
+throws("shipping-damage-rate", { shipments: 0, damaged: 0 });
+assert.strictEqual(calculators["shipping-damage-rate"]({ shipments: 1250, damaged: 14 }).primary, "1.12% observed damage rate");
+checks += 1;
+
+const failureExample = { shipments: 2000, failures: 18, replacement: 24, reship: 11, returnShipping: 6, handlingMinutes: 7, supportMinutes: 5, hourly: 21, other: 3, currency: "$" };
+primary("packaging-failure-cost", failureExample, 867.6, 0.001, "direct period cost");
+primary("packaging-failure-cost", { ...failureExample, failures: 0 }, 0, 0.001, "zero-failure boundary");
+throws("packaging-failure-cost", { ...failureExample, failures: 2001 });
+throws("packaging-failure-cost", { ...failureExample, replacement: -1 });
+assert.strictEqual(calculators["packaging-failure-cost"](failureExample).primary, "$867.60");
+checks += 1;
+
+const trialExample = { inspectedA: 120, damagedA: 3, materialCostA: 1.4, minutesA: 4.2, weightA: 2.8, inspectedB: 120, damagedB: 1, materialCostB: 1.62, minutesB: 3.8, weightB: 2.7, hourly: 21, currency: "$" };
+primary("packaging-trial-comparison", trialExample, 1.67, 0.001, "damage-rate point difference");
+assert.strictEqual(calculators["packaging-trial-comparison"]({ ...trialExample, damagedA: 0, damagedB: 0 }).primary, "Same observed damage rate");
+checks += 1;
+throws("packaging-trial-comparison", { ...trialExample, damagedA: 121 });
+throws("packaging-trial-comparison", { ...trialExample, inspectedB: "" });
+assert.strictEqual(calculators["packaging-trial-comparison"](trialExample).primary, calculators["packaging-trial-comparison"](trialExample).primary);
+checks += 1;
+
+const varianceExample = { recordedLength: 12, recordedWidth: 10, recordedHeight: 8, recordedWeight: 4, observedLength: 12.3, observedWidth: 10.1, observedHeight: 8.4, observedWeight: 4.2, dimensionTolerance: 5, weightTolerance: 5 };
+assert.strictEqual(calculators["package-weight-dimension-variance"](varianceExample).primary, "Within entered tolerances");
+checks += 1;
+assert.strictEqual(calculators["package-weight-dimension-variance"]({ ...varianceExample, observedLength: 12, observedWidth: 10, observedHeight: 8, observedWeight: 4, dimensionTolerance: 0, weightTolerance: 0 }).primary, "Within entered tolerances");
+checks += 1;
+assert.strictEqual(calculators["package-weight-dimension-variance"]({ ...varianceExample, dimensionTolerance: 4, weightTolerance: 4 }).primary, "Review measurement variance");
+checks += 1;
+throws("package-weight-dimension-variance", { ...varianceExample, recordedLength: 0 });
+throws("package-weight-dimension-variance", { ...varianceExample, observedWeight: -1 });
+assert.deepStrictEqual(calculators["package-weight-dimension-variance"](varianceExample), calculators["package-weight-dimension-variance"](varianceExample));
+checks += 1;
+
+assert.strictEqual(Object.keys(calculators).length, 36, "Expected 36 calculator implementations");
+assert.ok(checks >= 181, `Expected at least 181 independent checks; found ${checks}`);
 console.log(`CALCULATION VERIFICATION PASS — ${Object.keys(calculators).length} calculators, ${checks} independent checks`);
