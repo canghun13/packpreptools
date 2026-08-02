@@ -690,7 +690,11 @@ git status
 ### Git 및 배포
 
 - 구현 커밋: `822989015e6e600fed11ba2010997e75e5a98b68` — Add packaging quality and damage control tools
-- handover 커밋과 push·GitHub Pages·실도메인 확인 결과는 이 섹션의 후속 기록에서 갱신한다.
+- 조사·QA 기록 커밋: `abc0672d1d4bd7b05f9aee8ec0b1c7c09dbdd559` — Document quality cluster research and QA
+- push: 위 두 커밋을 `origin/main`에 push 완료.
+- GitHub Pages: run `30730939325`가 `abc0672d1d4bd7b05f9aee8ec0b1c7c09dbdd559` 기준 build/deploy 성공.
+- 실배포 확인: `/quality.html`에서 신규 도구 4개와 `20260802-quality` 자산 확인. 390px 실도메인 Shipping Damage Rate Calculator에 1,250/14 입력 시 `1.12% observed damage rate`, 오류 0, 가로 넘침 0. 신규 Guide·Reference의 고유 title/H1/검토일 확인.
+- 사용자 관리 영역: 실도메인 홈페이지에서도 footer 다음 위치와 KittyLaunch·sellwithboost·twelve.tools·findly.tools 링크 4개를 확인. 콘솔 오류 0.
 
 ### 남은 위험과 운영 관찰
 
