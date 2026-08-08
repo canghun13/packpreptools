@@ -710,3 +710,86 @@ git status
 ## 2026-08-06
 
 - 메인 페이지 푸터 아래의 디렉토리 뱃지 영역은 사용자가 직접 관리하는 영역이므로 수정·삭제·리팩터링하지 않는다.- https://boostdomainrating.com/ 에 등록 (내가 직접함)
+
+## 2026-08-08 — 신규 소규모 클러스터 확장성 재검토
+
+### 시작 상태와 실제 범위
+
+- 시작 커밋: `471beaab34d29a86a73f35cc8225d6cb8b4ab6cd` (`origin/main`과 일치), 브랜치 `main`, working tree clean.
+- origin: `https://github.com/canghun13/packpreptools.git`.
+- 실제 공개 HTML 69개, 계산기 36개, Guides 13개, Reference 11개, sitemap 등재 URL 68개(404 제외)를 저장소에서 다시 확인했다.
+- 최신 추가 범위는 Packaging Quality & Damage Control 허브 1개, 계산기 4개, Guide 1개, Reference 1개다. 이미 완료된 이 범위는 반복 구현하지 않았다.
+- 홈페이지 footer 다음의 KittyLaunch, sellwithboost, twelve.tools, findly.tools, BoostDomainRating 배지 5개는 사용자 관리 영역이다. 이번 작업에서 HTML, 링크, 위치, 구조, 스타일, 생성 로직을 수정하지 않았다.
+
+### 조사 방법과 한계
+
+- 정확한 유료 검색량 도구에는 접근하지 못했으므로 검색량 수치를 만들지 않았다. 실제 검색 결과의 도구형 페이지 비중, 반복되는 장기 검색어, 최근 실무 질문, 무료 도구·SaaS의 입력/결과 범위를 근거로 판단했다.
+- 대표 검색어: `ecommerce return processing cost calculator`, `reverse logistics calculator free`, `packaging supplier quote comparison calculator MOQ`, `packaging quantity discount price break calculator`, `pick pack error rate calculator`, `order accuracy calculator fulfillment`, `split shipment vs consolidated shipping cost calculator`, `packaging sustainability empty space calculator`.
+- 조사 축: Returns & Reverse Logistics, Packaging Purchasing & Quote Analysis, Fulfillment Accuracy & Rework, Shipment Consolidation, Packaging Sustainability.
+
+### 확인한 검색 수요와 주요 경쟁 범위
+
+- Returns & Reverse Logistics: 반품률, 반품 1건 비용, 재입고 노동, 회수 가능한 상품 가치, 반품률 개선 효과를 계산하려는 반복 의도가 검색 결과와 실무 질문에서 확인됐다. 그러나 Calcrux Return Rate Calculator, Eightx Real Cost of Returns, Ecombone Return Cost, theCalcs Returns Cost Impact, ShipWave Returns Cost Calculator가 이미 무료로 연간 비용·건당 비용·회수 가치·개선 시나리오를 제공한다.
+  - https://calcrux.com/tools/ecommerce/return-rate-calculator
+  - https://eightx.co/tools/real-cost-of-returns-calculator/
+  - https://ecombone.com/tools/return-cost
+  - https://www.thecalcs.com/calculators/business-marketing/returns-cost-impact-calculator
+  - https://shipwave.app/tools/returns-cost-calculator
+- Packaging Purchasing & Quote Analysis: 실제 견적의 운임·수수료·MOQ·리드타임·셋업비와 수량 할인 때문에 표시 단가만 비교할 수 없다는 의도가 확인됐다. Packmatch와 HoleScale은 포장 공급업체 견적·MOQ·리드타임 비교를, ZentPak은 포장 가격 구간을, QuoteCostCalc·KeyBS·worowo는 복수 공급업체의 landed/true unit cost 비교를, MonsiTools는 MOQ·보관비·판매 속도 기반 손익 판단을 제공한다. Colorado Sun의 포장 계산기는 tooling amortization도 포함한다.
+  - https://custompackagingcompare.com/
+  - https://holescale.com/
+  - https://zentpak.com/packaging-cost-calculator/
+  - https://quotecostcalc.com/
+  - https://keybs.io/calculator/supplier-quote-comparison
+  - https://www.worowo.com/business-calculators/unit-price-comparison/
+  - https://monsitools.com/tools/moq-break-even-finder/
+  - https://resources.coloradosuninc.com/calculators/plastic-packaging/plastic-packaging-cost-calculator/
+- Fulfillment Accuracy & Rework: 오류 없는 주문 비율, 오피킹 비용, 재작업 시간을 계산하려는 의도와 분모를 주문/품목/배송 중 무엇으로 정의할지에 대한 실무 질문이 확인됐다. Logiwa Picking Accuracy Calculator가 정확도 공식을 무료 제공하고, Luis Dev Studio Pick-and-Pack Cost Calculator는 오류율과 재작업 비용을 이미 총 pick-and-pack 비용에 포함한다. WMS·3PL SaaS가 실행 데이터와 연결하는 영역도 강하다.
+  - https://www.logiwa.com/resources/free-calculators/picking-accuracy-calculator
+  - https://luisdevstudio.com/tools/pick-and-pack-cost-calculator
+  - https://www.abelwomack.com/wp-content/uploads/KR-CalculatingTrueCostofAccuracy-whitepaper.pdf
+- Shipment Consolidation: 복수 주문을 따로 보내는 경우와 합배송하는 경우의 운송비·처리비·고객 부담·마진을 비교하려는 의도가 확인됐다. InstaSupport의 무료 도구가 해당 시나리오를 이미 직접 비교하며, Pack Prep Tools의 Bundle Packing Cost, Multi-Item Box Fit, Case Pack, Carton Count와도 입력·결과 경계가 겹친다.
+  - https://instasupport.io/tools/bundling-consolidation-savings-calculator
+- Packaging Sustainability: empty space, right-sizing, material use, CO2/환경 영향 의도는 확인됐다. Packsize는 박스 수·치수·빈 공간을 사용한 무료 sustainability calculator를 제공하고, Australian Recycling Label Marketplace도 소기업용 Packaging Impact Calculator를 제공한다. 환경 환산계수와 규정 판단을 독자 기본값으로 넣으면 검증·지역·시점 위험이 생긴다.
+  - https://www.packsize.com/resources/sustainability-calculator
+  - https://www.arlmarketplace.org.au/resources/The%20Packaging%20Impact%20Calculator
+
+### 기존 페이지 중복 검토
+
+- 반품 비용은 Shipping Damage Rate, Packaging Failure Cost, Order Packing Time, Packaging Cost와 비용·처리시간 입력이 겹치며, 반품 정책·매출·상품 회수까지 확장하면 Pack Prep Tools의 outbound packaging 범위를 벗어난다.
+- 견적/MOQ 도구는 Monthly Packaging Spend, Packaging Material Budget, Packaging Supply Reorder Point, Packaging Waste Allowance와 구매량·사용량·현금·폐기 허용량이 겹친다. 복수 견적 정규화만 독립적이지만, 그 하나만으로 4개 이상의 강한 도구 클러스터가 되지 않는다.
+- 정확도/재작업 도구는 Shipping Damage Rate, Packaging Failure Cost, Labor Capacity per Shift, Order Packing Time과 비율·비용·노동시간 계산이 겹치고, pick accuracy는 포장보다 WMS/warehouse execution 의도가 강하다.
+- 합배송은 Bundle Packing Cost, Multi-Item Box Fit, Case Pack, Carton Count와 직접 연결되지만 별도 클러스터로 만들면 기존 계산을 다른 이름으로 재구성하게 된다.
+- 지속가능성은 Box Utilization, Void Fill, Packaging Waste Allowance, Box Volume과 empty-space·재료량 핵심 계산이 겹친다. 검증된 지역별 환경계수 없이 탄소 결과를 추가하지 않는다.
+
+### 후보별 판정
+
+- Returns & Reverse Logistics — 기각. 실제 수요는 강하지만 무료 경쟁이 포화되어 있고, 최소 4개 도구를 만들면 기존 품질·비용·노동 계산과 중복되거나 반품 정책/매출 영역으로 벗어난다.
+- Packaging Purchasing & Quote Analysis — 보류. 실제 견적 비교 의도는 명확하지만 전문 포장 견적 플랫폼과 무료 supplier comparison 도구가 강하다. Quote Comparison 한 개는 차별화 여지가 있으나 MOQ Coverage, Setup Amortization, Price Break, Purchase Schedule을 함께 만들면 기존 예산·reorder·waste 도구와 중복된다.
+- Fulfillment Accuracy & Rework — 기각. 무료 정확도/비용 계산기와 WMS SaaS가 강하고 Pack Prep Tools의 포장 중심 범위보다 창고 피킹 운영에 가깝다.
+- Shipment Consolidation — 기각. 강한 무료 직접 경쟁 도구가 있으며 기존 bundle/carton/fit 도구와 핵심 의도가 겹친다.
+- Packaging Sustainability — 기각. 기존 right-sizing 도구와 중복되고, 환경 환산계수·규정 해석을 안전하게 유지할 근거와 운영 체계가 현재 없다.
+
+### 최종 결정과 변경 범위
+
+- 최종 결정: **NO-GO — 신규 클러스터와 공개 페이지를 구현하지 않음.**
+- 구현 조건 중 `기존 계산과 실질적으로 다른 독립적 반복 사용 도구 4개 이상`과 `강한 무료 경쟁 대비 명확한 차별점`을 동시에 충족한 후보가 없다.
+- 숫자를 맞추기 위한 약한 계산기, 이름만 바꾼 기존 계산, 설명용 허브·Guide·Reference를 추가하지 않았다.
+- 프로덕션 HTML, CSS, JavaScript, 생성기, URL, sitemap, robots, llms, 페이지 원장, 사용자 관리 배지 영역은 모두 변경하지 않았다. 변경 파일은 이 `handover.md` 1개뿐이다.
+- 최종 수량은 공개 HTML 69개, 계산기 36개, Guides 13개, Reference 11개, sitemap URL 68개로 유지한다.
+
+### QA와 추후 재검토 조건
+
+- 자동 QA: PASS — 공개 HTML 69개, sitemap URL 68개, JavaScript 5개, 계산기 36개, Guides 13개, Reference 11개, 긴 문단·문장 중복 0.
+- 계산 검증: PASS — 계산기 36개, 독립 검사 181개.
+- 변경 범위 확인: PASS — `git diff --check` 통과, 변경 파일은 `handover.md` 1개뿐이며 index/생성기/CSS/JavaScript/sitemap/robots/llms diff 0. 저장소의 사용자 관리 배지 링크 수 5개 유지.
+- 브라우저 smoke QA: PASS — 실도메인 Homepage, Tools, Quality 허브, Shipping Damage Rate Calculator를 1440/1280/1024/768/390px에서 확인한 20개 조합 모두 가로 넘침 0, H1·Header·Footer 존재, NaN/Infinity 0.
+- 계산기 UI: PASS — 390px 실도메인에서 1,250건 중 14건 입력 시 `1.12% observed damage rate`, Reset 후 기본 안내 복원, 10건 중 11건 입력 시 `Damaged shipments cannot exceed shipments reviewed.` 오류 표시, 콘솔 오류 0.
+- 모바일/사용자 관리 영역: PASS — 390px 메뉴 열림과 `aria-expanded=true`, footer 뒤 KittyLaunch·sellwithboost·twelve.tools·findly.tools·BoostDomainRating 배지 5개 노출, 가로 넘침 0.
+- 프로덕션 코드 변경이 없으므로 신규 계산 정상·경계·오류 테스트나 전체 69페이지 재렌더 대상은 없다. 위 회귀 검사와 대표 실도메인 5폭 smoke QA로 현 상태를 검증했다.
+- HIGH 위험: 없음.
+- MEDIUM 위험: 정확한 검색량·Search Console query·GA4 사용 데이터 없이 검색 결과 구성으로 판단했다. 이 기록은 수요 부재가 아니라 현재 차별화 근거 부족을 의미한다.
+- MEDIUM 위험: `scripts/generate-site.js`에는 과거 사용자 관리 배지 4개가 포함되어 있고 현재 `index.html`에는 사용자가 추가한 배지 5개가 있다. 사용자 지시에 따라 이번 작업에서는 생성기와 배지 영역을 수정하지 않았다. 향후 사이트 생성 작업은 배지 영역을 먼저 별도 보존하고 생성 후 정확히 복원·비교해야 한다.
+- 재검토 신호: Search Console에서 `packaging supplier quote comparison`, `packaging MOQ calculator`, `packaging price break calculator` 계열이 반복 노출되거나, 사용자 요청/GA4에서 복수 공급업체 견적 비교 요구가 확인될 때 Packaging Purchasing 단일 도구부터 다시 검증한다.
+- 다음 권장 작업: 최소 30일의 기존 36개 계산기별 진입·계산 실행·검색어 데이터를 수집해 약한 기존 도구와 실제 수요 공백을 먼저 확인한다. 공개 페이지 수 확대보다 관찰 데이터에 근거한 보강을 우선한다.
+- 다음 권장 모델: Sol / 추론 강도 중간.
