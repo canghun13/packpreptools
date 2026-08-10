@@ -1272,6 +1272,10 @@ h1 {
     width: 100%;
   }
 
+  .content-table.calculator-input-table tbody th {
+    width: 100%;
+  }
+
   .operations-table thead {
     position: absolute;
     width: 1px;

@@ -56,6 +56,7 @@ const indexableCanonicals = [];
 const contentWarnings = [];
 const paragraphOwners = new Map();
 const sentenceOwners = new Map();
+let calculatorInputTableCount = 0;
 
 function plainText(html) {
   return html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&[a-z0-9#]+;/gi, " ").replace(/\s+/g, " ").trim();
@@ -164,6 +165,7 @@ for (const file of htmlFiles) {
     const articleForSentences = article
       .replace(/<nav class="document-toc"[\s\S]*?<\/nav>/gi, " ")
       .replace(/<ul class="related-register"[\s\S]*?<\/ul>/gi, " ")
+      .replace(/<table class="content-table calculator-input-table"[\s\S]*?<\/table>/gi, " ")
       .replace(/<p class="meta-line"[\s\S]*?<\/p>/gi, " ");
     const articleText = plainText(articleForSentences);
     articleText.split(/(?<=[.!?])\s+/).forEach((sentence) => addDuplicateCandidate(sentenceOwners, sentence, name));
@@ -178,6 +180,13 @@ for (const file of htmlFiles) {
     if (!/<h2 id="mistakes">Common mistakes<\/h2>/i.test(html) || !/<h2 id="inputs">How to choose the inputs<\/h2>/i.test(html)) fail(`${name}: mistakes or input guidance missing.`);
     if ((matches(html, /<ul class="related-register">[\s\S]*?<\/ul>/gi)[0]?.[0].match(/href=/g) || []).length < 3) fail(`${name}: related workflow links incomplete.`);
     if (!html.includes(`Last reviewed:`)) fail(`${name}: last reviewed missing.`);
+    const calculatorInputTables = matches(html, /<table class="content-table calculator-input-table">[\s\S]*?<\/table>/gi);
+    if (calculatorInputTables.length !== 1) {
+      fail(`${name}: expected one calculator input-definition table; found ${calculatorInputTables.length}.`);
+    } else {
+      calculatorInputTableCount += 1;
+      if (/<td>[^<]*Calculator:\s/i.test(calculatorInputTables[0][0])) fail(`${name}: repeated calculator title found in input guidance.`);
+    }
   }
   if (name.startsWith("guides/")) {
     ["prepare", "scenario", "decisions", "mistakes", "closeout", "evidence", "checklist"].forEach((id) => {
@@ -213,6 +222,9 @@ const stylesheet = fs.readFileSync(path.join(ROOT, "assets", "styles.css"), "utf
 });
 if (!stylesheet.includes("--navy-950") || !stylesheet.includes("--blue-600") || !stylesheet.includes("--amber-600")) {
   fail("assets/styles.css: dispatch-control palette tokens missing.");
+}
+if (!/\.content-table\.calculator-input-table tbody th\s*{\s*width:\s*100%;\s*}/i.test(stylesheet)) {
+  fail("assets/styles.css: calculator input-table mobile first-cell override missing.");
 }
 
 const sitemap = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
@@ -264,3 +276,4 @@ if (contentWarnings.length) {
 }
 console.log(`AUTO QA PASS — ${htmlFiles.length} HTML, ${sitemapUrls.length} sitemap URLs, ${scriptFiles.length} JavaScript files`);
 console.log(`CONTENT QA PASS — ${toolFiles.length} calculators, ${guideFiles.length} guides, ${referenceFiles.length} references; duplicate long paragraphs 0; duplicate long sentences 0`);
+console.log(`RESPONSIVE TABLE QA PASS — ${calculatorInputTableCount} calculator input-definition tables use the scoped mobile override`);

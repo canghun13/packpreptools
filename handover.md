@@ -923,3 +923,46 @@ git status
 
 - Shipping Damage Rate의 100/1은 입력 방법을 보여 주는 예시일 뿐 실제 운영 목표가 아니다. 안내 문구를 제거하거나 결과를 자동 계산 상태로 바꾸면 벤치마크로 오해될 위험이 다시 커진다.
 - Last reviewed 전용 class라는 현재 계약이 바뀌어 다른 의미의 요소에 `meta-line`을 재사용할 경우 새 요소에는 별도 component class를 사용해야 한다.
+
+
+## 2026-08-10 — Calculator 입력 설명 표 모바일 공통 수정
+
+### 실제 문제와 전체 영향 범위
+
+- 사용자가 확인한 URL은 `https://packpreptools.com/tools/shipping-damage-rate.html`과 `https://packpreptools.com/tools/dimensional-weight.html`이다.
+- generator와 36개 Calculator HTML을 전수 조사한 결과, 모든 Calculator가 `How to choose the inputs` 아래에서 동일한 `<table class="content-table">`과 `tbody > tr > th + td` 구조를 사용했다. 전체 입력 설명 행은 182개다.
+- 라이브 390px 기준 36개 모두 첫 `th`가 98.8px, 설명 `td`가 353px였다. 첫 셀은 행 폭의 27.8%만 차지한 채 block으로 남았고, 설명은 다음 줄 전체 폭으로 내려가 첫 셀 오른쪽에 255.2px가 비었다. horizontal overflow는 없지만 36개 모두 동일한 시각 결함이었다.
+- 데스크톱 규칙 `.content-table tbody th { width: 28%; }`는 class + element 2개의 specificity를 가진다. 공통 680px 모바일 규칙 `.content-table th { width: 100%; }`보다 강해서 `display: block`은 적용되지만 첫 셀의 width만 28%로 남았다.
+- 이전 Decision guide 수정은 `.content-table.decision-guide-table tbody th`만 대상으로 했으므로 `decision-guide-table` class가 없는 Calculator에는 적용되지 않았다. Guide와 Reference도 `.content-table`을 공유하므로 무제한 전역 override는 사용하지 않았다.
+
+### 공통 구현과 문구 정리
+
+- authoritative source인 `scripts/generate-site.js`가 모든 Calculator 입력 설명 표에 공통 `calculator-input-table` class를 생성한다.
+- 기존 `max-width: 680px` 구간에 `.content-table.calculator-input-table tbody th { width: 100%; }`를 추가했다. `!important` 없이 데스크톱 규칙보다 높은 specificity로 Calculator component만 교정한다.
+- 390px 수정 후 36개 Calculator, 182개 행 모두 `th`와 `td`가 353px로 행 폭 355px의 99.4%를 차지한다. 오른쪽 잔여는 1px 테두리뿐이고 두 셀의 vertical gap은 0px다. 실패 페이지, clipping, overflow, console error는 모두 0이다.
+- `fieldAdvice()`가 모든 셀 앞에 Calculator 전체 제목을 반복하던 공통 접두사를 제거했다. 182개 행 모두 입력 이름 바로 아래에서 `Measure…`, `Count…`, `Enter…` 등 설명으로 시작하며 의미 정보는 유지된다. 공통 component 안내는 본문 고유성 검사에서 제외해 의도적 재사용과 실제 본문 중복을 구분했다.
+- 새 CSS가 필요한 Calculator 36개만 `styles.css?v=20260810-calculator-inputs`로 cache version을 갱신했다. Guide, Reference, 홈페이지, 허브에는 의미 있는 diff가 없다.
+
+### 자동 회귀 검사
+
+- `scripts/qa.js`에 각 Calculator가 정확히 한 개의 `content-table calculator-input-table`을 가지는지 검사하는 규칙을 추가했다.
+- 입력 안내에 `Calculator:` 제목 접두사가 다시 생성되면 실패한다.
+- scoped CSS selector와 `width: 100%` override가 사라지면 실패한다.
+- QA 출력은 `RESPONSIVE TABLE QA PASS — 36 calculator input-definition tables use the scoped mobile override`를 추가로 보고한다. 저장소에 브라우저 런타임 의존성을 추가하지 않고 기존 정적 QA 흐름에 자연스럽게 포함했다.
+
+### 5 viewport와 회귀 QA
+
+- 1440/1280/1024px: Calculator 표는 879px 행에서 `th` 246.1px, `td` 632.9px의 기존 2열 `table-cell` 구조를 유지했다.
+- 768px: 720px 행에서 `th` 201.6px, `td` 518.4px의 2열 구조를 유지했다.
+- 390px: 355px 행에서 `th`와 `td` 모두 353px block, vertical gap 0px, clipping/overlap/horizontal overflow 0.
+- 필수 50개 조합: Shipping Damage Rate, Dimensional Weight, Packaging Cost, Pallet Utilization, Packaging Failure Cost, 대상 Decision guide, 다른 Guide, Reference, 홈페이지, Tools 허브를 5개 폭에서 확인했다. horizontal overflow, cell clipping, element overlap, input overflow, console error 모두 0. 모바일 메뉴도 정상이다.
+- 390px 전체 Calculator 전수: 36/36 페이지, 182/182 행 정상. 동일 결함 잔존 페이지 0.
+- Shipping Damage Rate는 100/1과 illustrative 안내, Calculate 1%, Reset 100/1 + idle을 유지했다. Dimensional Weight는 기존 기본값과 Calculate 6.91 lb, Reset idle을 유지했다.
+- Decision guide는 390px에서 Observation/response 모두 353px로 유지됐다. `.meta-line`은 border-top 0px, margin-top 24px를 유지했다.
+- 자동 QA PASS: 공개 HTML 69, sitemap URL 68, JavaScript 5, Calculator 36, Guide 13, Reference 11, 긴 본문 문단·문장 중복 0. 계산 검증 36개/181회와 `git diff --check` PASS.
+- generator 실행 후 홈페이지 사용자 관리 배지 KittyLaunch, sellwithboost, twelve.tools, findly.tools, BoostDomainRating 5개의 HTML/href/이미지/개수/순서/위치가 보존됐고 `index.html`은 exact match, diff 0이다.
+
+### 남은 위험
+
+- `calculator-input-table`은 생성기 소유 Calculator 설명표 전용 계약이다. 향후 별도 Calculator template을 추가하면 새 표에도 이 class와 QA 규칙을 적용해야 한다.
+- 정적 QA는 component class와 scoped CSS 계약을 보호하고, 이번 작업의 실제 computed width 전수 검증은 브라우저에서 수행했다. CSS cascade를 대규모로 재구성할 때는 390px computed width 전수 QA를 다시 실행한다.

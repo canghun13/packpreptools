@@ -1178,7 +1178,7 @@ function ga() {
 function head({ file, title, description, type = "website", noindex = false, schema }) {
   const canonical = pageUrl(file);
   const usesReviewedMeta = /^(tools|guides|reference)\//.test(file) || ["about.html", "contact.html", "privacy.html"].includes(file);
-  const styleVersion = usesReviewedMeta ? "20260810-review-ux" : "20260802-quality";
+  const styleVersion = file.startsWith("tools/") ? "20260810-calculator-inputs" : usesReviewedMeta ? "20260810-review-ux" : "20260802-quality";
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -1417,7 +1417,7 @@ function fieldAdvice(tool, field) {
     divisor: `Obtain ${label.toLowerCase()} from the current official service, marketplace, or account method and match its unit system.`
   };
   const advice = guidance[type] || `Enter ${label.toLowerCase()} from the current pack specification or measured operating record.`;
-  return `${tool.title}: ${advice}`;
+  return advice;
 }
 
 function calculatorPage(tool) {
@@ -1458,7 +1458,7 @@ function calculatorPage(tool) {
   <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
     <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
     <h2 id="solves">What this calculator solves</h2><p>${content.solves}</p>
-    <h2 id="inputs">How to choose the inputs</h2><p>${content.inputs}</p><table class="content-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody>${inputRows}</tbody></table>
+    <h2 id="inputs">How to choose the inputs</h2><p>${content.inputs}</p><table class="content-table calculator-input-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody>${inputRows}</tbody></table>
     <h2 id="method">How the calculation works</h2><div class="formula">${tool.formula}</div>${calculationFlow}
     <h2 id="example">Worked example</h2><div class="example-block"><p>${tool.example}</p><p><strong>Next action:</strong> ${content.workflow[1]}</p></div>
     <h2 id="interpretation">How to interpret the result</h2><p>${content.decision}</p>
