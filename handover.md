@@ -883,3 +883,43 @@ git status
 - Automated QA: PASS — JavaScript syntax; 69 HTML pages, 68 sitemap URLs, 5 JavaScript files; 36 calculators, 13 Guides, 11 References; duplicate long paragraphs/sentences 0.
 - Calculation verification: PASS — 36 calculators and 181 independent checks.
 - `git diff --check`: PASS.
+
+
+## 2026-08-10 — Last reviewed 종료부와 Shipping Damage Rate 초기 입력 UX
+
+### 조사 결과와 디자인 판단
+
+- `meta-line`은 공개 HTML 63곳에서 63회 사용된다: Tools 36, Guides 13, Reference 11, About/Contact/Privacy 3. 모든 사용처의 내용은 `Last reviewed:`이며 다른 의미의 구분 요소에는 사용되지 않는다.
+- 기존 `.meta-line`은 `margin-top: 2.5rem`, `padding-top: 0.8rem`, `border-top: 1px solid var(--slate-200)`였다. Related links가 이미 위쪽 2px 선과 각 항목의 아래쪽 1px 선으로 닫힌 뒤 40px 간격, 패딩, 별도 선이 다시 나와 모바일과 데스크톱 모두 중복 구분처럼 보였다.
+- `Last reviewed`는 콘텐츠 구획이 아니라 보조 메타정보이므로 전용 공통 class에서 선과 패딩을 제거하고 24px 수직 간격만 유지하는 전역 수정이 가장 일관되고 안전하다고 판단했다. Related links와 다른 컴포넌트의 border는 변경하지 않았다.
+
+### Calculator 기본값 감사와 구현
+
+- 전체 Calculator 36개, 숫자 입력 182개를 감사했다. 32개 계산기는 현재 기본값만으로 정상 계산된다. `value="0"` 기본값과 placeholder만 있는 입력은 0개였다.
+- 빈 값으로 시작하는 계산기는 최신 품질 도구 4개였다: Shipping Damage Rate, Packaging Failure Cost, Packaging Trial Comparison, Package Weight & Dimension Variance.
+- 실제 수정은 Shipping Damage Rate 1개뿐이다. 두 입력은 의미가 단순하고 `100 reviewed / 1 damaged = 1%`가 즉시 이해 가능한 예시인 반면, 나머지 세 계산기는 실제 직접비·통제 시험·측정값과 조직별 tolerance가 필요해 임의값이 운영 기준으로 오해될 위험이 크므로 빈 상태를 유지했다.
+- Shipping Damage Rate 기본값은 `Shipments reviewed = 100`, `Shipments with observed damage = 1`이다. 입력 패널에 `Example values are illustrative, not industry benchmarks.`를 표시해 업계 평균이나 권장 손상률이 아님을 명시했다.
+- 첫 진입 결과 패널은 계산 완료로 표시하지 않고 기존 `idle` 안내를 유지한다. Calculate 후 정확히 `1% observed damage rate`, 99건 미기록 손상, 100건당 1건을 표시한다.
+- Reset은 HTML form의 정의된 기본값 100/1로 복원하며 결과 패널과 오류는 기존 `site.js` 흐름으로 `idle` 상태와 `Enter your package details to begin.` 안내로 돌아간다.
+
+### 변경 범위
+
+- authoritative source: `scripts/generate-site.js`의 Shipping Damage Rate registry, 선택적 manifest note 생성, Last reviewed 사용 페이지용 stylesheet cache version.
+- 공통 스타일: `assets/styles.css`의 `.meta-line`과 새 `.manifest-note`.
+- 생성 HTML: Last reviewed를 사용하는 63개 페이지는 새 stylesheet version만 반영했고, Shipping Damage Rate에는 추가로 100/1과 예시 안내가 반영됐다. 홈페이지와 Last reviewed가 없는 허브·기타 페이지에는 의미 있는 diff가 없다.
+
+### QA
+
+- 로컬 브라우저 1440/1280/1024/768/390px: 홈페이지, Packaging Trial and Shipping Damage Review, Shipping Damage Rate, How to Measure a Box, Packaging Quality and Damage Metrics, Dimensional Weight, Packaging Failure Cost의 35개 조합을 확인했다. 모든 조합에서 horizontal overflow 0, 실제 clipping 0, overlap 0, input overflow 0, console error 0.
+- Last reviewed: 5개 폭 모두 border-top 0px, padding-top 0px, Related links 다음 간격 24px. Guide/Reference/Tool에서 동일하게 자연스러운 종료 구조를 유지한다.
+- Shipping Damage Rate: 첫 진입 100/1과 idle; Calculate 1%; 1,250/14 재계산 1.12%; 3/1 반올림 33.33%; Reset 100/1과 idle; blank·0 denominator·negative는 `Shipments reviewed must be greater than zero.`; 10/11은 `Damaged shipments cannot exceed shipments reviewed.`; NaN/Infinity는 finite-number 오류. 모든 상태에서 overflow와 console error 0.
+- 390px 모바일 메뉴: `aria-expanded=true`, navigation 노출 정상.
+- 대표 회귀 계산기: Dimensional Weight 기본값으로 6.91 lb, Reset 후 기존 기본값과 idle 복원. Packaging Failure Cost는 빈 초기 상태와 필수값 오류를 유지하고 예시 입력에서 $867.60. 콘솔 오류와 overflow 0.
+- 자동 QA: PASS — 69 HTML, sitemap URL 68, JavaScript 5; Calculator 36, Guides 13, Reference 11; 긴 문단·문장 중복 0.
+- 계산 검증: PASS — 36개 계산기, 독립 검사 181개. JavaScript syntax와 `git diff --check`도 PASS.
+- 사용자 관리 영역: generator 실행 전후 홈페이지의 KittyLaunch, sellwithboost, twelve.tools, findly.tools, BoostDomainRating 5개 HTML/href/이미지/개수/순서/위치 보존. `index.html` diff 0.
+
+### 남은 위험
+
+- Shipping Damage Rate의 100/1은 입력 방법을 보여 주는 예시일 뿐 실제 운영 목표가 아니다. 안내 문구를 제거하거나 결과를 자동 계산 상태로 바꾸면 벤치마크로 오해될 위험이 다시 커진다.
+- Last reviewed 전용 class라는 현재 계약이 바뀌어 다른 의미의 요소에 `meta-line`을 재사용할 경우 새 요소에는 별도 component class를 사용해야 한다.

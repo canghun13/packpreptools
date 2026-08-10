@@ -674,6 +674,12 @@ h1 {
   gap: 1rem 1.2rem;
 }
 
+.manifest-note {
+  margin: 0.85rem 0 0;
+  color: var(--slate-600);
+  font-size: 0.82rem;
+}
+
 .field {
   min-width: 0;
 }
@@ -998,9 +1004,7 @@ h1 {
 }
 
 .meta-line {
-  margin-top: 2.5rem;
-  padding-top: 0.8rem;
-  border-top: 1px solid var(--slate-200);
+  margin-top: 1.5rem;
   color: var(--slate-500);
   font-size: 0.8rem;
 }

@@ -263,9 +263,10 @@ const qualityTools = [
     unit: false,
     currency: false,
     fields: [
-      ["shipments", "Shipments reviewed", "", "count"],
-      ["damaged", "Shipments with observed damage", "", "count"]
+      ["shipments", "Shipments reviewed", "100", "count"],
+      ["damaged", "Shipments with observed damage", "1", "count"]
     ],
+    exampleNote: "Example values are illustrative, not industry benchmarks.",
     formula: "Observed damage rate = damaged shipments ÷ shipments reviewed × 100",
     example: "In a documented 30-day review, 14 of 1,250 delivered shipments had product or package damage under the team’s written definition. The observed rate is 1.12%, with 1,236 shipments not recorded as damaged and one observed incident per 89.3 reviewed shipments.",
     interpretation: "Compare like-for-like review periods and preserve the damage definition used for each count.",
@@ -1176,7 +1177,8 @@ function ga() {
 
 function head({ file, title, description, type = "website", noindex = false, schema }) {
   const canonical = pageUrl(file);
-  const styleVersion = file === "guides/packaging-trial-and-damage-review.html" ? "20260810-decision-guide" : "20260802-quality";
+  const usesReviewedMeta = /^(tools|guides|reference)\//.test(file) || ["about.html", "contact.html", "privacy.html"].includes(file);
+  const styleVersion = usesReviewedMeta ? "20260810-review-ux" : "20260802-quality";
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -1434,6 +1436,7 @@ function calculatorPage(tool) {
   };
   const fields = tool.fields.map(([id, label, value, type]) => `<div class="field"><label for="${id}">${label}</label><div class="input-shell"><input id="${id}" name="${id}" type="number" inputmode="decimal" min="0" step="any" value="${value}" required aria-describedby="${id}-unit"><span class="suffix" id="${id}-unit">${suffix(type)}</span></div></div>`).join("");
   const select = tool.select ? `<div class="field field-wide"><label for="${tool.select[0]}">${tool.select[1]}</label><select id="${tool.select[0]}" name="${tool.select[0]}">${tool.select[2].map(([value, label]) => `<option value="${value}">${label}</option>`).join("")}</select></div>` : "";
+  const exampleNote = tool.exampleNote ? `<p class="manifest-note">${tool.exampleNote}</p>` : "";
   const related = tool.related.map((slug) => {
     const match = tools.find((item) => item.slug === slug);
     return `<li><a href="/tools/${slug}.html">${match.title}</a></li>`;
@@ -1448,7 +1451,7 @@ function calculatorPage(tool) {
   <header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: title }])}<p class="dispatch-meta"><span>${toolOperations[tool.slug].category}</span><span>Calculation utility</span></p><h1>${title}</h1><p class="lede">${tool.description}</p></div></header>
   <section class="calculator-console"><div class="page-shell">
     <div class="manifest-panel"><div class="manifest-header"><span>Shipment input manifest</span><span>Required fields / visible units</span></div>
-      <form class="calculator-form" data-calculator="${tool.slug}" novalidate><div class="manifest-grid">${unitOptions(tool)}${fields}${select}</div><div class="form-actions"><button class="button button-primary" type="submit">Calculate</button><button class="button button-quiet" type="reset">Reset</button></div><p class="form-error" data-error role="alert" aria-live="polite"></p></form>
+      <form class="calculator-form" data-calculator="${tool.slug}" novalidate><div class="manifest-grid">${unitOptions(tool)}${fields}${select}</div>${exampleNote}<div class="form-actions"><button class="button button-primary" type="submit">Calculate</button><button class="button button-quiet" type="reset">Reset</button></div><p class="form-error" data-error role="alert" aria-live="polite"></p></form>
     </div>
     <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
   </div></section>
