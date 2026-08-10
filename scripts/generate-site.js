@@ -1213,7 +1213,7 @@ function header(current) {
 </header>`;
 }
 
-const USER_MANAGED_HOME_BADGES = `<div class="page-shell" style="text-align:center;padding:30px 0;">
+const USER_MANAGED_HOME_BADGES_FALLBACK = `<div class="page-shell" style="text-align:center;padding:30px 0;">
   <a href="https://kittylaunch.com/p/packprep-tools" target="_blank" rel="noopener" style="display:inline-block;margin:0 2px;">
     <img src="https://kittylaunch.com/api/public/badges/launch_badge.svg?theme=light&name=PackPrep%20Tools" alt="PackPrep Tools on KittyLaunch" data-kittylaunch-badge="1" style="height:36px;" />
   </a>
@@ -1226,7 +1226,31 @@ const USER_MANAGED_HOME_BADGES = `<div class="page-shell" style="text-align:cent
   <a href="https://findly.tools/packpreptools?utm_source=packpreptools" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin:0 2px;">
     <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="Featured on Findly.tools" height="36px" />
   </a>
+  <a href="https://boostdomainrating.com/item/packpreptools.com?utm_source=badge" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin:0 2px;">
+    <img src="https://boostdomainrating.com/api/badge/packpreptools.com" alt="Pack Prep Tools - Domain Rating" style="height: 36px; width: auto;"/>
+  </a>
 </div>`;
+
+function extractUserManagedHomeBadges(homepageHtml) {
+  const footerEnd = homepageHtml.indexOf("</footer>");
+  const siteScriptStart = homepageHtml.indexOf('<script src="/assets/site.js', footerEnd);
+  if (footerEnd < 0 || siteScriptStart < 0) {
+    throw new Error("Cannot safely locate the user-managed homepage area.");
+  }
+
+  return homepageHtml.slice(footerEnd + "</footer>".length, siteScriptStart).trim();
+}
+
+function userManagedHomeBadges() {
+  const homepageFile = path.join(ROOT, "index.html");
+  if (!fs.existsSync(homepageFile)) return USER_MANAGED_HOME_BADGES_FALLBACK;
+
+  const homepageHtml = fs.readFileSync(homepageFile, "utf8");
+  const current = extractUserManagedHomeBadges(homepageHtml);
+  return current || USER_MANAGED_HOME_BADGES_FALLBACK;
+}
+
+const USER_MANAGED_HOME_BADGES = userManagedHomeBadges();
 
 function footer(afterFooter = "") {
   return `<footer class="site-footer">
@@ -1582,7 +1606,11 @@ function discoveryFiles() {
 }
 
 function generate() {
-  write("index.html", homepage());
+  const generatedHomepage = homepage();
+  if (extractUserManagedHomeBadges(generatedHomepage) !== USER_MANAGED_HOME_BADGES) {
+    throw new Error("User-managed homepage content changed during generation; index.html was not overwritten.");
+  }
+  write("index.html", generatedHomepage);
   write("tools/dimensional-weight.html", calculatorPage(tools[0]));
   fs.writeFileSync(path.join(ROOT, "favicon.png"), favicon());
   if (PILOT) return;

@@ -793,3 +793,57 @@ git status
 - 재검토 신호: Search Console에서 `packaging supplier quote comparison`, `packaging MOQ calculator`, `packaging price break calculator` 계열이 반복 노출되거나, 사용자 요청/GA4에서 복수 공급업체 견적 비교 요구가 확인될 때 Packaging Purchasing 단일 도구부터 다시 검증한다.
 - 다음 권장 작업: 최소 30일의 기존 36개 계산기별 진입·계산 실행·검색어 데이터를 수집해 약한 기존 도구와 실제 수요 공백을 먼저 확인한다. 공개 페이지 수 확대보다 관찰 데이터에 근거한 보강을 우선한다.
 - 다음 권장 모델: Sol / 추론 강도 중간.
+
+
+## 2026-08-10 — 전체 사이트 재감사 및 사용자 관리 배지 재생성 보호
+
+### 시작 상태와 실제 규모
+
+- 시작 커밋: `38c89d498504f18aadd69a85c11ef75221b65dfe`, 브랜치 `main`, `origin/main`과 일치, working tree clean.
+- 실제 공개 HTML 69개: 기본·허브 및 기타 9개, 계산기 36개, Guides 13개, Reference 11개.
+- sitemap URL 68개(404 제외). `llms.txt`는 계산기 36개, Guides 13개, Reference 11개를 동일 URL로 열거한다.
+- 계산기 분포: Package size and fit 7, Materials and usage 4, Cost and inventory 9, Labor and workflow 5, Master cartons 3, Pallet planning 4, Quality and damage control 4.
+- 최신 추가 범위는 2026-08-02 Packaging Quality & Damage Control의 허브 1개, 계산기 4개, Guide 1개, Reference 1개이며 반복 구현하지 않았다.
+- GSC/GA4 성과 데이터: 현재 작업 환경에 인증된 Search Console·GA4 데이터나 전용 연결이 없어 query, impression, CTR, landing, engagement, 계산 실행 수치를 확인하지 못했다. 숫자를 추정하지 않았다. 공개 페이지의 기존 GA4 ID `G-XR7JWJ36CD` 존재 여부만 저장소와 브라우저에서 검증했다.
+
+### 감사 범위와 후보 비교
+
+- 계산 정확성·기능: 전체 36개 계산기, 입력 검증, 단위, 반올림, Reset·오류 흐름과 독립 검사 181개를 확인했다. 대표 독립 교차계산은 DIM weight `960 ÷ 139 = 6.906... → 6.91 lb`, Box Size `10 + 2 × (0.5 + 0.25) = 11.5 in`, Shipping Damage Rate `14 ÷ 1,250 × 100 = 1.12%`, Packaging Failure Cost `(24 + 11 + 6 + (12 ÷ 60 × 21) + 3) × 18 = $867.60`과 일치했다. 즉시 수정할 계산 오류 근거는 없었다.
+- 콘텐츠·결과 해석: 계산기 36개, Guides 13개, Reference 11개가 기존 깊이 기준을 통과했고 긴 문단·문장 중복 0, assumptions·limitations·worked example·관련 workflow 누락 0이었다. word count만 늘릴 근거가 없어 기각했다.
+- UX·모바일: 라이브 홈페이지 1440/1280/1024/768/390px와 대표 계산기를 확인해 가로 넘침, Header/H1 충돌, NaN/Infinity, 콘솔 오류가 없었다. 390px 메뉴와 계산·Reset·오류 상태가 정상이라 공통 UI 변경을 기각했다.
+- 내부 연결: 모든 계산기·Guide·Reference는 허브에서 도달 가능하고 고아 페이지가 없다. `tools/carton-cube.html`은 허브 외 직접 유입 링크가 없어 상대적으로 약한 후보지만 GSC/GA4 검색·사용 신호가 없고 기능 결함도 아니므로 이번에는 변경하지 않았다.
+- 기존 검색 신호 페이지 보강: 실제 GSC/GA4 데이터 없이 특정 페이지의 CTR·순위·engagement 개선을 주장할 수 없어 기각했다.
+- 신규 Tool·클러스터: 2026-08-08의 REJECT/HOLD 후보를 뒤집을 새 데이터가 없고 기존 페이지 개선보다 가치가 높다는 증거가 없어 재조사·구현하지 않았다.
+- 사용자 관리 영역 보존: **채택.** 현재 `index.html`에는 KittyLaunch, sellwithboost, twelve.tools, findly.tools, BoostDomainRating 5개가 있으나 생성기 원본에는 4개만 있었다. 격리 복사본에서 기존 생성기를 실행하자 실제로 5개가 4개로 줄고 BoostDomainRating이 유실됐다. 추측이 아니라 재현 가능한 사용자 변경 손실 위험이며 다른 후보보다 우선순위가 높았다.
+
+### 최종 결정과 구현
+
+- 최종 결정: **GO — 사용자 관리 홈페이지 배지의 재생성 손실 방지.**
+- `scripts/generate-site.js`가 생성 전 현재 `index.html`의 `</footer>`와 homepage `site.js` 사이 사용자 관리 영역을 읽어 그대로 재사용하도록 변경했다.
+- 현재 파일이 없는 최초 생성용 fallback에도 기존 5개 배지를 현재 순서로 포함했다.
+- 기존 홈페이지에서 사용자 관리 영역의 경계를 안전하게 찾지 못하면 생성 시작 전에 오류로 중단한다.
+- 생성될 홈페이지의 사용자 관리 블록이 읽어 둔 원본과 정확히 일치하지 않으면 `index.html`을 쓰기 전에 오류로 중단한다. 향후 템플릿 변경도 조용히 배지를 삭제할 수 없다.
+- 실제 `index.html`의 배지 HTML, href, 표시 텍스트, 이미지, 개수 5개, 순서, footer 다음 위치는 변경하지 않았다. 프로덕션 HTML·CSS·계산 JavaScript·URL·sitemap·robots·llms·registry 데이터도 변경하지 않았다.
+- 변경 파일: `scripts/generate-site.js`, `handover.md` 2개.
+
+### QA 결과
+
+- 생성기 격리 회귀: PASS — 생성 전후 사용자 관리 블록 exact match, 배지 5개 모두 유지. 의도적으로 homepage 템플릿에서 사용자 관리 블록을 누락시킨 변형은 exit 1로 실패했고 `index.html` 해시는 쓰기 전후 동일했다.
+- JavaScript syntax: PASS — `node --check scripts/generate-site.js`.
+- 자동 QA: PASS — 공개 HTML 69개, sitemap URL 68개, JavaScript 5개, title/description/canonical/H1/GA4/JSON-LD, 중복 ID, 내부 링크, orphan, robots/sitemap/llms, 404 noindex 일치.
+- 콘텐츠 QA: PASS — 계산기 36개, Guides 13개, Reference 11개, 긴 문단·문장 중복 0.
+- 계산 검증: PASS — 계산기 36개, 독립 검사 181개.
+- 로컬 브라우저: PASS — 홈페이지 1440/1280/1024/768/390px에서 배지 href·이미지 5개와 순서 유지, 가로 넘침 0, Header/Footer/H1/GA4 유지, NaN/Infinity·콘솔 오류 0. 390px 메뉴 `aria-expanded=true`와 navigation 노출 확인.
+- 대표 계산기: PASS — 390px Shipping Damage Rate에서 1,250/14 입력 시 `1.12% observed damage rate`, Reset 후 기본 안내 복원, 10/11 입력 시 `Damaged shipments cannot exceed shipments reviewed.`, 가로 넘침·콘솔 오류·NaN/Infinity 0.
+- 라이브 변경 전 기준: 홈페이지 5개 폭에서 배지 5개, 가로 넘침 0, Header/Footer/H1/GA4 유지. 대표 계산기 정상·Reset·오류와 콘솔 오류 0 확인.
+- `git diff --check`: PASS. 사용자 관리 영역 및 `index.html` diff 0.
+- 최종 규모: 공개 HTML 69개, 계산기 36개, Guides 13개, Reference 11개, sitemap URL 68개.
+
+### 남은 위험과 재검토 조건
+
+- HIGH: 없음. 재현된 5→4 배지 손실 경로는 보호했다.
+- MEDIUM: GSC/GA4 성과 데이터가 없어 기존 페이지의 검색·사용 우선순위를 정하지 못했다. 최소 30일의 query·landing·계산 실행 데이터가 확보되면 기존 페이지 개선을 다시 비교한다.
+- LOW: 사용자 관리 영역 경계가 `</footer>`와 homepage `site.js` 위치에 의존한다. 구조가 바뀌면 생성기가 실패하도록 설계되어 조용한 손실은 없지만, 의도적 공통 footer/script 구조 변경 시 보존 경계도 함께 갱신해야 한다.
+- LOW: Carton Cube Calculator의 직접 내부 유입 링크는 허브 1개뿐이다. Search Console에서 carton cube·shipment cube query가 반복 노출되거나 GA4에서 관련 master-carton 흐름 이탈이 확인될 때 문맥 링크를 추가 검토한다.
+- LOW: 운송사 divisor, 포장재 yield, 공급 리드타임, 작업 속도·단가는 최신 운영 자료로 주기 검토한다.
+- 다음 시작 조건: GSC에서 기존 페이지가 5~30위 query 노출 또는 높은 impression·낮은 CTR을 보이거나, GA4에서 특정 계산기의 진입 대비 계산 실행·관련 이동이 약하거나, 사용자 관리 배지·footer·homepage script 구조를 의도적으로 변경할 때 재감사한다.
