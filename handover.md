@@ -966,3 +966,91 @@ git status
 
 - `calculator-input-table`은 생성기 소유 Calculator 설명표 전용 계약이다. 향후 별도 Calculator template을 추가하면 새 표에도 이 class와 QA 규칙을 적용해야 한다.
 - 정적 QA는 component class와 scoped CSS 계약을 보호하고, 이번 작업의 실제 computed width 전수 검증은 브라우저에서 수행했다. CSS cascade를 대규모로 재구성할 때는 390px computed width 전수 QA를 다시 실행한다.
+
+
+## 2026-08-10 — 신규 검색 클러스터 재탐색 NO-GO
+
+### 시작 상태와 실제 사이트 규모
+
+- 시작 commit: `6c977689035b5078810ea741cc29f2949d4c4399`, branch `main`, `origin/main`과 일치, working tree clean.
+- 실제 공개 HTML 69개: 기본·허브·기타 9, Calculator 36, Guide 13, Reference 11. sitemap URL은 68개다.
+- Calculator 분포: Package size and fit 7, Materials and usage 4, Cost and inventory 9, Labor and workflow 5, Master cartons 3, Pallet planning 4, Quality and damage control 4.
+- 이번 조사에서는 최근 검토된 Returns & Reverse Logistics, Packaging Purchasing & Quote Analysis, Fulfillment Accuracy & Rework, Shipment Consolidation, Packaging Sustainability와 이미 구현된 Packaging Quality & Damage Control을 제외했다. 이름이나 persona만 바꾼 변형도 신규 후보로 인정하지 않았다.
+- GSC/GA4 query·impression·landing 데이터와 유료 keyword-volume 도구는 현재 환경에 연결되어 있지 않다. 따라서 정확한 월간 검색량 수치는 만들지 않았고, 실제 검색 결과의 존재·구성, exact-intent 제목, 무료 interactive tool의 입력·출력 깊이, 관련 질문과 커뮤니티 반복 문제만 사용했다.
+
+### 새로 탐색한 후보와 검색어
+
+1. **Packaging Automation & Equipment Economics**
+   - 검색어: `packaging machine ROI calculator`, `packaging automation payback calculator`, `case sealer labor savings calculator`, `packaging line bottleneck calculator`, `manual vs automated packaging cost calculator`.
+   - 가능한 Tool: automation payback, manual-vs-machine labor cost, case-sealer break-even, packaging-line bottleneck, equipment capacity comparison.
+   - 가장 가까운 기존 Tool: Labor Capacity per Shift, Order Packing Time, Prep Batch Time, Packaging Cost per Order.
+2. **Packaging Changeover & Downtime**
+   - 검색어: `packaging changeover time calculator`, `changeover cost calculator packaging line`, `SMED calculator`, `packaging downtime cost calculator`.
+   - 가능한 Tool: changeover cost, SMED time saving, downtime cost, batch-size/setup allocation, recovered capacity.
+   - 가장 가까운 기존 Tool: Prep Batch Time, Labor Capacity per Shift, Order Packing Time, Packaging Failure Cost.
+3. **Label Roll & Printer Runtime Planning**
+   - 검색어: `label roll calculator`, `labels per roll calculator`, `label roll length calculator`, `label printer roll runtime calculator`.
+   - 가능한 Tool: labels per roll, roll length from diameter, finished roll diameter, printer runtime, roll-change frequency.
+   - 가장 가까운 기존 Tool: Label Cost, Insert Quantity, Packaging Supply Reorder Point.
+4. **Stretch Film & Pallet Wrap Planning**
+   - 검색어: `stretch wrap calculator`, `stretch film per pallet calculator`, `pallet wrap usage calculator`, `stretch wrap cost per pallet calculator`.
+   - 가능한 Tool: film length per pallet, pallets per roll, cost per pallet, pre-stretch comparison, roll forecast.
+   - 가장 가까운 기존 Tool: Tape Usage, Packaging Material Budget, Packaging Supply Reorder Point, Pallet Height/Utilization.
+5. **Roll/Sheet Cut Yield & Layout Planning**
+   - 검색어: `sheet yield calculator`, `packaging sheet cut layout calculator`, `roll material cut yield calculator`, `foam sheet cutting layout calculator`.
+   - 가능한 Tool: rectangular parts per sheet, sheets required, waste/yield, roll pitch yield, cut-cost per part.
+   - 가장 가까운 기존 Tool: Insert Quantity, Bubble Wrap, Packing Paper, Packaging Waste Allowance.
+6. **Packaging Supply Storage & Space Planning**
+   - 검색어: `packaging material storage space calculator`, `carton storage space calculator`, `packaging inventory storage capacity calculator`, `warehouse storage space calculator`.
+   - 가능한 Tool: flat-carton storage cube, shelf/bin capacity, pallet-position requirement, days-of-supply footprint, storage cost.
+   - 가장 가까운 기존 Tool: Box Volume, Carton Cube, Pallet planning tools, Packaging Supply Reorder Point, Packaging Inventory Basics.
+7. **Corrugated Compression & Stack Planning**
+   - 검색어: `box compression strength calculator`, `BCT calculator`, `ECT to BCT calculator`, `carton stacking strength calculator`.
+   - 가능한 Tool: simplified McKee BCT, required ECT, stack load screen, stack-height screen, environmental derating comparison.
+   - 가장 가까운 기존 Tool: Master Carton Weight, Pallet Height, Packaging Trial Comparison, Quality metrics.
+8. **Gross/Tare/Pallet Weight Planning**
+   - 검색어: `packaging tare weight calculator`, `gross net weight calculator`, `pallet gross weight calculator`, `shipment gross weight calculator`.
+   - 가능한 Tool: net/gross/tare solver, packed-unit weight, pallet gross weight, shipment total weight.
+   - 가장 가까운 기존 Tool: Master Carton Weight, Case Pack, Cases per Pallet, Dimensional Weight.
+9. **Packing Station Layout & Capacity**
+   - 검색어: `packing station layout calculator`, `packing station capacity calculator`, `pack stations needed calculator`, `packing bench space planner`.
+   - 가능한 Tool: stations required, bench footprint, hourly queue capacity, peak staffing, material-position capacity.
+   - 가장 가까운 기존 Tool: Labor Capacity per Shift, Order Packing Time, Prep Batch Time, Packing Station Workflow guide.
+
+### 실제 SERP와 무료 경쟁
+
+- **Automation / equipment:** `oeecalculator.app`의 무료 LineIQ는 machine별 rate·failure·repair 입력, line OEE, bottleneck, parallel equipment, accumulator placement ROI, equipment upgrade payback, scenario 저장과 PDF까지 제공한다. 3M-Matic calculator는 operator 수·burden labor·boxes/hour·machine cost로 cost/box, annual savings, payoff days를 계산한다. Viking Masek, PackVantage, PiP Automation, Link Pack 등도 무료 packaging-equipment ROI를 제공한다.
+- **Changeover / downtime:** WorkCell의 무료 SMED calculator는 internal/external setup, target internal time, changes/week, machine rate로 time/cost/annual capacity를 계산한다. Symestic는 downtime 외에도 OEE, MTBF/MTTR, takt, SMED, first-pass yield, machine rate를 한 무료 suite로 제공하고 downtime tool은 duration, affected capacity, throughput, contribution margin, idle labor, overhead, one-off cost, annual events를 받는다. CalcBee도 packaging-line preset이 있는 setup-time calculator를 제공한다.
+- **Label rolls:** Avery Dennison은 metric/imperial roll length, roll diameter, liner-caliper length comparison 세 계산기를 한 페이지에서 제공한다. HERMA, Flexcon, Mactac, Lauterbach, Label Plus도 core diameter·outer diameter·thickness·label repeat/gap 기반 도구를 무료 제공한다.
+- **Stretch film:** LogisticsCalc의 무료 도구는 pallet footprint, load height, roll width/length/cost, pre-stretch, overlap을 받아 film/pallet, pallets/roll, cost/pallet을 한 번에 계산한다. Excelerate, WebTech360, Depako, Springpack 등도 같은 핵심 intent를 직접 해결한다.
+- **Sheet/roll yield:** Interstate Plastics는 normal/rotated뿐 아니라 hybrid partition nesting까지 계산한다. Mantech는 spacing/kerf, job quantity, yield와 layout preview를 제공하고 CutWize는 mixed-part layout까지 제공한다. Innovapax는 packaging film의 roll length·pitch·lanes로 packs/roll과 cost/pack을 계산한다.
+- **Storage:** Packlyt는 Warehouse Space, Storage Cost, Inventory Density, Rack Capacity의 4개 무료 cluster를 이미 제공한다. DimPack3D와 PalletShuttle도 pallet positions, floor area, levels, racking/aisle assumptions을 다루며, 검색 결과는 packaging-supply 전용보다 warehouse/self-storage intent가 우세했다.
+- **Compression:** Westpak은 simplified McKee BCT calculator와 물리 시험 한계를 함께 제공한다. PackCalc는 BCT, required ECT, stack safety, humidity/time derating, report까지 제공한다. LogisticsCalc, Teal Packaging 등 exact-intent 무료 도구도 상위 결과에 다수다.
+- **Weight:** SensorsOne과 Calculator Academy가 gross/net/tare를 직접 해결하고, Palletly·Warp·Freight Sidekick은 carton count, pallet tare, gross load, height/weight limit까지 계산한다.
+- **Packing station:** exact calculator 결과보다 packing-bench buying guide, warehouse 2D/3D planner, broad warehouse-capacity 도구가 우세했다. calculator intent가 명확하지 않았고 기존 Pack Prep Tools 노동·workflow 도구와의 경계도 약했다.
+
+### 후보별 판정
+
+- **Packaging Automation & Equipment Economics — REJECT.** 실제 구매·payback 검색 의도와 5개 Tool 확장 가능성은 가장 강했다. 그러나 LineIQ가 packaging-line bottleneck·OEE·ROI·payback을 무료로 통합 제공하고, 장비사별 ROI 도구도 exact intent를 깊게 해결한다. 새 cluster는 기존 노동·시간·비용 Tool과도 상당 부분 중복된다.
+- **Packaging Changeover & Downtime — REJECT.** 반복 측정 가치는 있으나 무료 SMED/downtime/OEE suite가 과포화되어 있고 packaging-specific long-tail도 WorkCell·CalcBee·Symestic가 직접 처리한다. 4개 Tool을 만들면 같은 `time × rate × frequency` 산술을 분할한 doorway 구조가 된다.
+- **Label Roll & Printer Runtime — REJECT.** 실제 검색 의도는 명확하지만 강한 제조사 무료 도구가 length·diameter·comparison까지 한 페이지에서 해결한다. 후보 5개 중 3개가 동일한 roll geometry의 역산이고 Label Cost와도 겹친다.
+- **Stretch Film & Pallet Wrap — REJECT.** 수요와 반복 사용성은 있으나 한 강한 무료 calculator가 usage, rolls, cost, pre-stretch를 이미 통합한다. 4개 페이지로 나누면 한 계산의 출력별 복제에 가깝고 containment 안전성을 계산 결과로 오해할 위험도 있다.
+- **Roll/Sheet Cut Yield — REJECT.** 수요는 강하지만 무료 경쟁이 시각 layout, rotation, hybrid nesting, mixed parts, export까지 제공한다. Pack Prep Tools가 단순 grid 계산으로 진입하면 기능 열위이고, 고급 nesting을 구현하면 현재 사이트 범위를 크게 벗어난다.
+- **Packaging Supply Storage & Space — REJECT.** warehouse-space 수요는 있으나 packaging-supply 전용 검색 의도는 약하다. 4개 Tool은 기존 cube, pallet, reorder 계산을 재조합하거나 rack/aisle 운영 SaaS 영역으로 넘어간다.
+- **Corrugated Compression & Stack — REJECT.** 검색 의도와 formula는 강하지만 무료 전문 도구가 압도적으로 깊다. McKee estimate를 실제 stacking strength로 오해할 책임 위험이 높고 습도·creep·board variability·pallet support에는 검증 자료와 물리 시험이 필요하다.
+- **Gross/Tare/Pallet Weight — REJECT.** 유용하지만 산술이 단순하고 무료 exact tools가 많다. 독립 Tool 4개를 만들면 기존 Master Carton/Pallet Tool의 입력·출력 변형이 된다.
+- **Packing Station Layout & Capacity — REJECT.** exact calculator 검색 수요가 충분히 확인되지 않았고 layout은 2D/3D planner 또는 vendor bench guide intent가 우세하다. 수치 Tool은 기존 Labor Capacity, Order Packing Time, Prep Batch Time과 중복된다.
+
+### 최종 결정
+
+- **NO-GO — 신규 production HTML/CSS/JS, registry, sitemap, llms, hub를 변경하지 않는다.**
+- 9개 신규 각도를 조사했지만 GO 조건 9개를 동시에 만족한 후보가 없다. 강한 수요가 있는 후보는 무료 직접 경쟁이 이미 전체 workflow를 해결하거나 engineering/안전 위험이 높았고, 경쟁이 약한 후보는 검색 의도와 4개 독립 Tool 확장성이 부족했다.
+- 이번 조사에서 가장 가까웠던 후보는 Packaging Automation & Equipment Economics였지만, 2026년 현재 무료 LineIQ의 기능 깊이가 결정적인 기각 근거다. 이름이나 small-seller modifier만 바꿔 진입하지 않는다.
+- production 파일은 변경하지 않고 이 handover 기록만 남긴다. 기존 36 Calculator, 13 Guide, 11 Reference와 최근 responsive table, Decision guide, Last reviewed, Shipping Damage Rate 기본값을 그대로 보존한다.
+
+### 재검토 조건과 위험
+
+- **HIGH:** 없음. 구현하지 않았으므로 신규 계산·규정·안전 노출이 없다.
+- **MEDIUM:** 정확한 keyword volume과 GSC/GA4 first-party query 데이터가 없다. 이번 NO-GO는 실제 SERP 경쟁과 기능 깊이에 기반하지만 검색량 크기 자체를 수치로 검증한 것은 아니다.
+- **LOW:** 검색 결과는 시간에 따라 바뀐다. 후보를 재검토할 때 동일 쿼리의 상위 10개 결과와 무료 도구 기능을 다시 확인한다.
+- 재검토 신호: (1) GSC에서 위 exact long-tail이 여러 기존 페이지에 반복 노출, (2) GA4/사용자 요청에서 동일 workflow 요구 반복, (3) LineIQ·Avery·LogisticsCalc·PackCalc 같은 현재 강한 무료 도구가 폐쇄/유료화되거나 특정 기능을 제거, (4) 최소 4개 Tool에 서로 다른 input·logic·output·action을 정의할 수 있는 현장 데이터 확보.
