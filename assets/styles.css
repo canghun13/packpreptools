@@ -1264,6 +1264,10 @@ h1 {
     background: var(--slate-100);
   }
 
+  .content-table.decision-guide-table tbody th {
+    width: 100%;
+  }
+
   .operations-table thead {
     position: absolute;
     width: 1px;
