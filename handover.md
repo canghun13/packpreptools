@@ -1054,3 +1054,179 @@ git status
 - **MEDIUM:** 정확한 keyword volume과 GSC/GA4 first-party query 데이터가 없다. 이번 NO-GO는 실제 SERP 경쟁과 기능 깊이에 기반하지만 검색량 크기 자체를 수치로 검증한 것은 아니다.
 - **LOW:** 검색 결과는 시간에 따라 바뀐다. 후보를 재검토할 때 동일 쿼리의 상위 10개 결과와 무료 도구 기능을 다시 확인한다.
 - 재검토 신호: (1) GSC에서 위 exact long-tail이 여러 기존 페이지에 반복 노출, (2) GA4/사용자 요청에서 동일 workflow 요구 반복, (3) LineIQ·Avery·LogisticsCalc·PackCalc 같은 현재 강한 무료 도구가 폐쇄/유료화되거나 특정 기능을 제거, (4) 최소 4개 Tool에 서로 다른 input·logic·output·action을 정의할 수 있는 현장 데이터 확보.
+
+
+## 2026-08-11 — 신규 클러스터 발굴 방법 심층 재검증 NO-GO
+
+### 시작 상태, 원격 확인, 실제 사이트 범위
+
+- 실제 checkout: 작업 공간 안의 `repo` 디렉터리. 바깥 디렉터리는 commit이 없는 래퍼 Git 저장소였으므로 작업 대상에서 제외했다.
+- 시작 local HEAD: `7fc9728f3a598b7e3bed1d030066cfd5bb6ac1c5`; branch `main`; working tree clean.
+- origin: `https://github.com/canghun13/packpreptools.git`.
+- `git ls-remote origin refs/heads/main` 결과와 `git fetch origin main` 뒤 `origin/main`은 모두 `7fc9728f3a598b7e3bed1d030066cfd5bb6ac1c5`였다. ahead/behind `0/0`이므로 pull은 필요하지 않았다.
+- 저장소에서 다시 센 실제 규모: 공개 HTML 69, Calculator 36, Guide 13, Reference 11, 기본·Hub·기타 9, sitemap URL 68(404 제외).
+- 최신 추가 클러스터는 Packaging Quality & Damage Control(Hub 1, Calculator 4, Guide 1, Reference 1)이다.
+- Calculator 36개와 핵심 목적: Package size and fit — Dimensional Weight(부피 기반 청구중량), Length + Girth(길이+둘레), Box Size(보호 여유를 포함한 최소 내부치수), Box Volume(직육면체 용적), Poly Mailer Size(두께·여유·플랩을 포함한 mailer 크기), Box Utilization(상품 부피 점유율), Multi-item Box Fit(동일 직육면체 상품의 6방향 grid fit); Materials and usage — Void Fill(빈 부피), Bubble Wrap(표면적·층·겹침), Packing Paper(사용자 yield 기반 sheet 수), Tape Usage(center/H-seal 길이); Cost and inventory — Packaging Cost per Order(재료+폐기+노동), Carton Count(필요 carton), Case Pack(총 사용 가능 unit), Packaging Material Budget(물량·재료비·폐기·예비비), Monthly Packaging Spend(월/기간 spend), Label Cost(수량·폐기·비용), Insert Quantity(인서트 수량), Packaging Waste Allowance(기초수량+폐기율), Packaging Supply Reorder Point(사용량·lead time·safety stock); Labor and workflow — Order Packing Time(batch 소요시간), Labor Capacity per Shift(인원·시간·utilization 기반 capacity), Prep Batch Time(setup+unit work+check), Kitting Cost(component·packaging·labor), Bundle Packing Cost(handling·material·labor); Master cartons — Master Carton Dimensions(layout 기반 내부치수), Master Carton Weight(단위중량+tare와 사용자 limit), Carton Cube(단일/총 cube); Pallet planning — Cases per Pallet(직선/회전 grid), Pallet Layer Count(필요 layer), Pallet Height(총 높이와 사용자 limit), Pallet Utilization(footprint utilization); Quality and damage — Shipping Damage Rate(관찰 손상률), Packaging Failure Cost(기록된 직접 실패비용), Packaging Trial Comparison(두 trial의 손상·원가·시간·중량 비교), Package Weight & Dimension Variance(기록/실측 편차와 사용자 tolerance).
+
+### 이번 탐색에서 제외한 최근 후보
+
+- 2026-08-08 이전 기록: Returns & Reverse Logistics, Packaging Purchasing & Quote Analysis, Fulfillment Accuracy & Rework, Shipment Consolidation, Packaging Sustainability 및 이름·persona만 바꾼 변형.
+- 2026-08-10 기록: Packaging Automation & Equipment Economics, Packaging Changeover & Downtime, Label Roll & Printer Runtime Planning, Stretch Film & Pallet Wrap Planning, Roll/Sheet Cut Yield & Layout Planning, Packaging Supply Storage & Space Planning, Corrugated Compression & Stack Planning, Gross/Tare/Pallet Weight Planning, Packing Station Layout & Capacity.
+- 이미 구현된 Packaging Quality & Damage Control도 신규 후보에서 제외했다. 이번 후보의 일부 workflow가 위 주제와 닿아도, 검색 의도·핵심 로직·결과 행동이 다른지 확인하기 전에는 자동 기각하지 않았다.
+
+### 문제·의도 공간에서 만든 10개 신규 candidate family
+
+| Family | 사용자 / 실제 문제 / 발생 시점 | 현재 workaround와 대표 검색 표현 | 가장 가까운 기존 Tool / 미해결 부분 | 예상 독립 Tool 수 |
+|---|---|---|---|---:|
+| Industrial Poly Bags, Liners & Covers | 소형 제조·wholesale shipper가 box, bin, drum, pallet에 맞는 liner/cover를 주문할 때 layflat·gusset·tie-off 치수를 혼동 | 공급사 표·샘플 주문·수식; `gusseted poly bag size calculator`, `box liner calculator`, `pallet cover bag size calculator`, `drum liner size` | Poly Mailer Size / 산업용 liner·cover의 gusset, overhang, tie-off, 원형 container가 없음 | 2–3 |
+| Packaging Version Cutover & Obsolescence | 브랜드·co-packer가 새 label/carton artwork로 전환할 때 구재고 소진일, dual stock, scrap exposure를 관리 | Excel run-out 표·ERP·change-control 문서; `packaging inventory depletion`, `label changeover inventory`, `obsolete packaging calculator`, `artwork transition plan` | Reorder Point·Monthly Spend / old/new version effectivity·scrap·overlap 의사결정이 없음 | 3 |
+| Point-of-use Consumable Replenishment | pack bench·small warehouse가 tape/labels/inserts를 line-side bin으로 보충할 때 stockout와 과다 WIP를 피함 | 2-bin card·Kanban spreadsheet·감; `kanban bin sizing calculator`, `line side inventory calculator`, `packaging consumables replenishment`, `container size sensitivity` | Reorder Point / warehouse purchase trigger가 아니라 station bin·card·route 주기 결정 | 2–3 |
+| Order-mix & Dispatch Deadline Planning | peak-season seller·fulfillment operator가 single/multi-line/fragile 주문 mix와 carrier cutoff를 맞출 때 | 평균 minutes/order, 수작업 spreadsheet, WES; `order mix packing capacity`, `backlog clearance time`, `pack staffing for cutoff`, `batch release packing capacity` | Labor Capacity·Order Packing Time / mix 가중 workload, 기존 backlog와 deadline gap, release pacing이 없음 | 3 |
+| Strapping & Edge-protection Consumption | wholesale shipper가 carton/pallet batch의 strap 길이·coil·corner board를 준비할 때 | pallet 둘레를 재고 수작업 곱셈·공급사 guide; `pallet strapping length calculator`, `boxes per strapping coil`, `strapping cost per pallet`, `edge protector quantity` | Tape Usage·Pallet tools / band path·grip/seal allowance·coil consumption·edge-board 수량이 없음 | 2–3 |
+| Kit Component Availability & Shortage | subscription box·handmade seller가 component stock으로 완성 가능한 kit 수와 부족품을 판단할 때 | BOM spreadsheet, Shopify/ERP kit 기능; `kit availability calculator`, `maximum kits from inventory`, `BOM shortage calculator`, `components needed for batch` | Kitting Cost·Insert Quantity / 비용이 아니라 limiting component·available-to-build·shortage action | 2–3 |
+| Corrugated Partitions & Divider Planning | fragile-item seller·small manufacturer가 box 내부 cell과 divider 수량을 주문할 때 | CAD, supplier quote form, mock-up; `box divider calculator`, `carton partition calculator`, `divider cells per box`, `partition strips required` | Multi-item Box Fit·Insert Quantity / protective cells, tolerance, blind cells, longitudinal/transverse strips가 없음 | 2 |
+| Carton Assortment & Box Portfolio | multi-SKU seller가 재고 box 규격 수를 줄이면서 주문 coverage와 void를 유지할 때 | order export+Excel, WMS cartonization, consultant/SaaS; `carton assortment optimization`, `box size portfolio`, `packaging SKU rationalization`, `best stock box assortment` | Box Fit·Utilization·Box Size / 여러 SKU·주문과 여러 후보 box를 함께 최적화하지 않음 | 2–3 |
+| Repack / Overpack Workload Planning | small manufacturer·warehouse가 label correction, damaged outer carton, overpack project의 노동·재료·완료일을 계획할 때 | rework order·Excel hours·별도 work center; `repack labor hours calculator`, `repacking workload planner`, `overpack project cost`, `rework queue clearance` | Prep Batch Time·Packaging Failure Cost / 원인별 disposition, 재사용/교체재료, 기존 queue와 completion date가 없음 | 2–3 |
+| Mailing Tube & Cylindrical Pack Planning | poster·print·odd-size seller가 roll/tube의 diameter·usable length·end-cap allowance·shipping dimensions를 정할 때 | vendor chart, 샘플 roll, carrier guide; `mailing tube size calculator`, `poster tube diameter`, `tube capacity calculator`, `cylindrical package girth` | Length + Girth·DIM Weight·Box Size / roll diameter·cap seating·tube usable length·round product fit이 없음 | 2–3 |
+
+### 후보별 롱테일 트리
+
+1. **Industrial Poly Bags, Liners & Covers** → rectangular box liner with tie-off → gusseted pallet cover with overhang → round drum liner/cover → bag film weight by gauge and quantity.
+2. **Packaging Version Cutover & Obsolescence** → old label stock depletion date → mandatory-date scrap exposure → dual-inventory overlap and storage → transition buy quantity before new version arrival.
+3. **Point-of-use Consumable Replenishment** → two-bin packaging consumables → per-station container size → replenishment trip frequency/milk-run → peak-shift safety factor.
+4. **Order-mix & Dispatch Deadline Planning** → weighted minutes for single/multi-line orders → existing backlog clearance → staffing to carrier cutoff → controlled release rate from pick to pack.
+5. **Strapping & Edge Protection** → carton band length with allowance → pallet vertical/horizontal band path → coils for batch and remainder → edge/corner protector quantity and length.
+6. **Kit Component Availability** → maximum complete kits from on-hand → target batch shortage by component → leftover components after build → shared-component allocation across two kits.
+7. **Corrugated Partitions & Dividers** → cells per box with tolerance → blind-cell edge rows → dividers required for product quantity → longitudinal/transverse strip count and cut length.
+8. **Carton Assortment & Box Portfolio** → demand-weighted box coverage → remove-one-size scenario → add-one-size void reduction → current-versus-proposed assortment cost/cube.
+9. **Repack / Overpack Workload** → units by disposition path → labor/material hours and cost → queue completion date by workers/shift → old-versus-new method scenario.
+10. **Mailing Tube & Cylindrical Pack** → rolled item diameter from thickness/layers → tube ID and cap clearance → items/circles per tube → outer shipping girth/DIM representation.
+
+### 실제 검색과 SERP 수요 신호
+
+- 정확한 keyword volume, GSC query, GA4 first-party 검색 데이터는 연결되지 않았다. 월간 수치를 추정하지 않았다.
+- 실제 SERP에서 강한 exact tool intent가 확인된 것은 bag/liner sizing, Kanban sizing, carton/box optimization, divider configuration이었다. 이들은 여러 vendor calculator와 무료 독립 도구가 상위 결과에 반복됐다.
+- packaging cutover는 run-out/depletion worksheet, ERP phase-out 문서, artwork management SaaS가 반복됐지만 calculator intent는 약했다. order-mix/backlog, repack, strapping, tube도 실무 문제·forum·manual formula 신호는 있었으나 4개 도구 묶음의 exact calculator SERP는 약했다.
+- 반복 실무 신호 예: Reddit의 kit available-to-build/공유 component oversell 질문, Excel의 inventory run-out/BOM shortage 질문, manufacturing의 WIP buffer·two-bin 논의, SAP의 repack labor work-center 질문, 물류 forum의 tube 입력 방식과 pallet corner/strap 문제.
+- 대표 query는 위 matrix와 롱테일 트리에 기록했으며, modifier `calculator`, `planner`, `tool`, `formula`, `worksheet`, `spreadsheet`, `how many`, `per shift`, `cost`, `capacity`, `quantity`, `waste`, `throughput`, `cutover`, `packing`, `warehouse`를 조합했다.
+
+### 실제로 연 경쟁 Tool의 기능 범위
+
+| Tool | 실제 입력 | 실제 출력·깊이 | 제약·workflow 판단 |
+|---|---|---|---|
+| Base Plastics Bag Size Calculator — https://www.baseplastics.com/about-base/bag-size-calculator/ | rectangular length/width/height; round diameter/height | box liner tie-off 6 in, 8 in overhang, pallet cover; drum liner/cover를 한 화면에서 계산 | 무료·로그인 없음·vendor quote 연결. 모바일 페이지에서 input/output 접근 가능. bag 변형을 별도 Tool로 나눌 여지가 작음 |
+| Elements Supply / Poly Bags Online / Armor — https://elementssupply.com/pages/calculator-page , https://polybagsonline.co.uk/box-polybag-calculator.html , https://diginable.com/bag-calc/ | box/pallet L/W/H, layflat/gusset, closure | liner, pallet cover, layflat/gusset variants와 tie-off allowance | 여러 vendor가 같은 롱테일까지 무료로 커버. 일부는 quote 중심이지만 계산 자체는 공개 |
+| CalcBee Kanban Sizing — https://www.calcbee.com/calculators/business/operations/kanban-sizing/ | daily demand, lead time, safety factor, container size, unit cost | cards, raw value, WIP, days supply, investment, minimum cards, buffer units; 6 safety-factor와 5 container-size scenario 표 | 무료·로그인 없음·자동 갱신·모바일 가능. supplier/withdrawal/line-side를 모두 설명하여 packaging modifier만으로 빈 공간이 생기지 않음 |
+| Packwire Box Size Optimizer — https://packwire.com/box-size-optimizer | multi-product L/W/H/weight/qty, 추가 product, void-fill 종류 | 수백 arrangement·회전·layer heuristic, 최소 custom box, clearance/0.25 in rounding, DIM/billable weight 해석 | 무료·로그인 없이 계산 UI, vendor custom-box 연결. mixed SKU와 protection allowance 롱테일까지 깊음 |
+| Gefache24 Divider Calculator — https://www.cardboard-dividers.com/ | box inner L/W/tolerance, product L/W/H/tolerance, material, blind cells, product qty/delivery mode | cells/divider, required dividers, longitudinal/transverse bars, cell sizes, material, assembled/flat delivery; quote·sample | 무료·로그인 없음·다재료·blind-cell까지 제공. 모바일은 길지만 usable. 독립 divider workflow 대부분을 한 도구가 해결 |
+| BoxVolume / FractalPack / Boxtelligence — https://boxvolume.com/en , https://www.fractalpack.com/ , https://www.boxtelligence.com/ | mixed items·available boxes·order/carton dataset 또는 volume/cost sliders | 3D packing, best box, assortment suggestion, scenario/savings | BoxVolume은 무료 3D, 상용 서비스는 데이터 분석/API. 단순 calculator는 기능 열위, 진짜 portfolio 최적화는 현재 scope보다 큼 |
+| ShipHero kit availability / Fabrikator planner — https://software-help.shiphero.com/hc/en-us/articles/4419344900749-Understanding-How-Kit-Availability-Is-Calculated , https://www.fabrikator.io/free-tool-raw-material-planner | component on-hand/BOM, recipes, production plan | limiting component 기반 kit availability; required/on-hand/need-to-order와 breakdown | kit intent는 존재하지만 packaging 전용이 아니고 ERP/production planner가 자연스러운 workflow. multi-kit allocation은 데이터·optimization 필요 |
+| Fiddle/SAP/artwork SaaS — https://fiddle.io/help/inventory/depletion-plans , https://help.sap.com/saphelp_snc70/helpdata/en/be/ac6c42c6b29c60e10000000a1550b0/content.htm?no_cache=true , https://en.ennov.com/solutions/regulatory/artwork/ | stock, consumption, incoming supply, phase-out forecast, versions/approvals | run-out/reorder dates; surplus; controlled version, audit trail, approvals | cutover 문제는 실재하지만 단순 산술보다 lot/effectivity/approval/traceability가 핵심. 잘못 단순화하면 규제·label mix-up 위험 |
+- 별도 상호작용 확인: Packwire는 product row 추가와 void-fill 선택을 노출하고 계산 원리를 상세 공개했다. CalcBee는 기본 입력으로 15 cards, 750 WIP, 3.8 days, $11,250 및 scenario 표를 즉시 표시했다. Gefache24는 기본 상태에서 6 compartments, 3 longitudinal/4 transverse bars, 88 mm cell 결과까지 표시했다. Base Plastics는 rectangular·round input과 6개 결과 필드를 실제 DOM에서 확인했다.
+
+### 후보별 가능한 Tool 설계와 Input → Logic → Output → Action 비교
+
+1. **Industrial Poly Bags, Liners & Covers**
+   - Box Liner Size: box L/W/H + tie allowance → gusset/layflat geometry → bag W/G/L → stock size/quote 선택. Closest Poly Mailer; closure·container intent는 다르지만 독립.
+   - Pallet Cover Size: pallet L/W/loaded H + overhang → cover geometry → W/G/L → cover 주문. Closest Pallet Height; logic/action 독립.
+   - Drum Liner/Cover: diameter/H + tie/overhang → circumference-based layflat → bag W/L → drum liner 주문. Closest 없음; 독립.
+   - Film Weight/Bag Quantity: bag W/G/L/gauge/density/qty → film area×thickness×density → weight/cost → freight/purchase 검토. Closest Packaging Material Budget; 산술·행동은 다름.
+   - 그러나 앞의 3개는 같은 container-to-bag geometry의 형태별 출력이며 Base Plastics가 한 화면에서 이미 통합한다. Film Weight는 sizing보다 material purchasing cluster에 가까워 자연스러운 4번째가 아니다. 실질 독립 Tool은 3개 미만.
+2. **Packaging Version Cutover & Obsolescence**
+   - Depletion Date: old stock/daily use/date → stock÷use → run-out date → cutover schedule. Closest Reorder Point; output/action 독립.
+   - Mandatory-date Exposure: old stock/forecast/mandatory date/unit cost → projected remainder → units/value at risk → consume/relabel/scrap 검토. Closest Monthly Spend; 독립.
+   - Transition Buy: new material lead time/MOQ/usage/old stock → time-phased balance → first new buy/overlap → PO plan. Closest Reorder Point; 일부 logic 중복.
+   - Dual-stock Space: old/new inventory/pack cube/overlap days → peak combined positions → storage flag → site readiness. Closest storage 후보·Carton Cube; 단순 cube 재조합.
+   - 실제 핵심 action은 effectivity·lot·approval·line clearance이며 단순 계산이 이를 안전하게 대체하지 못한다. 자연스러운 반복 계산은 3개 이하이고 packaging-specific calculator SERP도 약함.
+3. **Point-of-use Consumable Replenishment**
+   - Kanban Cards: demand/lead/safety/container → ceil(demand×lead×factor/container) → cards/WIP → card 수 설정. Closest Reorder Point; station action 독립.
+   - Two-bin Size: demand distribution/lead/service target → base stock/safety → bin qty/fill rate → bin 교체. Closest Reorder Point; data 요구와 action 일부 독립.
+   - Replenishment Trips: stations×use/bin capacity/shift → refill events → trips/shift → milk-run 주기. Closest Labor Capacity; 독립.
+   - Point-of-use Investment: bins×qty×unit cost → WIP value → cash/space → container scenario. Closest Material Budget; Kanban의 파생 출력.
+   - CalcBee가 cards, WIP, days, investment, safety/container scenario를 이미 통합하며 trips만 남는다. 독립 Tool은 2개 정도.
+4. **Order-mix & Dispatch Deadline Planning**
+   - Weighted Pack Time: order classes/count/minutes → weighted workload → total hours/blended minutes → shift plan. Closest Order Packing Time; multi-class logic/action은 독립.
+   - Backlog Clearance: backlog+arrival rate+net pack rate → queue balance → clearance time/never-clears flag → capacity 조정. Closest Labor Capacity; 독립.
+   - Cutoff Staffing: class mix/deadline/current backlog/utilization → required labor minutes/available minutes → workers gap → staffing. Closest Labor Capacity; 여러 기존 output을 deadline 기준으로 역산.
+   - Release Rate: pick rate/pack capacity/WIP cap → min downstream capacity, queue projection → safe batch release → wave size 조정. Closest Prep Batch Time; 독립.
+   - 수학적으로 4개를 정의할 수 있으나 exact calculator SERP가 약하고 첫·셋째는 기존 두 노동 Tool의 multi-row/goal-seek 확장이다. release pacing은 live order priority와 cutoff를 가진 WES 영역이며 단순 static tool의 action 신뢰도가 낮다. 자연스러운 standalone은 3개 이하.
+5. **Strapping & Edge Protection**
+   - Strap Length: package dimensions/band paths/count/allowance → path perimeter sum → length/load → cut list. Closest Tape Usage; 독립.
+   - Coils for Batch: length/load×loads+waste/coil length → ceil coils/remainder → coil issue/purchase. Closest Waste Allowance; 독립이지만 첫 Tool의 downstream.
+   - Strap Cost: used length/coil cost or cost/foot → cost/load/batch → consumable budget. Closest Packaging Cost; 첫 Tool의 비용 출력.
+   - Edge Boards: load H/corners/loads/stock length → pieces/linear length → bundles → stage material. Closest Insert Quantity; 독립.
+   - 실질적으로 strap 계산 1개+edge board 1개이며 나머지는 output 분할이다. band 수·tension·containment을 추천하면 안전 검증 위험이 생기므로 사용자가 pattern을 입력하게 해야 하고, 그러면 4 Tool cluster가 성립하지 않는다.
+6. **Kit Component Availability & Shortage**
+   - Available-to-build: component on-hand/per-kit → min floor(on-hand/need) → max kits/limiter → 판매가능 수량 조정. Closest Kitting Cost; 독립.
+   - Target Batch Shortage: target kits/BOM/on-hand/incoming → required-minus-available → shortage list → purchase/pick. Closest Insert Quantity; 독립.
+   - Leftover After Build: build qty/BOM/on-hand → residual by component → leftovers → reuse/reorder. Closest Case Pack; 첫 두 Tool의 complementary output.
+   - Shared Allocation: two kit demands/shared inventory/priority → constrained allocation → feasible kit mix → channel allocation. Closest 없음; 독립이나 optimization/rules 필요.
+   - 반복 문제는 강하지만 packaging보다 generic BOM/ERP intent가 우세하다. 3번째는 같은 BOM balance의 출력이고 4번째는 단순 무료 static calculator 범위를 넘어선다. 자연스러운 Tool 2–3개.
+7. **Corrugated Partitions & Dividers**
+   - Cells per Box: box ID/product/tolerance/material caliper → floor grid → cells/cell size → divider layout. Closest Multi-item Box Fit; protective cell logic 독립.
+   - Divider Quantity: items/cells per divider → ceil → divider qty/top-layer remainder → quote. Closest Insert Quantity; 독립.
+   - Strip Cut List: rows/columns/box cell dimensions/notch → strip count/length → sheet/cut plan → fabricate. Closest Sheet Yield excluded 후보; manufacturing CAD 쪽.
+   - Blind-cell Scenario: edge rows/material → usable cells/layout difference → compare protection/capacity → prototype. Closest Trial Comparison; 첫 Tool 옵션에 가까움.
+   - Gefache24가 tolerance, material, blind cells, cell/strip counts, total dividers, delivery까지 한 도구에서 해결한다. 독립 Tool은 2개이고 구조 성능은 물리 검증 필요.
+8. **Carton Assortment & Box Portfolio**
+   - Coverage Matrix: SKU/order dimensions×box list → fit tests → coverage/exception → box mapping. Closest Multi-item Box Fit; dataset-level로 독립.
+   - Remove-one-size: historical assignments/candidate boxes → reassign → void/DIM/cost delta → SKU rationalization. Closest Box Utilization; 독립.
+   - Add-one-size: unserved order clusters/candidate dimension → objective improvement → best candidate → sourcing trial. Closest Box Size; optimization으로 독립.
+   - Portfolio Compare: current/proposed box sets+frequency+cost → weighted cube/material/storage → delta → portfolio 결정. Closest Packaging Trial Comparison; 독립.
+   - 겉보기에는 4개지만 모두 동일 historical order dataset과 3D/cartonization engine의 modes다. 정확한 결과에는 mixed-item packing, orientation, rules, protection, carrier rounding이 필요하다. Packwire/BoxVolume/FractalPack 수준보다 단순하면 기능 열위이고 고급 구현은 유지관리 범위를 초과한다.
+9. **Repack / Overpack Workload**
+   - Disposition Workload: units by action×standard minutes → labor hours → work-center load → assign labor. Closest Prep Batch Time; multi-path logic 독립.
+   - Repack Material Need: units by path×materials+waste → materials → staging/PO. Closest Insert Quantity/Waste Allowance; 재조합.
+   - Queue Completion: backlog/arrival/workers/rate/shift → projected balance → completion date → schedule. Closest backlog 후보/Labor Capacity; 독립.
+   - Repack Cost Compare: path materials+labor+overhead → unit/total and method delta → approve method. Closest Packaging Failure Cost/Kitting Cost; 중복.
+   - 최근 제외한 Fulfillment Accuracy & Rework와 본질적으로 맞닿고, calculator 검색 의도는 약하다. 독립 Tool은 workload와 queue 2개 정도이며 나머지는 기존 수량·비용 Tool의 재조합.
+10. **Mailing Tube & Cylindrical Pack**
+   - Rolled-item Diameter: sheet length/thickness/core → spiral area approximation → finished OD → tube 후보. Closest 없음; 독립이나 material compression/roll tightness 검증 필요.
+   - Tube Size: roll OD/length/cap clearance → required ID/usable length → tube size → 샘플 주문. Closest Box Size; 형상·action 독립.
+   - Circular Items per Tube: tube ID/item OD/length → circle packing/grid → count → pack quantity. Closest Multi-item Fit; 독립.
+   - Shipping Girth/DIM: tube outer L/D/carrier-entered convention → circumference or bounding box → girth/DIM → label 입력 검토. Closest Length+Girth·DIM Weight; 기존 Tool과 같은 action.
+   - 첫 Tool은 실제 material behavior 가정이 크고 네 번째는 기존 Tool 중복이다. usable tube sizing과 circular capacity 2개만 확실하며 exact 검색 결과도 vendor chart/guide 중심이다.
+
+### 후보 비교와 판정
+
+| Family | 수요/tool intent | 무료 coverage | 기존 Tool 독립성 | 자연스러운 반복 Tool | 복잡도·위험 | 판정 |
+|---|---|---|---|---:|---|---|
+| Industrial Bags/Liners | 강함 | 매우 높음, 형태 롱테일까지 통합 | 2–3개는 다름 | 2–3 | 낮음 | REJECT |
+| Version Cutover | 문제 수요 중간, calculator 약함 | ERP/artwork workflow 높음 | 3개 정도 다름 | 3 | traceability·규제 위험 | REJECT |
+| Point-of-use Replenishment | 강함 | CalcBee가 scenario까지 통합 | trip만 뚜렷 | 2 | 중간 | REJECT |
+| Order-mix/Deadline | 문제 수요 중간, exact tool 약함 | WES/SaaS 중심 | 3개 정도 다름 | 3 | live data·우선순위 | HOLD |
+| Strapping/Edge | manual formula 신호 | exact calculator 낮음 | 2개 다름 | 2 | containment 오해 위험 | REJECT |
+| Kit Availability | 반복 문제 강함 | ERP/BOM planner 높음 | 2–3개 다름 | 2–3 | generic scope/공유 allocation | HOLD |
+| Partitions/Dividers | exact intent 강함 | 한 무료 tool이 거의 전체 workflow | 2개 다름 | 2 | prototype 필요 | REJECT |
+| Carton Portfolio | 상업 수요 강함 | 3D/optimization 경쟁 강함 | modes는 다름 | 2–3 engine modes | 구현·유지관리 매우 큼 | REJECT |
+| Repack Workload | 문제 신호는 있음, calculator 약함 | ERP/work order 중심 | 2개 다름 | 2 | 최근 제외 후보 인접 | REJECT |
+| Tube/Cylindrical | guide·forum 수요 중간 | charts/girth tools | 2개 다름 | 2 | roll behavior·carrier rules | REJECT |
+
+### 최종 결정과 GO 조건 대조
+
+- **NO-GO. production HTML/CSS/JS, generator, registry, sitemap, llms, Hub를 변경하지 않는다. 이번 commit은 `handover.md`만 변경한다.**
+- 이번 조사는 이전처럼 메인 keyword와 경쟁 존재만 본 것이 아니다. 10개 문제 family를 사용자·재료·장비·상황·workflow에서 만들고, 각 family를 4개 롱테일 방향으로 분해했으며, 실제 SERP/커뮤니티/worksheet 신호와 대표 interactive tool의 DOM 입력·출력·scenario 깊이를 확인했다. 또한 family마다 4개 후보 Tool을 먼저 설계한 뒤 기존 36개 Tool과 Input → Logic → Output → User action을 대조했다.
+- GO 조건 가운데 `실제 문제 수요`, `Pack Prep Tools 적합성`, `일부 공식 확보 가능성`은 여러 후보가 만족했다. 그러나 어느 후보도 `진입 가능한 미충족 롱테일`, `경쟁이 전체 workflow를 완전히 해결하지 않음`, `최소 4개의 자연스러운 독립 반복 Tool`, `과도하지 않은 유지관리`, `안전·인증 위험 없음`을 동시에 만족하지 못했다.
+- 가장 가까운 후보는 **Order-mix & Dispatch Deadline Planning**과 **Kit Component Availability**다. 전자는 weighted workload/backlog/cutoff/release의 4개 모양을 만들 수 있으나 2개는 기존 노동 Tool의 multi-row/goal-seek 확장이고 release pacing은 live WES 데이터가 필요하다. 후자는 사용자 반복 문제와 available-to-build intent가 강하지만 자연스러운 계산은 availability/shortage 2–3개이고 shared allocation부터는 generic BOM/ERP optimizer가 된다.
+- Industrial Bags/Liners와 Partitions/Dividers는 search intent가 가장 명확했지만, 실제 무료 vendor 도구가 형태별 롱테일과 downstream quote workflow까지 한 화면에서 커버했다. Carton Portfolio는 독립 decision modes가 많아 보였지만 모두 동일 3D/cartonization engine의 모드이고, 현재 범위에서 만들 수 있는 단순 버전은 무료 경쟁보다 현저히 얕다.
+- 정확한 검색량 데이터는 확보하지 못했다. 이 NO-GO는 검색량 부재 자체가 아니라 실제 SERP 구성, 반복 문제 흔적, 경쟁 기능, 기존 Tool 대비 I→L→O→A, 4개 독립 Tool 성립 여부에 근거한다.
+
+### 재검토 조건과 남은 위험
+
+- Order-mix/Deadline: 실제 소형 seller의 order-class별 표준시간과 cutoff/backlog worksheet 사용 사례가 확보되고, 최소 4개 결과가 기존 노동 Tool의 단순 goal-seek가 아니라 서로 다른 현장 행동을 만들 때 재검토한다.
+- Kit Availability: packaging/subscription-box query에서 반복 노출·요청이 확인되고, availability/shortage 외에 공유 component allocation과 channel reservation을 단순하고 검증 가능하게 정의할 수 있을 때 재검토한다.
+- Bags/Dividers: 현재 무료 통합 도구가 폐쇄·유료화되거나 small-seller workflow에서 명확한 미지원 영역(예: stock-size comparison, multi-size batch export)이 반복 확인될 때 재검토한다.
+- Carton Portfolio: 검증 가능한 order dataset, 공개 packing heuristic, scenario 기준, 충분한 유지관리 여력이 확보될 때만 재검토한다.
+- HIGH 위험: 없음. production 변경과 신규 계산이 없다.
+- MEDIUM: 정확한 keyword volume/GSC/GA4 데이터가 없어서 수요의 크기는 정량화하지 못했다.
+- LOW: SERP와 무료 도구 기능은 바뀔 수 있다. 재검토 시 동일 long-tail query와 현재 대표 도구의 무료 범위·로그인·모바일·scenario 기능을 다시 연다.
+
+### 기본 QA와 보호 영역 확인
+
+- `node scripts/qa.js`: PASS — 69 HTML, sitemap 68, JavaScript 5; content QA 36 Calculator, 13 Guide, 11 Reference; duplicate long paragraph/sentence 0; responsive table QA 36/36.
+- `node scripts/verify-calculators.js`: PASS — 36 Calculator, 181 independent checks.
+- `git diff --check`: PASS. 변경 파일은 `handover.md` 하나뿐이며 production diff 0.
+- 실도메인 390px: Decision guide 4행의 두 cell이 각각 353px block, clipping 0, horizontal overflow 0, console error 0. Last reviewed `.meta-line` border-top 0px.
+- 실도메인 1440px: Decision guide는 246.1px + 632.9px의 기존 2열 table-cell, clipping/overflow/console error 0.
+- Shipping Damage Rate 390px: 기본 100/1, illustrative 안내 유지; Calculate 결과 `1% observed damage rate`; Reset 뒤 100/1 + `Enter your package details to begin.` idle; overflow/console error 0.
+- 홈페이지 사용자 관리 배지: repository anchor 5개, 실도메인 5개. 순서와 href/image는 KittyLaunch → sellwithboost → twelve.tools → findly.tools → BoostDomainRating으로 정확히 유지. generator·index HTML은 수정하지 않았다.
