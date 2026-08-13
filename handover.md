@@ -1496,6 +1496,10 @@ git status
 
 ### Git / 배포 마감
 
-- 구현 commit: 작업 완료 후 아래에 기록.
-- push: 작업 완료 후 아래에 기록.
-- local HEAD / origin/main 일치, working tree clean, GitHub Pages와 live URL 결과: push 및 배포 확인 후 아래에 기록.
+- 구현 commit: `2ba624854da3b59c6230b94823451e41bd0dabe9` (`Add pack instruction workflow tools`).
+- push: `origin/main`에 성공. 시작 remote `84d25a5`에서 구현 commit `2ba6248`로 진행했다.
+- GitHub Pages Actions run `31708795032`: build job success, deploy job success. workflow의 별도 `report-build-status` job이 queued 상태여도 실제 deploy job은 2026-08-13T14:11:33Z에 success로 완료됐다.
+- 실배포 hub `https://packpreptools.com/pack-instructions.html`: 정확한 title/H1, Tool link 4개, 1440px overflow 0, console error 0.
+- 실배포 Builder `https://packpreptools.com/tools/pack-instruction-builder.html`: 390px에서 기본 Generate가 `PK-014 / Rev B built for CND-01`, generated sheet visible, overflow 0, console error 0.
+- 실배포 Homepage: 신규 `4 workflow tools` 상태 표시, 사용자 관리 badge 5개와 기존 순서/href 유지, 390px overflow 0.
+- 이 기록을 추가하는 closing commit을 push한 뒤 최종 local HEAD / origin/main 일치와 clean working tree를 다시 확인한다. closing commit은 public HTML 기능을 변경하지 않는다.
