@@ -13,7 +13,7 @@ Packaging calculations and operating references for repeatable shipment preparat
 - [Tape Usage Calculator](https://packpreptools.com/tools/tape-usage.html): Estimate tape use per carton and across a batch using center-seam or H-seal patterns.
 - [Poly Mailer Size Calculator](https://packpreptools.com/tools/poly-mailer-size.html): Estimate minimum internal poly mailer width and length for a rectangular soft or boxed product.
 - [Packaging Cost per Order Calculator](https://packpreptools.com/tools/packaging-cost.html): Calculate packaging cost per order from supplies, waste percentage, labor minutes, and hourly labor rate.
-- [Carton Count Calculator](https://packpreptools.com/tools/carton-count.html): Calculate cartons required from unit demand and units per carton.
+- [Carton Count Calculator](https://packpreptools.com/tools/carton-count.html): Calculate how many cartons are needed from required units and units per carton, including the quantity in a partial final carton.
 - [Case Pack Calculator](https://packpreptools.com/tools/case-pack.html): Convert case quantities and loose reserve units into a total unit plan.
 - [Box Utilization Calculator](https://packpreptools.com/tools/box-utilization.html): Compare total rectangular item volume with internal box volume.
 - [Multi-item Box Fit Calculator](https://packpreptools.com/tools/multi-item-box-fit.html): Estimate orthogonal grid capacity across six item orientations.

@@ -1230,3 +1230,67 @@ git status
 - 실도메인 1440px: Decision guide는 246.1px + 632.9px의 기존 2열 table-cell, clipping/overflow/console error 0.
 - Shipping Damage Rate 390px: 기본 100/1, illustrative 안내 유지; Calculate 결과 `1% observed damage rate`; Reset 뒤 100/1 + `Enter your package details to begin.` idle; overflow/console error 0.
 - 홈페이지 사용자 관리 배지: repository anchor 5개, 실도메인 5개. 순서와 href/image는 KittyLaunch → sellwithboost → twelve.tools → findly.tools → BoostDomainRating으로 정확히 유지. generator·index HTML은 수정하지 않았다.
+
+## 2026-08-13 — Master Carton / Carton Count 검색 신호 기반 기존 페이지 최적화
+
+### 요청과 결정
+
+- 주간 GSC 신호를 근거로 신규 cluster나 신규 URL을 만들지 않고 기존 Master Carton / Carton Count 경로만 재검토했다.
+- 대상 URL: `/tools/master-carton-dimensions.html`, `/tools/master-carton-weight.html`, `/tools/carton-count.html`, `/tools/case-pack.html`, `/guides/master-carton-planning.html`, `/reference/master-carton-terms.html`, `/tools/carton-cube.html`.
+- **GO**로 판정했다. 이유는 URL·canonical·indexability나 검색 의도 분리가 잘못된 것이 아니라, 검색 유입 흐름 안에서 확인 가능한 세 가지 품질 결함이 있었기 때문이다: Carton Count의 실제 결과와 worked example 불일치, guide/reference의 기계적인 generator 문장, 그리고 계산기 사이의 직접 workflow 링크 누락.
+- title/H1, URL, canonical, robots, sitemap 구조는 유지했다. 새 페이지, redirect, noindex, 전역 CSS, 계산 공식은 추가하거나 변경하지 않았다.
+
+### GSC 신호와 SERP 해석
+
+- 페이지 신호: Master Carton Dimensions 4 clicks / 102 impressions / position 15.00, Master Carton Weight 1 / 52 / 12.33, Carton Count 0 / 49 / 7.78, Master Carton Terms 0 / 30 / 24.23, Case Pack 0 / 14 / 12.71.
+- query 신호: `master carton size calculator` 1 / 11 / 6.91, `master carton calculator` 1 / 9 / 28.56, `master carton dimensions` 0 / 6 / 7.17, `carton quantity` 0 / 4 / 7.75, `master carton size` 0 / 1 / 10, `one carton is how many` 0 / 1 / 4, `how many are in a carton` 0 / 1 / 10.
+- 정확한 검색량은 확보하지 않았으며 위 노출·클릭을 volume 추정값으로 과장하지 않았다.
+- 10개 query의 실제 SERP를 확인했다. `master carton size calculator`와 `master carton calculator`는 product/layout 입력형 계산기 intent가 강했고, `master carton dimensions`와 `master carton size`는 규격·설명 문서도 함께 나타났다. `carton quantity`와 `carton count calculator`는 units-per-carton을 사용한 올림 계산, pallet carton capacity, MOQ/order rounding intent가 섞였다. `case pack calculator`는 보유 unit 환산, 주문 case 수, 제품 치수 기반 units-per-case가 혼재했고, `case pack quantity`는 용어 설명 intent가 강했다. `master carton weight calculator`는 Pack Prep Tools의 Tools index가 검색 노출됐지만 전용 무료 도구 경쟁은 상대적으로 얕았다.
+- cannibalization 경계는 유지 가능하다고 판단했다: Master Carton Dimensions는 선택한 columns×rows×layers에서 최소 내부 치수를 설계하고, Multi-item Box Fit은 이미 정해진 box의 수용량을 검사한다. Carton Count는 unit demand→필요 carton 수이고 Case Pack은 sealed cases+loose reserve→보유 unit 수다. Guide는 절차, Terms는 정의, Weight는 gross packed weight, Cube는 finished external space를 담당한다.
+
+### indexability / coverage 확인
+
+- 운영 대상 7개 URL은 모두 HTTP 200, 정확한 self-canonical, meta noindex 없음, `sitemap.xml` 포함으로 확인했다.
+- `robots.txt`는 `User-agent: *`, `Allow: /`, 운영 sitemap 선언을 반환했다.
+- Search Console의 일부 `Crawled - currently not indexed` 기록과 실제 click/impression이 공존하므로 coverage 문구만 근거로 URL, canonical, robots, sitemap을 변경하지 않았다. 실제 검색 노출과 운영 응답을 우선했다.
+
+### 확인한 문제와 원인
+
+- `scripts/generate-site.js`가 authoritative source다. Calculator, Guide, Reference HTML과 indexes, sitemap, llms는 생성 결과다.
+- Carton Count의 계산 로직은 기본값 125 units / 24 units per carton에서 6 cartons, 5 units in final carton을 정확히 반환했다. 그러나 generator의 worked example만 `19 units in the final carton`으로 적혀 있어 결과와 설명이 충돌했다.
+- Master Carton Planning Guide는 모든 section 뒤에 `In Master Carton Planning Guide, document the define...` 같은 동일 template 문장을 붙였고 evidence/closeout/caution에서도 title을 반복했다. Master Carton Terms의 maintenance도 `Start by measure...`, title 반복, 첫 glossary term을 self-approving data로 취급하지 말라는 기계적 조합이었다.
+- Master Carton Dimensions의 다음 단계는 weight와 cube 확인이라고 설명하지만 Carton Cube 직접 링크가 없었다. Carton Count는 다음 단계에 Master Carton Weight를 말하지만 직접 링크가 없었다. Case Pack의 두 번째 관련 Tool은 실제 흐름과 약한 Insert Quantity였다. Master Carton Terms의 Related calculator는 구체 Tool이 아니라 `/tools.html`로 향했다.
+
+### 실제 수정
+
+- Carton Count meta description/lede/schema/llms 설명을 `required units`와 `units per carton`으로 필요한 carton 수와 partial final carton quantity를 계산한다는 자연어로 명확히 했다. title과 H1은 유지했다.
+- Carton Count worked example을 실제 계산과 맞는 `6 cartons with 5 units in the final carton`으로 수정했다. 계산 JavaScript는 변경하지 않았다.
+- 이번 대상 5개 Calculator의 worked example에서 generator가 만들던 `Next action: After:` 중복 접두사를 `Next action:`으로 정리했다. 같은 formatter를 비대상 Calculator에는 적용하지 않았다.
+- 관련 링크를 제한적으로 보강했다: Master Carton Dimensions→Weight/Cube/Carton Count, Carton Count→Case Pack/Dimensions/Weight, Case Pack→Carton Count/Dimensions, Master Carton Terms→Master Carton Dimensions.
+- Guide/Reference generator에 optional per-page override를 추가했다. 해당 데이터가 있는 두 페이지만 section note, closeout/evidence, maintenance/caution 문장을 현장 record·prototype·revision 기준의 직접적인 문장으로 교체한다. 다른 12 Guides와 10 References는 기존 generic output을 유지한다.
+- Master Carton Planning Guide와 Master Carton Terms의 reviewed/dateModified를 2026-08-13으로 갱신했다.
+
+### 변경 범위
+
+- authoritative source: `scripts/generate-site.js`.
+- 생성 결과: `tools/carton-count.html`, `tools/case-pack.html`, `tools/master-carton-dimensions.html`, `guides/master-carton-planning.html`, `reference/master-carton-terms.html`, `llms.txt`.
+- 기록: `handover.md`.
+- 수정하지 않음: `assets/calculators.js`, `assets/styles.css`, URL/redirect/canonical/robots/sitemap 구성, Master Carton Weight/Carton Cube 계산식과 HTML, 다른 cluster의 문서 내용.
+
+### QA
+
+- `node --check scripts/generate-site.js`: PASS.
+- `node scripts/qa.js`: PASS — 69 HTML, sitemap 68, JavaScript 5; content QA 36 Calculator, 13 Guide, 11 Reference; duplicate long paragraph 0, duplicate long sentence 0; responsive table 36/36.
+- `node scripts/verify-calculators.js`: PASS — 36 Calculator, 181 independent checks.
+- Master Carton Dimensions 1440 / 1280 / 1024 / 768 / 390px: 모두 horizontal overflow 0, viewport 밖 요소 0, 의도적으로 숨긴 mobile thead를 제외한 clipping 0, console error 0. 관련 링크는 Weight, Cube, Carton Count, Guide 순서로 노출됐다.
+- 대상 7개 URL 전체를 1440px와 390px에서 확인했다. 각 14개 조합 모두 horizontal overflow 0, viewport 밖 요소 0, clipping 0, console error 0.
+- Calculator 기본값 실제 결과: Dimensions `25.5 × 11.25 × 7.25 in` / 12 units; Weight `24 lb` / 6 lb remaining; Carton Count `6 cartons` / final 5; Case Pack `294 units`; Carton Cube `1.51 m³`, 모두 console error 0.
+- 회귀 QA: homepage, Tools index, Dimensional Weight Calculator, Packaging Trial and Shipping Damage Review, Packaging Quality and Damage Metrics를 각각 1440px와 390px에서 확인했다. 10개 조합 모두 overflow/out-of-viewport/clipping/console error 0. Decision guide의 scoped mobile card layout과 calculator input table의 scoped full-width rule이 유지됐다.
+- Shipping Damage Rate의 source/logic/default는 변경되지 않았고 기존 100/1, illustrative note, Calculate 1%, Reset initial+idle 동작을 자동 QA와 비대상 diff 0으로 보존했다.
+- homepage 사용자 관리 영역은 generator 보호 assertion을 통과했고 repository의 footer 뒤/site.js 앞 anchor와 image가 정확히 5개다. 순서·href·image·위치는 KittyLaunch → Sell With Boost → Twelve Tools → Findly.tools → BoostDomainRating 그대로이며 `index.html` content diff는 0이다.
+
+### 위험과 후속 관찰
+
+- HIGH 위험: 없음. 공식·carrier limit을 새로 제시하지 않았고 계산식, canonical, indexability를 변경하지 않았다.
+- MEDIUM: 7–28위 사이의 적은 impression 표본이므로 단기 rank/CTR 변화는 변동성이 크다. 최소 다음 주간 export에서 page/query 단위 clicks, impressions, position을 같은 기준으로 비교한다.
+- LOW: SERP 구성은 바뀔 수 있다. `carton quantity`와 `case pack calculator`는 혼합 intent이므로 추가 title 변형이나 page consolidation은 후속 실제 query/page data가 쌓이기 전에는 하지 않는다.
