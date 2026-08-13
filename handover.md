@@ -1503,3 +1503,51 @@ git status
 - 실배포 Builder `https://packpreptools.com/tools/pack-instruction-builder.html`: 390px에서 기본 Generate가 `PK-014 / Rev B built for CND-01`, generated sheet visible, overflow 0, console error 0.
 - 실배포 Homepage: 신규 `4 workflow tools` 상태 표시, 사용자 관리 badge 5개와 기존 순서/href 유지, 390px overflow 0.
 - 이 기록을 추가하는 closing commit을 push한 뒤 최종 local HEAD / origin/main 일치와 clean working tree를 다시 확인한다. closing commit은 public HTML 기능을 변경하지 않는다.
+
+## 2026-08-13 — Pack Instruction cluster responsive UI correction
+
+### 확인 URL과 정확한 원인
+
+- Hub: `/pack-instructions.html`.
+- Guide: `/guides/writing-pack-instructions.html`.
+- Reference: `/reference/pack-instruction-record-fields.html`.
+- Hub 원인: `process-track`과 `document-index`를 같은 muted section에 연속 배치했지만 두 컴포넌트 사이 margin이나 section boundary가 없었다. 실제 수정 전 rect 측정에서 process 하단과 document index 상단 간격은 1440px와 390px 모두 `0px`였다. 기존 Quality hub는 document index를 별도 section에 두므로 정상 section padding이 적용됐지만, Pack Instruction hub의 합쳐진 구조에는 그 리듬이 없었다.
+- Guide/Reference 원인: 공통 desktop 규칙 `.content-table tbody th { width: 28%; }`가 mobile의 `.content-table th { width: 100%; }`보다 specificity가 높았다. 두 신규 문서의 표가 plain `.content-table`만 사용해 desktop 28%가 390px에도 남았다. 수정 전 390px의 row는 355px, `td`는 353px였지만 첫 `th`는 99px뿐이었다.
+- 이전 수정이 덮지 못한 이유: 기존 Packaging Trial Decision guide는 `.decision-guide-table`, calculator input definition은 `.calculator-input-table`이라는 별도 class와 specificity가 같은 mobile override를 사용한다. 새 workflow Guide/Reference에는 어느 class도 적용되지 않아 그 두 보정의 적용 대상이 아니었다.
+
+### 공통 수정과 영향 범위
+
+- 생성 원본에서 Guide의 Decision guide와 Reference의 Key distinctions에 workflow 문서 전용 공통 class `.workflow-record-table`을 부여했다.
+- 680px 이하에서 `.content-table.workflow-record-table tbody th { width: 100%; }`를 사용해 desktop selector를 정확히 덮었다. 전역 `.content-table` 규칙을 바꾸지 않아 다른 문서 표의 desktop/tablet 구조는 유지했다.
+- Hub의 해당 document index에만 `.workflow-document-index`를 붙이고 `margin-top: clamp(2.5rem, 5vw, 4rem)`을 적용했다. 수정 후 실제 간격은 1440/1280px 64px, 1024px 51px, 768/390px 40px다.
+- CSS cache key는 위 3개 URL에만 `20260813-workflow-layout`을 적용했다.
+- 정적 회귀 검사에 hub spacing hook, workflow document table class 2개, mobile specificity override를 추가했다.
+- 공개 HTML 변경은 위 3페이지다. 4개 workflow Tool page는 routing editor/generated sheet 전용 컴포넌트와 기존 mobile 규칙을 사용하며 `.content-table` 문제에 노출되지 않아 생성 결과를 변경하지 않았다.
+- 390px before → after: Guide와 Reference 모두 `th` 99px / `td` 353px의 불균형에서 `th` 353px / `td` 353px의 한 grouped card row로 바뀌었다. horizontal overflow, 잘림, 겹침, 오른쪽 빈 영역은 0이다. 768px과 1440px에서는 `th` 약 28%, `td` 약 72%의 정상 2-column table-cell 구조를 유지했다.
+
+### Cluster audit와 회귀 보존
+
+- 7개 cluster page(hub, Tool 4, Guide, Reference)를 모두 검사했다. 표 specificity 결함은 Guide 1개 표와 Reference 1개 표에만 있었고, Hub의 리듬 결함은 process/document transition 1곳에만 있었다.
+- 4개 Tool의 logic, field ID, Generate/Reset/Print, error state를 변경하지 않았다. 실제 browser interaction에서 Builder 기본 생성·whitespace required error·Reset, Routing 2 rules·duplicate-condition conflict 1개·Reset, Traveler 180/45의 4 checkpoints·Reset, Readiness blank 12 gaps·negative error·Reset을 확인했다. 각 Print 버튼은 visible 상태다.
+- Shipping Damage Rate는 기본 100/1, illustrative note, Calculate `1% observed damage rate`, Reset 100/1 + idle을 유지했다.
+- Dimensional Weight는 기본 Calculate `6.91 lb`, Reset idle을 유지했다.
+- 기존 Packaging Trial Decision guide는 390px에서 `th`/`td` 각각 353px, `.meta-line` border-top `0px`를 유지했다. calculator input definition도 390px에서 양 셀 353px를 유지했다.
+- Master Carton Dimensions는 1440/390px에서 overflow 0, Master Carton guide와 Weight tool link를 유지했다.
+- Homepage 사용자 관리 badge block은 생성 전·후 SHA-256 `1205454B420A7A14B16F66A984BF5217AF327B33F68FB9E30EBD48824198ED68`, anchor 5개로 동일하다. HTML, href, image, 수, 순서, 위치를 변경하지 않았다.
+
+### QA 결과
+
+- syntax/generation: `node --check scripts/generate-site.js`, `node --check scripts/qa.js`, full generation PASS; generated diff는 의도한 공개 HTML 3개뿐이다.
+- `node scripts/qa.js`: PASS — 76 HTML, sitemap 75 URL, JavaScript 7; 36 Calculator, 4 workflow Tool, 14 Guide, 12 Reference; internal link/metadata/canonical/GA4/JSON-LD/duplicate ID 회귀 0.
+- `node scripts/verify-calculators.js`: PASS — 36 calculators, 181 independent checks.
+- `node scripts/verify-workflow-tools.js`: PASS — 46 normal, boundary, error, safety, deterministic checks.
+- `git diff --check`: PASS.
+- Browser QA 1440/1280/1024/768/390px: 필수 11페이지(hub, Guide, Reference, workflow Tool 4, Homepage, Shipping Damage Rate, Dimensional Weight, Packaging Trial Guide) × 5폭 = 55 조합. horizontal overflow 0, visible out-of-viewport element 0, console error 0. Hub 간격과 table computed width는 위 수치로 확인했다.
+- 모바일 menu: 390px에서 `aria-expanded=false` → click → `true`, navigation link visible.
+
+### 남은 위험과 운영 확인
+
+- HIGH: 없음.
+- MEDIUM: 별도 device/browser font metric이나 OS별 browser print pagination은 local in-app browser와 다를 수 있다. 이번 CSS 변경은 print output 구조를 건드리지 않았지만 운영 시 실제 print sample을 계속 관찰한다.
+- LOW: `.workflow-record-table`은 현재 두 controlled document에 의도적으로 제한돼 있다. 생성기에 유사한 workflow 문서 표를 추가할 때 이 class 또는 그 문서에 맞는 scoped component를 명시해야 한다.
+- LOW: global stylesheet를 사용하므로 새 CSS를 도입할 때 plain `.content-table`보다 desktop selector의 specificity가 높은지 정적 QA와 390px computed width를 함께 확인한다.

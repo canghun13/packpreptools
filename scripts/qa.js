@@ -242,6 +242,12 @@ if (!stylesheet.includes("--navy-950") || !stylesheet.includes("--blue-600") || 
 if (!/\.content-table\.calculator-input-table tbody th\s*{\s*width:\s*100%;\s*}/i.test(stylesheet)) {
   fail("assets/styles.css: calculator input-table mobile first-cell override missing.");
 }
+if (!/\.content-table\.workflow-record-table tbody th\s*{\s*width:\s*100%;\s*}/i.test(stylesheet)) {
+  fail("assets/styles.css: workflow document-table mobile first-cell override missing.");
+}
+if (!/\.workflow-document-index\s*{[^}]*margin-top:/i.test(stylesheet)) {
+  fail("assets/styles.css: pack-instruction document-index spacing rule missing.");
+}
 
 const sitemap = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
 const sitemapUrls = matches(sitemap, /<loc>([^<]+)<\/loc>/g).map((match) => match[1]);
@@ -293,6 +299,11 @@ for (const slug of ["shipping-damage-rate", "packaging-failure-cost", "packaging
 const instructionHub = fs.readFileSync(path.join(ROOT, "pack-instructions.html"), "utf8");
 for (const slug of ["pack-instruction-readiness", "pack-instruction-builder", "pack-variant-routing", "pack-job-traveler"]) {
   if (!instructionHub.includes(`href="/tools/${slug}.html"`)) fail(`pack-instructions.html: workflow tool ${slug} missing.`);
+}
+if (!instructionHub.includes('class="document-index workflow-document-index"')) fail("pack-instructions.html: scoped workflow document-index spacing hook missing.");
+for (const file of ["guides/writing-pack-instructions.html", "reference/pack-instruction-record-fields.html"]) {
+  const workflowDocument = fs.readFileSync(path.join(ROOT, file), "utf8");
+  if (!workflowDocument.includes('class="content-table workflow-record-table"')) fail(`${file}: scoped responsive workflow record table missing.`);
 }
 
 if (errors.length) {
