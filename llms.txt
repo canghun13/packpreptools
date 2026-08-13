@@ -40,7 +40,13 @@ Packaging calculations and operating references for repeatable shipment preparat
 - [Packaging Trial Comparison Tool](https://packpreptools.com/tools/packaging-trial-comparison.html): Compare two packaging trial variants on the same observed damage, material cost, packing time, and package-weight criteria.
 - [Package Weight & Dimension Variance Checker](https://packpreptools.com/tools/package-weight-dimension-variance.html): Compare recorded and observed package dimensions and weight using absolute, percentage, and user-entered tolerance differences.
 
-## Guides (13)
+## Workflow tools (4)
+- [Pack Instruction Readiness Checker](https://packpreptools.com/tools/pack-instruction-readiness.html): Check whether a pack instruction contains the minimum product, material, sequence, closure, label, verification, exception, and ownership fields needed for a controlled trial.
+- [Pack Instruction Builder](https://packpreptools.com/tools/pack-instruction-builder.html): Turn user-entered SKU, materials, ordered steps, closure, label, verification, and exception details into a printable pack instruction.
+- [Pack Variant Routing Planner](https://packpreptools.com/tools/pack-variant-routing.html): Order user-defined pack-variant rules by priority, identify duplicate-condition conflicts, and create a printable routing sheet with a default instruction.
+- [Pack Job Traveler Generator](https://packpreptools.com/tools/pack-job-traveler.html): Create a batch-specific pack traveler with instruction revision, material identifiers, user-set checkpoint intervals, and closeout fields.
+
+## Guides (14)
 - [How to Measure a Box Correctly](https://packpreptools.com/guides/how-to-measure-a-box.html): Measure package length, width, and height consistently and understand internal versus external dimensions.
 - [Dimensional Weight Explained for Small Sellers](https://packpreptools.com/guides/dimensional-weight-explained.html): Understand why dimensional weight matters, how divisors work, and what small sellers should verify.
 - [How Much Clearance Should Packaging Have?](https://packpreptools.com/guides/how-much-packaging-clearance.html): Plan product clearance for insertion, protective material, movement control, and a practical pack test.
@@ -54,8 +60,9 @@ Packaging calculations and operating references for repeatable shipment preparat
 - [Master Carton Planning Guide](https://packpreptools.com/guides/master-carton-planning.html): Plan unit layout, internal dimensions, packed weight, closure, and verification for master cartons.
 - [Pallet Planning Basics for Small Shipments](https://packpreptools.com/guides/pallet-planning-basics.html): Estimate layers, height, footprint use, and load limits before physical pallet verification.
 - [Packaging Trial and Shipping Damage Review](https://packpreptools.com/guides/packaging-trial-and-damage-review.html): Plan comparable packaging trials, define damage observations, record deviations, and monitor field results without claiming certification.
+- [How to Write and Release Pack Instructions](https://packpreptools.com/guides/writing-pack-instructions.html): Create SKU-level pack instructions, route variants, issue batch travelers, and preserve physical verification evidence.
 
-## Reference (11)
+## Reference (12)
 - [Package Measurement Terms](https://packpreptools.com/reference/package-measurement-terms.html): A practical glossary of package dimensions, girth, volume, clearance, and billable weight.
 - [Common Packaging Materials and Uses](https://packpreptools.com/reference/common-packaging-materials.html): Compare common boxes, mailers, cushioning, paper, bubble wrap, and closure materials.
 - [Dimensional Weight Divisors](https://packpreptools.com/reference/dimensional-weight-divisors.html): Understand dimensional weight divisors, units, and why current carrier confirmation is essential.
@@ -67,5 +74,6 @@ Packaging calculations and operating references for repeatable shipment preparat
 - [Master Carton Terms](https://packpreptools.com/reference/master-carton-terms.html): Define case pack, master carton layout, tare, cube, and packed-carton measurements.
 - [Pallet and Unit Load Terms](https://packpreptools.com/reference/pallet-and-unit-load-terms.html): Define pallet footprint, layers, utilization, overhang, containment, and load limits.
 - [Packaging Quality and Damage Metrics](https://packpreptools.com/reference/packaging-quality-metrics.html): Define observed damage rate, failure cost, trial comparison, measurement variance, and evidence boundaries for packaging reviews.
+- [Pack Instruction and Job Record Fields](https://packpreptools.com/reference/pack-instruction-record-fields.html): Define the identifiers, materials, steps, routing rules, checkpoints, exceptions, and ownership fields used in pack instructions and job travelers.
 
-All calculator outputs are planning estimates. Verify physical packs and current supplier, marketplace, carrier, facility, and regulatory requirements.
+All calculator and workflow outputs are planning records. Verify physical packs and current supplier, marketplace, carrier, facility, and regulatory requirements.

@@ -41,13 +41,13 @@ function pageUrlForQa(file) {
 
 const allFiles = walk(ROOT);
 const htmlFiles = allFiles.filter((file) => file.endsWith(".html"));
-if (htmlFiles.length !== 69) fail(`Expected exactly 69 public HTML files; found ${htmlFiles.length}.`);
+if (htmlFiles.length !== 76) fail(`Expected exactly 76 public HTML files; found ${htmlFiles.length}.`);
 const toolFiles = htmlFiles.filter((file) => rel(file).startsWith("tools/"));
 const guideFiles = htmlFiles.filter((file) => rel(file).startsWith("guides/"));
 const referenceFiles = htmlFiles.filter((file) => rel(file).startsWith("reference/"));
-if (toolFiles.length !== 36) fail(`Expected exactly 36 calculators; found ${toolFiles.length}.`);
-if (guideFiles.length !== 13) fail(`Expected exactly 13 guides; found ${guideFiles.length}.`);
-if (referenceFiles.length !== 11) fail(`Expected exactly 11 reference pages; found ${referenceFiles.length}.`);
+if (toolFiles.length !== 40) fail(`Expected exactly 40 tool pages; found ${toolFiles.length}.`);
+if (guideFiles.length !== 14) fail(`Expected exactly 14 guides; found ${guideFiles.length}.`);
+if (referenceFiles.length !== 12) fail(`Expected exactly 12 reference pages; found ${referenceFiles.length}.`);
 
 const titles = new Map();
 const descriptions = new Map();
@@ -57,6 +57,8 @@ const contentWarnings = [];
 const paragraphOwners = new Map();
 const sentenceOwners = new Map();
 let calculatorInputTableCount = 0;
+let calculatorPageCount = 0;
+let workflowToolPageCount = 0;
 
 function plainText(html) {
   return html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&[a-z0-9#]+;/gi, " ").replace(/\s+/g, " ").trim();
@@ -172,6 +174,11 @@ for (const file of htmlFiles) {
   }
 
   if (name.startsWith("tools/")) {
+    const isCalculator = /data-calculator="[^"]+"/.test(html);
+    const isWorkflowTool = /data-workflow-tool="[^"]+"/.test(html);
+    if (isCalculator === isWorkflowTool) fail(`${name}: expected exactly one calculator or workflow-tool marker.`);
+    if (isCalculator) calculatorPageCount += 1;
+    if (isWorkflowTool) workflowToolPageCount += 1;
     ["solves", "inputs", "method", "example", "interpretation", "mistakes", "limits", "workflow"].forEach((id) => {
       if (!html.includes(`id="${id}"`)) fail(`${name}: content section #${id} missing.`);
     });
@@ -180,12 +187,18 @@ for (const file of htmlFiles) {
     if (!/<h2 id="mistakes">Common mistakes<\/h2>/i.test(html) || !/<h2 id="inputs">How to choose the inputs<\/h2>/i.test(html)) fail(`${name}: mistakes or input guidance missing.`);
     if ((matches(html, /<ul class="related-register">[\s\S]*?<\/ul>/gi)[0]?.[0].match(/href=/g) || []).length < 3) fail(`${name}: related workflow links incomplete.`);
     if (!html.includes(`Last reviewed:`)) fail(`${name}: last reviewed missing.`);
-    const calculatorInputTables = matches(html, /<table class="content-table calculator-input-table">[\s\S]*?<\/table>/gi);
-    if (calculatorInputTables.length !== 1) {
-      fail(`${name}: expected one calculator input-definition table; found ${calculatorInputTables.length}.`);
-    } else {
-      calculatorInputTableCount += 1;
-      if (/<td>[^<]*Calculator:\s/i.test(calculatorInputTables[0][0])) fail(`${name}: repeated calculator title found in input guidance.`);
+    if (isCalculator) {
+      const calculatorInputTables = matches(html, /<table class="content-table calculator-input-table">[\s\S]*?<\/table>/gi);
+      if (calculatorInputTables.length !== 1) {
+        fail(`${name}: expected one calculator input-definition table; found ${calculatorInputTables.length}.`);
+      } else {
+        calculatorInputTableCount += 1;
+        if (/<td>[^<]*Calculator:\s/i.test(calculatorInputTables[0][0])) fail(`${name}: repeated calculator title found in input guidance.`);
+      }
+    }
+    if (isWorkflowTool) {
+      if (!html.includes("data-workflow-output") || !html.includes("/assets/workflow-tools.js")) fail(`${name}: workflow result region or browser logic missing.`);
+      if (!html.includes("planning boundary")) fail(`${name}: workflow planning boundary missing.`);
     }
   }
   if (name.startsWith("guides/")) {
@@ -199,6 +212,9 @@ for (const file of htmlFiles) {
     });
   }
 }
+
+if (calculatorPageCount !== 36) fail(`Expected exactly 36 calculator pages; found ${calculatorPageCount}.`);
+if (workflowToolPageCount !== 4) fail(`Expected exactly 4 workflow tool pages; found ${workflowToolPageCount}.`);
 
 for (const [paragraph, owners] of paragraphOwners) {
   if (owners.length > 1) fail(`Repeated long body paragraph in ${[...new Set(owners)].join(", ")}: ${paragraph.slice(0, 90)}…`);
@@ -229,7 +245,7 @@ if (!/\.content-table\.calculator-input-table tbody th\s*{\s*width:\s*100%;\s*}/
 
 const sitemap = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
 const sitemapUrls = matches(sitemap, /<loc>([^<]+)<\/loc>/g).map((match) => match[1]);
-if (sitemapUrls.length !== 68) fail(`sitemap.xml: expected exactly 68 URLs; found ${sitemapUrls.length}.`);
+if (sitemapUrls.length !== 75) fail(`sitemap.xml: expected exactly 75 URLs; found ${sitemapUrls.length}.`);
 if (new Set(sitemapUrls).size !== sitemapUrls.length) fail("sitemap.xml: duplicate URL.");
 if (sitemapUrls.includes(`${SITE}/404.html`)) fail("sitemap.xml: 404 must not be listed.");
 for (const url of indexableCanonicals) if (!sitemapUrls.includes(url)) fail(`sitemap.xml: missing ${url}.`);
@@ -243,7 +259,7 @@ for (const file of [...toolFiles, ...guideFiles, ...referenceFiles]) {
   if (!llms.includes(url)) fail(`llms.txt: missing ${url}.`);
 }
 const toolsHub = fs.readFileSync(path.join(ROOT, "tools.html"), "utf8");
-for (const file of toolFiles) if (!toolsHub.includes(`href="/${rel(file)}"`)) fail(`tools.html: calculator ${rel(file)} is unreachable.`);
+for (const file of toolFiles) if (!toolsHub.includes(`href="/${rel(file)}"`)) fail(`tools.html: tool ${rel(file)} is unreachable.`);
 const guidesHub = fs.readFileSync(path.join(ROOT, "guides.html"), "utf8");
 for (const file of guideFiles) if (!guidesHub.includes(`href="/${rel(file)}"`)) fail(`guides.html: guide ${rel(file)} is unreachable.`);
 const referenceHub = fs.readFileSync(path.join(ROOT, "reference.html"), "utf8");
@@ -251,17 +267,32 @@ for (const file of referenceFiles) if (!referenceHub.includes(`href="/${rel(file
 if (fs.readFileSync(path.join(ROOT, "CNAME"), "utf8").trim() !== "packpreptools.com") fail("CNAME: domain is incorrect.");
 
 const home = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
-[
+const userManagedBadgeLinks = [
   "https://kittylaunch.com/p/packprep-tools",
   "https://sellwithboost.com",
   "https://twelve.tools",
-  "https://findly.tools/packpreptools?utm_source=packpreptools"
-].forEach((url) => {
+  "https://findly.tools/packpreptools?utm_source=packpreptools",
+  "https://boostdomainrating.com/item/packpreptools.com?utm_source=badge"
+];
+userManagedBadgeLinks.forEach((url) => {
   if (!home.includes(url)) fail(`index.html: user-managed directory badge link missing: ${url}`);
 });
+const badgePositions = userManagedBadgeLinks.map((url) => home.indexOf(`href="${url}"`));
+if (badgePositions.some((position) => position < 0) || badgePositions.some((position, index) => index && position <= badgePositions[index - 1])) fail("index.html: user-managed directory badge order changed.");
+[
+  "https://kittylaunch.com/api/public/badges/launch_badge.svg?theme=light&name=PackPrep%20Tools",
+  "https://sellwithboost.com/badge/listing.svg",
+  "https://twelve.tools/badge0-white.svg",
+  "https://findly.tools/badges/findly-tools-badge-light.svg",
+  "https://boostdomainrating.com/api/badge/packpreptools.com"
+].forEach((src) => { if (!home.includes(`src="${src}"`)) fail(`index.html: user-managed directory badge image missing: ${src}`); });
 const qualityHub = fs.readFileSync(path.join(ROOT, "quality.html"), "utf8");
 for (const slug of ["shipping-damage-rate", "packaging-failure-cost", "packaging-trial-comparison", "package-weight-dimension-variance"]) {
   if (!qualityHub.includes(`href="/tools/${slug}.html"`)) fail(`quality.html: quality tool ${slug} missing.`);
+}
+const instructionHub = fs.readFileSync(path.join(ROOT, "pack-instructions.html"), "utf8");
+for (const slug of ["pack-instruction-readiness", "pack-instruction-builder", "pack-variant-routing", "pack-job-traveler"]) {
+  if (!instructionHub.includes(`href="/tools/${slug}.html"`)) fail(`pack-instructions.html: workflow tool ${slug} missing.`);
 }
 
 if (errors.length) {
@@ -275,5 +306,5 @@ if (contentWarnings.length) {
   contentWarnings.forEach((warning) => console.warn(`- ${warning}`));
 }
 console.log(`AUTO QA PASS — ${htmlFiles.length} HTML, ${sitemapUrls.length} sitemap URLs, ${scriptFiles.length} JavaScript files`);
-console.log(`CONTENT QA PASS — ${toolFiles.length} calculators, ${guideFiles.length} guides, ${referenceFiles.length} references; duplicate long paragraphs 0; duplicate long sentences 0`);
+console.log(`CONTENT QA PASS — ${calculatorPageCount} calculators, ${workflowToolPageCount} workflow tools, ${guideFiles.length} guides, ${referenceFiles.length} references; duplicate long paragraphs 0; duplicate long sentences 0`);
 console.log(`RESPONSIVE TABLE QA PASS — ${calculatorInputTableCount} calculator input-definition tables use the scoped mobile override`);

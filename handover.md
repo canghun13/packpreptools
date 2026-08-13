@@ -37,29 +37,31 @@
 
 ## 2. 현재 저장소 상태
 
-2026-08-02 품질·손상 관리 클러스터 확장 기준:
+2026-08-13 Pack Instruction & Job Release workflow cluster 확장 기준:
 
-- 실제 공개 HTML 69개
-- 기본·허브 페이지 9개
-- 계산기 36개
-- Guides 13개
-- Reference 11개
+- 실제 공개 HTML 76개
+- 기본·허브·기타 페이지 10개
+- Tool page 40개: 계산기 36개 + workflow Tool 4개
+- Guides 14개
+- Reference 12개
 - 공통 스타일: `assets/styles.css`
 - 공통 UI 동작: `assets/site.js`
 - 계산 로직: `assets/calculators.js`
+- workflow logic: `assets/workflow-tools.js`
 - 정적 페이지 생성기: `scripts/generate-site.js`
 - 자동 QA: `scripts/qa.js`
 - 계산 검증: `scripts/verify-calculators.js`
+- workflow 검증: `scripts/verify-workflow-tools.js`
 - 검색·크롤링 파일: `robots.txt`, `sitemap.xml`, `llms.txt`
 - 유지 파일: `CNAME`, `README.md`, `handover.md`
 
 ### 현재 상태 판정
 
-- Phase 1 Foundation·디자인 차별화와 Phase 2·3 기능/콘텐츠 확장 완료 후 Packaging Quality & Damage Control 소규모 클러스터 추가
+- Phase 1 Foundation·디자인 차별화, Phase 2·3 기능/콘텐츠 확장, Packaging Quality & Damage Control과 Pack Instruction & Job Release 소규모 cluster 추가 완료
 - GitHub `main` 배포 상태는 아래 최신 작업 기록을 우선 확인
 - GitHub Pages / Cloudflare 실도메인 상태는 아래 최신 작업 기록을 우선 확인
 - 모든 공개 HTML에 고유 SEO 메타데이터, Open Graph, favicon, GA4, 정적 JSON-LD 적용
-- 자동 QA, 계산기 36개·독립 검사 181개, 69페이지 × 5개 반응형 폭 브라우저 QA 통과
+- 자동 QA, 계산기 36개·독립 검사 181개, workflow Tool 4개·검사 46개, 신규·핵심 회귀 페이지의 5개 반응형 폭 브라우저 QA 통과
 - HIGH 위험 0
 
 ---
@@ -1294,3 +1296,206 @@ git status
 - HIGH 위험: 없음. 공식·carrier limit을 새로 제시하지 않았고 계산식, canonical, indexability를 변경하지 않았다.
 - MEDIUM: 7–28위 사이의 적은 impression 표본이므로 단기 rank/CTR 변화는 변동성이 크다. 최소 다음 주간 export에서 page/query 단위 clicks, impressions, position을 같은 기준으로 비교한다.
 - LOW: SERP 구성은 바뀔 수 있다. `carton quantity`와 `case pack calculator`는 혼합 intent이므로 추가 title 변형이나 page consolidation은 후속 실제 query/page data가 쌓이기 전에는 하지 않는다.
+
+## 2026-08-13 — 신규 workflow cluster 발굴 및 Pack Instruction & Job Release 구현
+
+### 시작 상태와 실제 규모 복원
+
+- 작업 폴더: `C:\Users\cangh\OneDrive\문서\packpreptools`.
+- 시작 시 branch `main`, origin `https://github.com/canghun13/packpreptools.git`, working tree clean을 확인했다.
+- 시작 local HEAD는 `38c89d498504f18aadd69a85c11ef75221b65dfe`, 시작 remote `origin/main`은 `84d25a5057506812787db350edbb63e67c444477`이었다. 미커밋 변경이 없어서 `git fetch origin`과 `git pull --ff-only origin main`으로 `84d25a5`까지 동기화한 뒤 작업했다.
+- 최신 실제 상태는 69 public HTML, 36 Calculator, 13 Guide, 11 Reference, 기본·허브·기타 9, sitemap 68 URL이었다. authoritative source는 `scripts/generate-site.js`, 계산 로직은 `assets/calculators.js`, 검증은 `scripts/qa.js`와 `scripts/verify-calculators.js`다.
+- 기존 36 Calculator의 title, description, input ID/type, Logic, Output, User action을 generator와 생성 HTML/JavaScript에서 다시 대조했다. 신규 후보가 단순 multi-row, goal-seek, 이름 변경, 문서 복제로 끝나는 경우를 제외했다.
+- 직전 조사에서 이미 제외한 Returns & Reverse Logistics, Packaging Purchasing & Quote Analysis, Fulfillment Accuracy & Rework, Shipment Consolidation, Packaging Sustainability, Automation/Equipment Economics, Changeover/Downtime, Label Roll/Runtime, Stretch Film, Roll/Sheet Yield, Storage/Space, Compression/Stack, Gross/Tare/Pallet Weight, Packing Station Layout, Industrial Bags/Liners, Packaging Version Cutover, Point-of-use Replenishment, Order-mix/Deadline, Strapping/Edge Protection, Kit Component Availability, Partitions/Dividers, Carton Portfolio, Repack/Overpack, Mailing Tube family는 이번 candidate pool에 다시 넣지 않았다.
+
+### 새로운 workflow family 12개와 Tool 가설
+
+표의 `가장 가까운 기존`은 기존 36 Calculator 또는 직전 제외 범위다. 각 줄은 User/problem → Inputs → Logic → Output/action → 반복 사용 → 차이를 한 번에 기록한다.
+
+#### F1. Shipping Label Print Setup & Calibration — REJECT
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+|---|---|---|---|---|
+| 4×6 Label Settings Checker | thermal printer를 처음 연결한 seller; 잘림·축소 방지 | PDF page size, stock, scaling, orientation → 조합 rule check → mismatch list; driver를 수정하고 test print | printer/driver/marketplace 변경 때 | 기존 없음 / 인쇄 설정 checker |
+| Print Scale Correction Planner | 출력 치수가 목표와 다름 | target line, measured line → target÷measured×100 → scale%; print setting 조정 | printer·PDF source별 | Package Variance / 종이 출력 배율이지 package 측정 아님 |
+| DPI & Label Pixel Planner | raster label 제작자; 해상도 부족 | physical size, DPI → pixel dimensions → canvas requirement; artwork 재출력 | label size·printer별 | Label Cost / 비용이 아니라 raster resolution |
+| Thermal Label Symptom Troubleshooter | blank, faint, clipped, mirrored label | symptom, printer type, media, connection → decision tree → ordered checks; calibration/test 실시 | 장애마다 | Fulfillment Accuracy 제외 family와 다르나 hardware troubleshooting |
+
+#### F2. Pack Instruction & Job Release — GO
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+|---|---|---|---|---|
+| Pack Instruction Readiness Checker | small brand operations owner; 신규 instruction의 누락 발견 | SKU/ID/revision/material/step count/closure/label/verification/exception/owner → required-field 및 최소 step validation → gap list; trial 전에 보완 | 신규·개정 instruction마다 | Packaging Trial Comparison / trial 결과 비교가 아니라 trial 전 record completeness |
+| Pack Instruction Builder | operator-facing method가 필요한 seller/3PL handoff owner | reusable identity, materials, ordered steps, close/label/verify/exception → validation·escaping·ordered render → printable draft; physical trial·owner review | SKU/variant revision마다 | Packing Station Workflow Guide / 설명 문서가 아니라 입력 기반 SKU record 생성 |
+| Pack Variant Routing Planner | gift/promo/channel/item-count variant가 있는 operation | default instruction, observable conditions, route IDs, actions, priority → sort + exact duplicate-condition conflict check → routing matrix; 조건별 test 후 release | campaign·variant 변경마다 | Packaging Version Cutover 제외 family / 날짜·재고 전환이 아니라 주문 속성별 method 선택 |
+| Pack Job Traveler Generator | defined batch를 instruction revision에 연결할 supervisor | job, SKU, revision, quantity, interval, station/operator, material lots → positive integer validation + checkpoints + final row → printable traveler; issue/check/close exceptions | batch/job마다 | Prep Batch Time / 시간을 계산하지 않고 execution record와 checkpoint를 생성 |
+
+#### F3. Packaging Spec & Supplier Handoff — REJECT
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+|---|---|---|---|---|
+| Packaging Spec Completeness Checker | packaging buyer; supplier RFQ 누락 방지 | dimensions, tolerances, material, print, quantity, delivery → required/cross-field rules → gap report; brief 보완 | RFQ마다 | Purchasing/Quote Analysis 제외 family와 강하게 인접 |
+| Supplier RFQ Brief Generator | custom package buyer; 비교 가능한 quote 요청 | product, format, size, substrate, print, finish, MOQ, ship-to → structured render → RFQ draft; suppliers에 별도 전달 | sourcing event마다 | 기존 없음 / 구매 문서 생성이나 supplier별 요구가 큼 |
+| Artwork Handoff Packet Builder | designer/brand; 파일·승인정보 누락 | dieline version, file names, colors, fonts, barcode owner, proof contact → checklist assembly → handoff manifest; preflight 전달 | artwork revision마다 | Artwork Preflight family와 결합될 가능성 |
+| Supplier Clarification Log Generator | packaging project owner; question/answer 추적 | question, owner, due date, decision, affected revision → status grouping → clarification log; unresolved hold | project마다 | Version Cutover / generic project log로 범위 확장 |
+
+#### F4. Packaging Sample & Proof Approval — REJECT
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+|---|---|---|---|---|
+| Sample Request Builder | brand/buyer; 정확한 prototype 요청 | SKU, purpose, sample qty, material/print/finish, delivery → structured request → request form; supplier에 전달 | sample round마다 | Trial Comparison / sample 요청 단계 |
+| Proof Review Completeness Checker | reviewer; dieline/copy/barcode/finish 누락 | proof revision, review areas, comment status → completeness rules → open review list; proof hold | proof revision마다 | Quality cluster / artwork 승인으로 scope 이동 |
+| Sample Comparison Record | buyer; physical samples 비교 | candidate, dimensions, appearance, fit notes, observed defects, decision owner → same-field comparison → review table; next sample 선택 | sample round마다 | Packaging Trial Comparison / packaging performance 대신 commercial proof review |
+| Approval Change Record Generator | owner; 승인 뒤 변경 추적 | approved revision, requested change, reason, affected files, reviewer → change manifest → supersession record; reopen approval | change마다 | Version Cutover 제외 family와 중복 |
+
+#### F5. Shipping Label Placement & Surface Fit — REJECT
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+|---|---|---|---|---|
+| Label Face Fit Checker | packer; 4×6 label이 carton face에 맞는지 확인 | face L×W, label L×W, edge clearance → two-orientation fit → fit/orientation; 다른 face 선택 | box size별 | Box Size / product fit이 아니라 label rectangle fit |
+| Barcode Obstruction Checklist | operator; seam/tape/edge 위 barcode 방지 | chosen face, seams, tape zones, curvature, old labels → rule list → obstruction warnings; 위치 이동 | pack method별 | 기존 없음 / 공식 carrier·GS1 rule 변동 의존 |
+| Small Parcel Label Orientation Planner | poly mailer/tube/small box user | usable surfaces, label size, wrap allowance → orientation rules → placement sketch text; fold/overlap 방지 | format별 | Tube family와 일부 인접 |
+| Multiple Label Zone Planner | hazmat/marketplace/internal labels가 공존하는 operation | surface, each label size/type, exclusion gaps → 2D strip allocation → overlap list; priority 조정 | label set마다 | 단순 rectangle packing engine으로 확장될 위험 |
+
+#### F6. Carton Closure Troubleshooting — REJECT
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+|---|---|---|---|---|
+| Tape Seal Symptom Troubleshooter | flaps lift/tape peels; packer | symptom, board surface, dust/moisture/temp, application method → decision tree → inspection order; sample seal 재실시 | 문제 lot마다 | Tape Usage / 길이 계산이 아니라 adhesion 진단 |
+| Seal Pattern Selector | pack designer; center/H seal 선택 | carton weight, flap gap, handling, user policy → user-rule mapping → pattern candidate; physical test | carton method마다 | Tape Usage가 pattern을 입력받음 / selector는 performance 오해 위험 |
+| Closure Condition Checker | supervisor; application 조건 점검 | temperature, clean/dry, tape/board ID, pressure method → checklist → condition gaps; work hold/recondition | shift/setup마다 | Changeover 제외 family에 인접 |
+| Tape Setup Record Generator | case sealer/hand tape owner | tape SKU/lot, head/dispenser setting, operator, sample observations → structured record → setup sheet; verify sample | roll/setup마다 | equipment-specific maintenance 영역 |
+
+#### F7. Pack Sequence & Layered Presentation — REJECT
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+|---|---|---|---|---|
+| Pack Step Dependency Planner | multi-step gift pack owner | actions, prerequisites → topological validation → ordered/blocked steps; reorder method | method revision마다 | Pack Instruction Builder의 ordered steps보다 복잡한 동일 engine |
+| Layer Build Sheet Generator | presentation pack operator | layer names, materials, orientation, insert points → ordered layers → printable layer sheet; prototype 비교 | variant마다 | Builder의 step/material output과 중복 |
+| Unpack-order Checker | kitting/consumer experience owner | desired reveal order, entered pack order → reverse-sequence comparison → mismatch list; layers 재배치 | design마다 | Kit excluded family와 인접 |
+| Sequence Time Comparator | operations owner; two sequences 비교 | per-step time/handling, repeats → sum and deltas → time comparison; trial 선택 | improvement trial마다 | Prep Batch Time/Trial Comparison의 단순 multi-row 확장 |
+
+#### F8. Shipping Scale Verification & Weighment Record — REJECT
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+| Repeated Reading Consistency Checker | packer; scale readings 흔들림 | repeated readings, user tolerance → range/mean/difference → stability flag; surface/power 재확인 | shift·scale issue마다 | Package Variance / recorded-vs-observed가 아니라 instrument repeat readings |
+| Test-load Sequence Planner | scale owner; 확인 순서 기록 | capacity, user-owned test loads, points → ascending/descending sequence → worksheet; responsible check | periodic check마다 | calibration 절차·법적 계량 risk |
+| Scale Resolution Selector | buyer; 표시 분해능 검토 | package min/max weight, desired increment → ratios → candidate display increment; spec 확인 | scale 구매마다 | 구매 recommendation 및 정확도 오해 가능 |
+| Weighment Record Generator | dispatch team; final weight evidence | package ID, scale ID, readings, date/operator → structured render → weighment sheet; manifest update | shipment/batch마다 | Weight calculators와 달리 record generator지만 사용성 1–2개에 집중 |
+
+#### F9. Dispatch Exception Triage & Escalation — REJECT
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+| Exception Route Selector | packer; damaged/label/material/fit 예외 대응 | exception type, severity, user routes → decision map → hold/rework/escalate route; owner 호출 | 예외마다 | Fulfillment Accuracy & Rework 제외 family와 중복 |
+| Hold Tag Generator | supervisor; held package 식별 | package/job, reason, time, owner, prohibited action → structured tag → print/attach | hold마다 | generic warehouse form |
+| Escalation Completeness Checker | team lead; 정보 부족 escalation 방지 | problem, evidence, lot/order, action taken, requested decision → gap check → completeness list; 보완 후 전송 | escalation마다 | quality record와 중복 |
+| Exception Closeout Record | owner; disposition 추적 | exception, disposition, rework/scrap qty, approver, recurrence action → summary → closeout record; batch traveler 연결 | 예외 close마다 | Packaging Failure Cost·Rework 제외 범위 인접 |
+
+#### F10. Shipment Photo Evidence & Pack Record — REJECT
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+| Photo Shot-list Generator | seller; 일관된 pack evidence 촬영 | product/package type, closure, label, serial/lot needs → selected shot templates → list; 촬영 | shipment class마다 | 정적 checklist 복제 위험 |
+| Photo File-name Planner | operation; image 연결 실패 | job/order-safe ID, sequence, view, date → sanitized naming → filename list; local 저장 | shipment마다 | utility지만 포장 핵심과 약함 |
+| Evidence Completeness Checker | reviewer; 필수 view 누락 | expected shots, captured names/notes → set difference → missing list; 재촬영 | exception/shipment마다 | quality cluster 및 privacy 문제 |
+| Pack Record Cover Sheet | claim/QA owner; 사진·측정·material record 연결 | package ID, instruction, photo refs, measures, exception → manifest → cover sheet; 내부 보관 | issue마다 | carrier liability처럼 오해될 위험 |
+
+#### F11. Packing Slip & Shipment Document Prep — REJECT
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+| Packing Slip Generator | small seller; order document 필요 | seller/order/customer/items → totals/render → slip PDF/print; shipment 동봉 | order마다 | existing calculator 없음 / 개인정보·강한 무료 경쟁 |
+| Carton Contents List Builder | multi-carton shipper | carton IDs, item rows/qty → grouping/totals → carton list; label carton | shipment마다 | Carton Count가 quantity만 계산 / document generator |
+| Delivery Note Generator | B2B seller | sender/recipient/items/reference → structured render → delivery note; consignee 전달 | shipment마다 | generic document generator |
+| Shipment Document Reconciliation | dispatch owner | order lines, slip lines, carton lines → keyed comparison → missing/mismatch list; hold shipment | shipment마다 | Fulfillment Accuracy excluded family와 직접 중복 |
+
+#### F12. Packaging Artwork Preflight & File Handoff — REJECT
+
+| Tool 가설 | User/problem | Inputs → Logic → Output/action | 반복 사용 | 가장 가까운 기존 / 실질 차이 |
+| Print DPI Checker | packaging designer | placed image pixels, print size → px÷inch → effective DPI; asset 교체 | artwork asset마다 | label DPI candidate와 중복, specialist tool 강함 |
+| Bleed/Safe-area Checker | designer; trim 위험 | artwork/dieline/bleed/safe dimensions → boundary comparison → deficit; layout 수정 | dieline마다 | file parsing 없이는 얕음 |
+| Dieline File Handoff Builder | brand-to-printer | dieline version, layers, spots, fonts, linked assets → manifest → handoff checklist; package files | revision마다 | Supplier Handoff candidate와 중복 |
+| Proof Revision Comparator | reviewer | two extracted checklists/metadata → field difference → change list; proof 검토 | proof마다 | real PDF visual diff 없이는 메모 표 수준 |
+
+### 실제 검색 수요·SERP·경쟁 확인
+
+- 정확한 keyword volume 도구 접근 권한은 없었다. 검색량 숫자를 만들지 않고, exact/long-tail SERP의 결과 구성, 무료 interactive tool 존재, vendor/SaaS 기능 범위, 공식·실무 문서, seller forum 문제 반복을 근거로 판단했다.
+- Label setup query: `4x6 shipping label settings checker`, `thermal printer calibration shipping label`, `shipping label printing too small clipped`를 확인했다. LabelChop은 PDF size, driver stock, scaling, orientation, symptom을 한 checker에서 다루고 A4 converter, print scale, blurry barcode, blank label, test label까지 무료 suite로 제공한다. LabelHelper도 calibration/test pattern을 제공하며 seller forum에는 clipped/tiny/blank 문제가 반복됐다. 수요는 있으나 F1의 4개 가설이 이미 한 competitor suite에 수렴하므로 REJECT했다.
+  - https://labelchop.com/tools/4x6-shipping-label-settings-checker
+  - https://labelhelper.com/thermal-printer-calibration-shipping-label
+- Pack instruction query: `packing work instruction template`, `pack out instruction template`, `pick pack ship SOP template`, `pack out guidelines SKU variant`, `manufacturing traveler template`를 확인했다. Portless는 SKU, materials, photo/video, ordered steps, insert, seal/label, return label을 포함한 SOP를 요구하고 MasonHub는 variant별 materials/quantity/placement/order-size/VAS rules를 요구한다. Docsie·Trupeer·WritingTools·Taskade는 generic template 또는 AI/video-to-SOP를 제공하고, PackAssistant·Metis는 instruction/traveler 문서 출력을 제공한다. 그러나 가입 없이 packaging-specific readiness → structured instruction → variant route conflict → batch traveler를 한 흐름으로 연결하는 무료 정적 도구는 대표 결과에서 확인하지 못했다.
+  - https://support.portless.com/en/articles/13611841-creating-packing-sops-for-fulfillment
+  - https://support.masonhub.co/hc/en-us/articles/360055543632-Pack-Out-Guidelines
+  - https://www.docsie.io/solutions/templates/logistics-supply-chain/pick-pack-and-ship-sop/
+  - https://www.trupeer.ai/tools/manufacturing-sop-software
+  - https://writingtools.ai/tools/work-instructions-generator
+  - https://www.metisautomation.co.uk/manufacturing-traveller-excel-template/
+- Supplier/spec query: `packaging specification template`, `packaging RFQ template`, `packaging brief builder`, `packaging artwork handoff checklist`를 확인했다. Sparal이 pack spec, RFQ, artwork handoff, approval, reorder, launch template와 AI Packaging Brief Builder를 제공하며 dieline specialist도 강했다. F3는 Purchasing/Quote 및 Version 영역과 겹쳐 REJECT했다.
+  - https://www.sparalpackaging.com/templates
+  - https://www.sparalpackaging.com/tools/packaging-brief-builder
+- Sample/proof query: `packaging sample request form`, `packaging proof approval checklist`, `packaging prototype approval`를 확인했다. Jotform의 conditional form/approval/storage와 packaging vendor proof process가 sample request와 approval workflow를 이미 제공한다. F4는 quality/version 관리 범위로 넓어져 REJECT했다.
+  - https://www.jotform.com/form-templates/packaging-prototype-sample-request-form
+- Label placement query: `shipping label placement checker box`, `shipping label on seam edge barcode`, `barcode placement packaging guide`를 확인했다. FedEx는 largest surface, seam/edge 회피, barcode 위 tape 금지를 안내하고 GS1 placement guide와 seller Q&A가 노출됐다. face-fit은 만들 수 있지만 나머지는 carrier/GS1-specific guide를 재진술하는 1–2개 기능이므로 F5를 REJECT했다.
+  - https://www.fedex.com/en-us/shipping/create-shipping-label.html
+- Closure query: `carton tape not sticking troubleshooting`, `case sealer tape troubleshooting`, `box flaps tape lifting`을 확인했다. 3M application monitoring과 equipment manual/vendor guides가 missing tape, cut, roll, adhesion symptom을 다룬다. material/board/application condition을 모르는 정적 selector는 성능 보증처럼 보일 수 있어 F6를 REJECT했다.
+- Pack sequence query: `packing sequence planner`, `multi stage packing software`, `pack out sequence work instruction`을 확인했다. Paccurate multi-stage packing과 commercial packing/container planning products는 rules, sequence, layout, API/print를 제공한다. 정적 버전의 4개 후보는 동일 ordered-step engine의 mode이거나 기존 time/trial의 확장이므로 F7을 REJECT했다.
+  - https://docs.paccurate.io/multi-stage-packing
+- Scale query: `shipping scale verification worksheet`, `scale repeatability checker`, `weighment record template`를 확인했다. 검색 결과가 calibration worksheets, regulated calibration guidance, scale vendors에 집중됐다. repeat-reading checker와 record는 가능하지만 4개 독립 Tool이 되기 전에 calibration/compliance 판단으로 넘어가므로 F8을 REJECT했다.
+- Exception/photo query: `packing exception escalation template`, `shipment photo evidence checklist`, `packaging photo record`를 확인했다. 결과는 WMS/QA/claims SaaS와 설명형 checklist가 중심이었다. static implementation은 generic forms, quality/rework 중복, privacy/claim 오해 위험이 커 F9/F10을 REJECT했다.
+- Packing document query: `free packing slip generator`, `carton packing list generator`, `delivery note generator`를 확인했다. PackingSlip, PackingSlipGenerator, OneCart, Toolmatrix, Genvalo가 무료/no-login, CSV/bulk, PDF/print 범위를 이미 제공했다. F11은 강한 무료 경쟁과 개인정보 처리 때문에 REJECT했다.
+- Artwork preflight query: `free packaging artwork preflight checker`, `dieline preflight online`, `packaging artwork bleed checker`를 확인했다. Preflight.art는 no-account 무료 preflight에서 dieline, spot, bleed, fonts, resolution, ink, barcode를 검사하고 Artwork Flow/Helqora 등도 file-based 검사를 제공한다. file parsing 없는 static checker는 현저히 얕으므로 F12를 REJECT했다.
+  - https://preflight.art/
+
+### GO 기준 판정과 최종 선택
+
+| 기준 | Pack Instruction & Job Release 판정 |
+|---|---|
+| 최소 4개의 강한 독립 Tool | PASS — readiness, instruction generation, variant routing, batch traveler는 입력·logic·output·다음 행동이 각각 다름 |
+| 기존 Tool/최근 제외와 비중복 | PASS — calculation, trial metric, timing, version cutover, fulfillment accuracy가 아니라 controlled operating record의 서로 다른 단계 |
+| 실제 문제/검색 의도 | PASS — SKU pack-out instruction, variant guidelines, SOP, traveler query와 fulfillment documentation에서 반복 요구 확인 |
+| competitor gap | PASS — generic AI/template/video SOP와 enterprise fulfillment system 사이에 no-account packaging-specific 연결 workflow가 비어 있음 |
+| 정적 웹 구현 가능 | PASS — user-entered fields, deterministic validation/sort/checkpoint generation, HTML print; account/API/database 불필요 |
+| 안전 경계 | PASS — readiness와 record organization만 제공; certification, approval, AQL, ISTA, damage prevention, legal disposition을 제공하지 않음 |
+
+- **최종 결정: GO. Pack Instruction & Job Release cluster를 7페이지로 구현했다.**
+- 4개 Tool은 하나의 giant form이나 동일 engine의 mode가 아니다. Readiness는 누락을 찾고, Builder는 reusable method draft를 만들며, Routing은 observable condition의 priority와 exact duplicate conflict를 검토하고, Traveler는 한 batch의 revision/material/checkpoint/closeout record를 만든다.
+- 기본값은 instructional sample identity/steps 또는 기존 operation이 정해야 할 neutral blank다. checkpoint interval, materials, tolerance, approval threshold를 업계 평균으로 invent하지 않았다.
+- 모든 output에 physical trial/current requirement/responsible owner 경계를 두었고, output을 인증·승인·성능 진단으로 표현하지 않았다.
+
+### 구현 범위와 최종 원장
+
+- 신규 hub: `/pack-instructions.html`.
+- 신규 Tools: `/tools/pack-instruction-readiness.html`, `/tools/pack-instruction-builder.html`, `/tools/pack-variant-routing.html`, `/tools/pack-job-traveler.html`.
+- 신규 Guide: `/guides/writing-pack-instructions.html`.
+- 신규 Reference: `/reference/pack-instruction-record-fields.html`.
+- authoritative data/templates/generation: `scripts/generate-site.js`.
+- 신규 browser/pure logic: `assets/workflow-tools.js`; UMD API로 browser와 Node test가 동일 순수 함수를 사용한다.
+- 신규 검증: `scripts/verify-workflow-tools.js`, `package.json`의 `test:workflows`; 정상·경계·오류·HTML escaping·determinism 46 checks.
+- index/home 연결은 최소화했다. Homepage의 기존 operations button row에 cluster link 1개만 추가하고, Tools register에는 calculator table과 분리된 4-row workflow table을 추가했다. Guides/Reference index, breadcrumb, related links, sitemap, llms를 모두 갱신했다.
+- 최종 공개 HTML **76개** = 기본·허브·기타 10 + Tool page 40(기존 Calculator 36 + workflow Tool 4) + Guide 14 + Reference 12. sitemap은 404를 제외한 **75 URL**.
+- 기존 URL, canonical, GA4 `G-XR7JWJ36CD`, JSON-LD, robots, CNAME, Contact email, calculator logic/ID/result/error handling은 유지했다.
+- 사용자 관리 homepage badge block은 생성 전·후 SHA-256가 모두 `1205454B420A7A14B16F66A984BF5217AF327B33F68FB9E30EBD48824198ED68`로 동일했다. anchor 5개와 순서·href·image·위치는 KittyLaunch → Sell With Boost → Twelve Tools → Findly.tools → BoostDomainRating 그대로다.
+
+### 자동·계산·브라우저 QA
+
+- `node --check scripts/generate-site.js`, `scripts/qa.js`, `scripts/verify-workflow-tools.js`, `assets/workflow-tools.js`: PASS.
+- `node scripts/qa.js`: PASS — 76 HTML, sitemap 75 URL, JavaScript 7; 36 Calculator, 4 workflow Tool, 14 Guide, 12 Reference; broken internal link 0, duplicate ID 0, metadata/canonical/GA4/JSON-LD issue 0, duplicate long paragraph/sentence 0, responsive calculator input table 36/36.
+- `node scripts/verify-calculators.js`: PASS — 기존 36 Calculator, 181 independent checks. 계산 로직 회귀 0.
+- `node scripts/verify-workflow-tools.js`: PASS — 46 normal/boundary/error/safety/deterministic checks.
+- in-app browser local QA, 1440/1280/1024/768/390px: Homepage, Tools, 신규 hub, 신규 Tools 4, 신규 Guide, 신규 Reference 총 9페이지×5폭 = 45 조합. horizontal overflow 0, visible out-of-viewport element 0, console error 0. Homepage badge는 모든 5폭에서 5개.
+- 기존 회귀 browser QA: Quality hub, Shipping Damage Rate, Master Carton Dimensions, Packaging Trial Guide, Quality Metrics Reference 5페이지×5폭 = 25 조합. overflow/out-of-viewport/console error 모두 0.
+- 실제 동작: blank Readiness는 12 gaps, negative step은 오류; Builder 기본은 `PK-014 / Rev B built for CND-01`, generated sheet visible, Reset idle, whitespace required error, injected `<script>`는 active script 0; Routing 기본 2 rules/0 conflict, duplicate condition은 1 conflict; Traveler 180/45는 4 checkpoints, 181 interval은 오류. 모바일 menu expanded/open/display grid.
+- 보호 회귀: Shipping Damage Rate 390px에서 기본 100/1, Calculate `1% observed damage rate`, Reset 100/1 + idle. 최근 calculator input table, decision-guide card, `.meta-line`, master-carton content/link 변경은 generator source와 browser regression에서 유지됐다.
+
+### 위험과 추후 관찰
+
+- HIGH: 없음. certification/approval/performance 판정, 저장, 개인정보 전송, third-party API가 없다.
+- MEDIUM: 정확한 keyword volume과 GSC/GA4 landing data가 아직 없다. release 후 `/pack-instructions.html`과 4 Tool의 impressions, query wording, engagement, generated-record/print intent를 최소 4–8주 관찰하고 cluster 확장은 실제 신호가 있을 때만 한다.
+- MEDIUM: Routing conflict check는 case-insensitive exact condition duplicate만 찾는다. 서로 다른 문구의 논리적 overlap은 owner가 scenario test로 확인해야 한다. Boolean parser나 order-system integration은 현재 범위 밖이다.
+- LOW: browser print pagination은 OS/browser와 record 길이에 따라 달라질 수 있다. 기능은 browser print를 호출하며 별도 PDF engine이나 saved audit trail을 약속하지 않는다.
+- LOW: SOP/template/SaaS competitor의 무료 범위는 바뀔 수 있다. 다음 content review 때 no-account/free status와 packaging-specific workflow depth를 다시 확인한다.
+- 배포 후 확인할 data: page/query별 clicks/impressions/position, Tools→cluster click, hub→각 Tool 이동, mobile engagement, print-button usage(현재 별도 event tracking 없음), 사용자가 요청하는 추가 field와 routing conflict 사례. 이 data 없이 5번째 Tool이나 static checklist 페이지를 만들지 않는다.
+
+### Git / 배포 마감
+
+- 구현 commit: 작업 완료 후 아래에 기록.
+- push: 작업 완료 후 아래에 기록.
+- local HEAD / origin/main 일치, working tree clean, GitHub Pages와 live URL 결과: push 및 배포 확인 후 아래에 기록.

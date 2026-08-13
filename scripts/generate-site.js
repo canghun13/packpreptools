@@ -359,6 +359,41 @@ const qualityTools = [
 
 tools.push(...qualityTools);
 
+const workflowTools = [
+  {
+    slug: "pack-instruction-readiness",
+    title: "Pack Instruction Readiness Checker",
+    type: "Checker",
+    description: "Check whether a pack instruction contains the minimum product, material, sequence, closure, label, verification, exception, and ownership fields needed for a controlled trial.",
+    output: "A gap list or a ready-for-trial record",
+    useWhen: "Reviewing a new or revised pack instruction before a physical trial."
+  },
+  {
+    slug: "pack-instruction-builder",
+    title: "Pack Instruction Builder",
+    type: "Generator",
+    description: "Turn user-entered SKU, materials, ordered steps, closure, label, verification, and exception details into a printable pack instruction.",
+    output: "A structured SKU-level pack instruction",
+    useWhen: "Converting an approved pack method into an operator-facing draft."
+  },
+  {
+    slug: "pack-variant-routing",
+    title: "Pack Variant Routing Planner",
+    type: "Planner / checker",
+    description: "Order user-defined pack-variant rules by priority, identify duplicate-condition conflicts, and create a printable routing sheet with a default instruction.",
+    output: "A prioritized routing matrix and conflict list",
+    useWhen: "Gift, promotion, order-size, channel, or other pack variants need explicit routing."
+  },
+  {
+    slug: "pack-job-traveler",
+    title: "Pack Job Traveler Generator",
+    type: "Generator",
+    description: "Create a batch-specific pack traveler with instruction revision, material identifiers, user-set checkpoint intervals, and closeout fields.",
+    output: "A printable batch traveler and checkpoints",
+    useWhen: "Releasing a defined pack batch under a controlled instruction."
+  }
+];
+
 function profile(solves, inputs, decision, mistakes, limits, workflow) {
   return { solves, inputs, decision, mistakes, limits, workflow };
 }
@@ -721,7 +756,9 @@ Object.assign(documentRelations, {
   "master-carton-terms": "Master carton tools",
   "pallet-and-unit-load-terms": "Pallet planning tools",
   "packaging-trial-and-damage-review": "Packaging Trial Comparison Tool",
-  "packaging-quality-metrics": "Quality and damage-control tools"
+  "packaging-quality-metrics": "Quality and damage-control tools",
+  "writing-pack-instructions": "Pack Instruction Builder",
+  "pack-instruction-record-fields": "Pack instruction workflow tools"
 });
 
 const guides = [
@@ -951,6 +988,33 @@ const guideDepth = {
   }
 };
 
+guides.push({
+  slug: "writing-pack-instructions",
+  title: "How to Write and Release Pack Instructions",
+  reviewed: "August 13, 2026",
+  modified: "2026-08-13",
+  description: "Create SKU-level pack instructions, route variants, issue batch travelers, and preserve physical verification evidence.",
+  intro: "A pack instruction should turn a verified physical method into a clear operator record without hiding exceptions or inventing approval.",
+  sections: [
+    ["Define the instruction boundary", "Name the SKU or product family, instruction ID, revision, effective date, owner, and the order conditions covered. Keep the reusable pack method separate from a customer-facing packing slip and from the batch-specific traveler."],
+    ["Record materials and sequence", "Identify the container and every material with its operating quantity or range. Write ordered actions from product preparation through protection, inserts, closure, label placement, verification, and exception handling."],
+    ["Route pack variants explicitly", "Use observable order attributes such as an order tag, item count, gift selection, or channel to select a controlled instruction. Set rule priority, provide one default route, and resolve duplicate conditions before release."],
+    ["Trial, issue, and close the job", "Build the physical pack, record deviations and measurements, and obtain the responsible operational review. Issue a traveler that names the instruction revision, material identifiers, checkpoints, completed quantity, and open exceptions."]
+  ],
+  checklist: ["Instruction ID and revision are visible.", "Materials include quantities or operating ranges.", "Steps cover closure, label, verification, and exceptions.", "Every batch traveler points back to the controlled instruction."],
+  related: "/tools/pack-instruction-builder.html"
+});
+
+guideDepth["writing-pack-instructions"] = {
+  prepare: ["Select one SKU, product family, or pack variant with a physically demonstrated method.", "Gather the container and material identifiers, quantities, ordered steps, closure, label, verification, and exception owner.", "Separate master instruction data from order-specific and batch-specific fields.", "Choose a reviewer and evidence location before the instruction is issued."],
+  scenario: "A small seller ships one candle SKU in a standard carton, but gift orders add tissue and a card. The standard method becomes instruction PK-014 Rev B, while the gift condition routes to PK-014-G Rev A. A 180-unit run receives traveler JOB-082 with checkpoints every 45 units. The records clarify which method applies, what materials were issued, and where exceptions are written without claiming the packaging is certified or damage-proof.",
+  decisions: [["Core method is not physically demonstrated", "Keep the instruction in draft and run a representative pack trial."],["Two rules use the same condition", "Resolve ownership and priority before operators use the routing sheet."],["A material changes during the run", "Record the exception and stop or continue only under the operation’s authorized process."],["The batch closes with open exceptions", "Retain the traveler and route the exception to the named owner before silent reuse."]],
+  mistakes: ["Using a packing slip as the pack method.", "Listing materials without quantities or identifiers.", "Writing normal steps but no exception action.", "Issuing a traveler without the instruction revision."],
+  closeout: ["The physical pack matches the written sequence.", "Variant rules have one default and no unresolved duplicates.", "The traveler references current controlled data.", "Review owner, evidence, and revision trigger are recorded."],
+  relatedGuide: "/guides/packing-station-workflow.html",
+  reference: "/reference/pack-instruction-record-fields.html"
+};
+
 const references = [
   {
     slug: "package-measurement-terms",
@@ -1135,6 +1199,35 @@ const referenceDepth = {
   }
 };
 
+references.push({
+  slug: "pack-instruction-record-fields",
+  title: "Pack Instruction and Job Record Fields",
+  reviewed: "August 13, 2026",
+  modified: "2026-08-13",
+  description: "Define the identifiers, materials, steps, routing rules, checkpoints, exceptions, and ownership fields used in pack instructions and job travelers.",
+  intro: "Keep the reusable pack method, order-routing rule, and batch execution record distinct while linking each one through controlled identifiers.",
+  rows: [
+    ["Instruction ID", "A stable identifier for one reusable pack method; do not reuse it for an unrelated method."],
+    ["Revision and effective date", "The specific instruction state intended for use and the date its operating scope begins."],
+    ["Material line", "Container, protection, closure, label, or insert identified with quantity, range, or issue reference."],
+    ["Ordered step", "One observable operator action in the demonstrated pack sequence."],
+    ["Verification point", "A named observation or measurement and the record used to capture it; not a certification result."],
+    ["Routing condition", "An order attribute that selects a pack variant, evaluated in a stated priority order."],
+    ["Default route", "The controlled instruction used when no listed variant condition is present."],
+    ["Job traveler", "A batch-specific record linking quantity, station, operator, material identifiers, checkpoints, and closeout to one instruction revision."],
+    ["Exception reference", "A traceable note that identifies a deviation and its owner without silently rewriting the standard method."],
+    ["Record owner", "The role responsible for review, revision, release scope, and disposition under the operation’s own process."]
+  ]
+});
+
+referenceDepth["pack-instruction-record-fields"] = {
+  overview: "Pack instruction records answer three different questions. The master instruction states how a defined product or variant is normally packed. The routing sheet states which instruction applies when observable order attributes differ. The job traveler records what happened during one batch. Keeping those records linked but separate prevents order details from silently changing the reusable method.",
+  example: "Instruction PK-014 Rev B identifies the standard carton, protection, closure, label location, six ordered steps, verification point, and exception owner for SKU CND-01. A routing sheet sends gift-tagged orders to PK-014-G Rev A. Traveler JOB-082 releases 180 units under PK-014 Rev B and creates checkpoints at units 45, 90, 135, and 180. An unexpected material substitution is written as an exception rather than being treated as the new standard.",
+  differences: [["Instruction vs packing slip", "The instruction controls the pack method; a packing slip lists shipment contents for an order."],["Instruction vs traveler", "The instruction is reusable; the traveler is specific to a job or batch."],["Routing rule vs operator choice", "A routing rule uses a written observable condition; an unrecorded operator choice has no controlled basis."],["Verification vs approval", "A verification field records an observation; release authority remains with the responsible process and owner."]],
+  use: ["Assign the reusable instruction ID and revision.", "Record materials, ordered steps, closure, label, verification, and exception handling.", "Define variant conditions, priority, and a default route.", "Issue a traveler for each controlled batch and retain exceptions at closeout."],
+  cautions: ["Do not embed customer personal data in a reusable instruction.", "Do not use the generated record as certification or legal approval.", "Do not overwrite a revision to hide a deviation.", "Confirm product, material, carrier, marketplace, facility, and regulatory requirements in their current sources."]
+};
+
 const basicPages = [
   {
     file: "about.html",
@@ -1317,6 +1410,13 @@ function operationsTable(items) {
   </table>`;
 }
 
+function workflowOperationsTable(items = workflowTools) {
+  return `<table class="operations-table workflow-operations-table">
+    <thead><tr><th>Workflow type</th><th>Tool</th><th>Primary output</th><th>Use when</th></tr></thead>
+    <tbody>${items.map((tool) => `<tr><td data-label="Workflow type"><span class="category">${tool.type}</span></td><td data-label="Tool"><a href="/tools/${tool.slug}.html">${tool.title}</a></td><td data-label="Primary output">${tool.output}</td><td data-label="Use when">${tool.useWhen}</td></tr>`).join("")}</tbody>
+  </table>`;
+}
+
 function documentRegister(items, prefix) {
   const folder = prefix === "G" ? "guides" : "reference";
   return `<ol class="document-register">${items.map((item, index) => `<li><a href="/${folder}/${item.slug}.html"><code>${prefix}${String(index + 1).padStart(2, "0")}</code><span><strong>${item.title}</strong><small>${item.description}</small></span></a></li>`).join("")}</ol>`;
@@ -1351,7 +1451,7 @@ function homepage() {
   return `${head({ file, title, description, schema })}${header("Home")}
 <main id="main">
   <section class="dispatch-hero"><div class="page-shell dispatch-hero-inner">
-    <p class="dispatch-meta"><span>${tools.length} live calculators</span><span>${guides.length + references.length} controlled documents</span><span>Browser-based results</span></p>
+    <p class="dispatch-meta"><span>${tools.length} live calculators</span><span>${workflowTools.length} workflow tools</span><span>${guides.length + references.length} controlled documents</span></p>
     <h1>Packaging decisions, ready for dispatch.</h1>
     <p class="hero-copy">Size the shipment, plan protection, estimate closure materials, and understand cost before an order leaves your operation.</p>
     <div class="button-row"><a class="button button-primary" href="/tools.html">Open packaging tools</a><a class="button button-secondary" href="/guides/how-to-measure-a-box.html">Review measurement procedure</a></div>
@@ -1370,7 +1470,7 @@ function homepage() {
   <section class="content-section content-section-muted"><div class="page-shell">
     <div class="section-title"><span class="section-code">Featured operations / 12 routes</span><h2>Packaging operations register</h2><p>Start with a common decision, or open the complete register for all ${tools.length} calculators.</p></div>
     ${operationsTable(["box-size","void-fill","tape-usage","packaging-cost","packaging-supply-reorder-point","order-packing-time","kitting-cost","master-carton-dimensions","master-carton-weight","cases-per-pallet","pallet-height","pallet-utilization"].map((slug) => tools.find((tool) => tool.slug === slug)))}
-    <div class="button-row"><a class="button button-primary" href="/tools.html">View all ${tools.length} calculators</a><a class="button button-quiet" href="/guides/master-carton-planning.html">Plan master cartons</a><a class="button button-quiet" href="/guides/pallet-planning-basics.html">Plan pallet loads</a></div>
+    <div class="button-row"><a class="button button-primary" href="/tools.html">View all ${tools.length} calculators</a><a class="button button-quiet" href="/pack-instructions.html">Open pack instruction workflow</a><a class="button button-quiet" href="/guides/master-carton-planning.html">Plan master cartons</a><a class="button button-quiet" href="/guides/pallet-planning-basics.html">Plan pallet loads</a></div>
   </div></section>
   <section class="content-section"><div class="page-shell">
     <div class="section-title"><span class="section-code">Controlled documents</span><h2>Procedures and reference data</h2><p>Measurement procedures explain what to do. Reference sheets define the terms and assumptions used in calculations.</p></div>
@@ -1389,6 +1489,17 @@ function qualityHub() {
 <section class="content-section"><div class="page-shell"><div class="section-title"><span class="section-code">Quality review / 04 records</span><h2>Move from an observed issue to a controlled comparison.</h2><p>Define the review population first, preserve raw evidence, compare a change on common criteria, and monitor actual shipments after release.</p></div>${operationsTable(qualityTools)}</div></section>
 <section class="content-section content-section-muted"><div class="page-shell"><div class="document-index"><section class="document-group"><h3>Procedure</h3><ol class="document-register"><li><a href="/guides/packaging-trial-and-damage-review.html"><code>G13</code><span><strong>Packaging Trial and Shipping Damage Review</strong><small>Prepare comparable trials, record deviations, and monitor field performance.</small></span></a></li></ol></section><section class="document-group"><h3>Reference</h3><ol class="document-register"><li><a href="/reference/packaging-quality-metrics.html"><code>R11</code><span><strong>Packaging Quality and Damage Metrics</strong><small>Define rates, costs, percentage-point differences, variance, and evidence boundaries.</small></span></a></li></ol></section></div></div></section>
 <section class="operations-notice"><div class="page-shell operations-notice-grid"><div><h2>Record, compare, then verify.</h2><p>These tools organize user-entered observations. They do not provide AQL acceptance, ISTA certification, carrier liability, or protection guarantees.</p></div><ol class="verify-list"><li><b>01 / Define</b>Write the population, damage rule, units, and tolerance source.</li><li><b>02 / Compare</b>Keep counts, costs, measurements, and deviations on the same basis.</li><li><b>03 / Verify</b>Inspect the physical pack and use the responsible approval process.</li></ol></div></section></main>${footer()}`;
+}
+
+function packInstructionsHub() {
+  const file = "pack-instructions.html";
+  const title = "Pack Instruction & Job Release Tools";
+  const description = "Check pack-instruction readiness, build an operator draft, route pack variants, and issue a batch traveler from user-entered operating records.";
+  return `${head({ file, title, description, schema: websiteSchema(file, title, description) })}${header("Tools")}
+<main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: "Pack instruction & job release" }])}<p class="dispatch-meta"><span>Workflow cluster</span><span>${workflowTools.length} browser-based tools</span><span>No account or storage</span></p><h1>${title}</h1><p class="lede">Convert a physically demonstrated pack method into a controlled draft, explicit variant routes, and a batch execution record. Every output remains a planning document for review by the responsible operation.</p></div></header>
+<section class="content-section"><div class="page-shell"><div class="section-title"><span class="section-code">Instruction control / 04 actions</span><h2>Move from a demonstrated method to a traceable job.</h2><p>Check the reusable instruction first, build the operator-facing draft, resolve variant rules, and then issue a traveler that points to the intended revision.</p></div>${workflowOperationsTable()}</div></section>
+<section class="content-section content-section-muted"><div class="page-shell"><div class="process-track"><div class="process-step"><b>01</b><h3>Check</h3><p>Find missing ownership, material, step, verification, and exception fields.</p></div><div class="process-step"><b>02</b><h3>Build</h3><p>Organize a verified method into a printable SKU-level draft.</p></div><div class="process-step"><b>03</b><h3>Route</h3><p>Map observable order conditions to controlled instruction IDs.</p></div><div class="process-step"><b>04</b><h3>Release</h3><p>Create a batch traveler with material and checkpoint records.</p></div></div><div class="document-index"><section class="document-group"><h3>Procedure</h3><ol class="document-register"><li><a href="/guides/writing-pack-instructions.html"><code>G14</code><span><strong>How to Write and Release Pack Instructions</strong><small>Separate the reusable method, routing logic, and batch record.</small></span></a></li></ol></section><section class="document-group"><h3>Reference</h3><ol class="document-register"><li><a href="/reference/pack-instruction-record-fields.html"><code>R12</code><span><strong>Pack Instruction and Job Record Fields</strong><small>Define IDs, revisions, material lines, checkpoints, and exceptions.</small></span></a></li></ol></section></div></div></section>
+<section class="operations-notice"><div class="page-shell operations-notice-grid"><div><h2>Draft, trial, review, then release.</h2><p>Generated records do not certify a package, approve a substitution, prevent damage, or replace current product, carrier, marketplace, facility, or regulatory requirements.</p></div><ol class="verify-list"><li><b>01 / Demonstrate</b>Build the real product with the intended materials.</li><li><b>02 / Review</b>Resolve gaps, conflicts, and trial deviations with the owner.</li><li><b>03 / Control</b>Issue the correct revision and retain batch exceptions.</li></ol></div></section></main>${footer()}`;
 }
 
 function unitOptions(tool) {
@@ -1493,14 +1604,83 @@ function calculatorPage(tool) {
 </main><script src="/assets/calculators.js?v=20260802-quality" defer></script>${footer()}`;
 }
 
+const workflowContent = {
+  "pack-instruction-readiness": {
+    solves: "Use this checker before a new or revised pack instruction enters a physical trial. It looks for the operating fields that make a method identifiable and executable: product scope, instruction identity, revision, date, materials, ordered steps, closure, label placement, verification, exception handling, and ownership. It does not judge whether those choices protect the product or satisfy an outside standard. Its job is narrower: expose blank sections and a sequence that is too short to describe preparation, packing, and closeout.",
+    inputs: "Use the same identifiers that will appear on the controlled draft. Name materials with quantity or operating range rather than writing only a material family. Count distinct observable steps, including preparation and final verification where those actions are part of the method. Write an exception action that tells an operator where to hold or record work and who owns the response. The checker reads what you enter in the browser and does not save the record.",
+    method: "The tool checks eleven named text fields plus the ordered-step count. A blank required field becomes one gap. A supplied step count must be a whole number from zero through fifty; fewer than three steps creates a sequence gap. Duplicate gap labels are removed, and the summary reports sections checked, recorded steps, and open gaps. No score, pass rate, AQL rule, or certification threshold is applied.",
+    example: "Instruction PK-014 Rev B has a container, materials, six steps, closure, label location, verification point, and owner, but its exception action is blank. The checker reports one release gap and names that field. The owner can define what happens when the carton, closure, or label does not match the written method, then rerun the check before the physical trial.",
+    interpretation: "A gap result means the draft is not complete enough for the limited record-readiness boundary used here. Close every listed field at its source. A zero-gap result means only that the minimum fields are present; it is a prompt to build and inspect the real pack, record trial deviations, and obtain the operation’s required review before release.",
+    mistakes: ["Treating zero gaps as evidence of package performance.", "Counting vague headings instead of observable ordered actions.", "Naming a material without quantity, range, or issue identity.", "Writing an exception note with no responsible role or next action."],
+    limits: "This checker cannot inspect drawings, photographs, product hazards, label data, material specifications, operator comprehension, carrier rules, or the physical pack. It does not know whether a field is accurate merely because it contains text. Keep personal customer data out of reusable instructions and use current governing sources for product, facility, marketplace, carrier, and regulatory requirements."
+  },
+  "pack-instruction-builder": {
+    solves: "Use the builder to turn a physically demonstrated pack method into a consistent operator-facing draft. It keeps reusable method data together: SKU or family, instruction ID, revision, container, materials, ordered actions, closure, label placement, verification, exceptions, and notes. The generated sheet is not a packing slip and does not contain an order’s customer details. It is a printable draft that a responsible owner can compare with the real product and materials before issuing it through the operation’s own control process.",
+    inputs: "Begin with one method boundary. If gift, channel, item-count, or promotion conditions change the method, create or reference a separate controlled variant rather than hiding alternatives inside ambiguous prose. Enter at least three and no more than eight ordered steps. Use short action-first language and name the object being handled. Identify materials with usable quantities or ranges, describe the exact closure pattern and label surface, and state what is observed or measured at verification.",
+    method: "The browser validates the required identifiers and operating fields, removes empty optional steps, and preserves the entered step order. It then escapes user text before assembling a printable record. The builder reports the number of steps, named container, and draft status. It does not look up a SKU, assign a revision automatically, import order data, store the output, approve materials, or decide whether the physical method is suitable.",
+    example: "A seller enters SKU CND-01, instruction PK-014, revision B, a 200 × 150 × 120 mm carton, the named pad and paper quantities, six ordered actions, an H-seal, a top-face label location, a shake-and-visual verification, and a hold-and-escalate exception. The output places those items on one sheet for a production-like trial and owner review.",
+    interpretation: "Read the output alongside the actual pack from start to finish. Each material should be available under the written identity, each action should be observable in order, and the closure, label, and verification instructions should match the finished package. Record trial deviations outside the standard method. If the method changes, issue the next revision rather than editing the old record without traceability.",
+    mistakes: ["Copying shipment contents into the reusable pack method.", "Combining several product variants under one unclear instruction.", "Using unmeasured words such as enough or securely with no operating detail.", "Releasing the generated draft without a representative physical trial."],
+    limits: "The builder provides formatting and required-field validation only. It cannot confirm packaging performance, product compatibility, safe handling, barcode readability, carrier acceptance, or legal compliance. Printing a sheet does not make it controlled or approved. Apply the appropriate review, revision, retention, and training process for the operation, and reverify when the product, material, route, or requirement changes."
+  },
+  "pack-variant-routing": {
+    solves: "Use the routing planner when an observable order attribute selects a different controlled pack instruction. Typical conditions may include a gift flag, channel code, promotion tag, item-count band, or an approved product variant. The tool orders rules by user-entered priority, identifies the narrow case where identical written conditions point to different instructions, and provides a default route. It replaces an informal operator choice with a reviewable draft matrix; it does not connect to an order system.",
+    inputs: "Enter the product or order family, one controlled default instruction, and at least one condition-to-instruction rule. Write conditions using the exact data an operator or system can observe. Give lower priority numbers to rules that must be evaluated first. If two conditions can both be true, describe the intended combined condition or confirm through the responsible process which rule wins. The optional action field can name a handling note or record requirement after the route is selected.",
+    method: "The planner ignores fully blank rows, requires both a condition and route for every active row, and accepts whole-number priorities from one through ninety-nine. Active rows are sorted from the lowest priority number upward. Conditions are compared without letter-case differences; when the same condition names different instructions, a conflict is listed. The tool does not infer overlap between differently worded conditions and cannot inspect live order attributes.",
+    example: "A standard candle order defaults to PK-014 Rev B. Priority 10 sends orders tagged GIFT to PK-014-G Rev A, while priority 20 sends a three-unit bundle to PK-014-3 Rev C. The generated matrix shows the evaluation order and fallback. If another GIFT row points to PK-014-X, the output identifies the duplicate-condition conflict for resolution.",
+    interpretation: "Resolve every reported conflict before the sheet reaches an operator. Then test normal orders, each individual condition, combinations of conditions, and an order with no listed condition. Confirm the source data uses the exact terminology in the sheet and that every referenced instruction is current. Retain who approved the routing logic and when it becomes effective.",
+    mistakes: ["Using conditions that cannot be seen in the order record.", "Assuming different wording prevents two rules from overlapping.", "Leaving no controlled default instruction.", "Pointing a rule to a superseded or unverified method."],
+    limits: "This lightweight checker finds only exact duplicate-condition conflicts. It cannot parse Boolean logic, query inventory, read orders, check instruction status, or authorize an exception. User-entered priority is planning data, not an automated routing guarantee. Review privacy, product, channel, marketplace, facility, and regulatory constraints before applying any route."
+  },
+  "pack-job-traveler": {
+    solves: "Use the traveler generator after a reusable instruction and any variant routing have been reviewed for the intended work. It creates a batch-specific execution record linking job number, SKU, instruction revision, planned quantity, station, operator, material identifiers, user-set checkpoints, and closeout fields. The traveler helps keep one production run traceable without copying customer personal data or rewriting the master method for every batch.",
+    inputs: "Enter a unique job or batch number and the exact instruction ID and revision intended for the run. Planned quantity and checkpoint interval must be positive whole numbers, and the interval cannot exceed the job quantity. Choose an interval from the operation’s own risk and review process; the tool supplies no industry average. Add material or lot identities only when those fields belong in the operating record, and avoid sensitive customer information.",
+    method: "The generator validates the required identifiers and numeric bounds. It creates checkpoints at each complete interval and always adds the final planned quantity when it is not already an interval point. To keep a printable page and the browser responsive, more than two hundred checkpoint rows are rejected. Optional station, operator, date, and material identities receive blank write-in lines when omitted. No job is scheduled, stored, or approved.",
+    example: "Job JOB-082 releases 180 units of CND-01 under PK-014 Rev B with checks every 45 units. The traveler creates rows at 45, 90, 135, and 180, plus material-issue and closeout areas. If the closure lot changes after unit 90, the operator can record an exception reference rather than silently treating the substitution as part of the standard method.",
+    interpretation: "Before work begins, verify the traveler points to the current controlled instruction and that issued materials match the intended record. During the run, use each checkpoint according to the operation’s defined observation method. At closeout, reconcile completed, reworked, or scrapped quantity and route open exceptions to the named owner. Preserve the traveler under the operation’s retention practice.",
+    mistakes: ["Issuing a traveler before the instruction revision is confirmed.", "Selecting a checkpoint interval because it looks typical rather than from a documented process.", "Recording material changes without an exception reference.", "Calling a completed traveler proof that the package prevents damage."],
+    limits: "The generated sheet does not reserve inventory, control a line, verify signatures, provide an electronic audit trail, or certify product and package quality. Browser print behavior varies, and the page holds no saved copy after navigation. Confirm current instructions, safe handling, record retention, privacy, and applicable customer or regulatory requirements through responsible systems and owners."
+  }
+};
+
+function workflowTextField(id, label, value = "", options = {}) {
+  const wide = options.wide ? " field-wide" : "";
+  return `<div class="field${wide}"><label for="${id}">${label}</label><div class="input-shell"><input id="${id}" name="${options.name || id}" type="${options.type || "text"}" value="${value}"${options.required === false ? "" : " required"}${options.inputmode ? ` inputmode="${options.inputmode}"` : ""}${options.min ? ` min="${options.min}"` : ""}${options.max ? ` max="${options.max}"` : ""}${options.step ? ` step="${options.step}"` : ""}></div></div>`;
+}
+
+function workflowTextarea(id, label, value = "") {
+  return `<div class="field field-wide"><label for="${id}">${label}</label><textarea id="${id}" name="${id}" rows="3">${value}</textarea></div>`;
+}
+
+function workflowForm(slug) {
+  if (slug === "pack-instruction-readiness") return `${workflowTextField("sku", "SKU or product family")}${workflowTextField("instructionId", "Instruction ID")}${workflowTextField("revision", "Revision")}${workflowTextField("effectiveDate", "Effective date", "", { type: "date" })}${workflowTextField("container", "Container identification")}${workflowTextarea("materials", "Materials with quantities or ranges")}${workflowTextField("stepCount", "Number of ordered pack steps", "", { type: "number", inputmode: "numeric", min: "0", max: "50", step: "1" })}${workflowTextField("closure", "Closure method")}${workflowTextField("labelPlacement", "Label placement")}${workflowTextarea("verification", "Verification point")}${workflowTextarea("exceptionAction", "Exception action and owner")}${workflowTextField("owner", "Record owner")}`;
+  if (slug === "pack-instruction-builder") return `${workflowTextField("sku", "SKU or product family", "CND-01")}${workflowTextField("instructionId", "Instruction ID", "PK-014")}${workflowTextField("revision", "Revision", "B")}${workflowTextField("effectiveDate", "Effective date", "", { type: "date", required: false })}${workflowTextField("owner", "Record owner", "Packing operations", { required: false })}${workflowTextField("container", "Container", "200 × 150 × 120 mm carton")}${workflowTextarea("materials", "Materials and quantities", "1 carton; 1 base pad; 2 paper bundles; 1 label")}${[1,2,3,4,5,6].map((number) => workflowTextField(`step${number}`, `Pack step ${number}`, ["Inspect product and carton.", "Place base pad in carton.", "Wrap product and center it.", "Add paper to limit movement.", "Close carton using the specified seal.", "Apply label and complete verification."][number - 1], { name: "step", wide: true, required: number <= 3 })).join("")}${workflowTextField("closure", "Closure method", "H-seal with specified tape")}${workflowTextField("labelPlacement", "Label placement", "Largest top face; clear of seams")}${workflowTextarea("verification", "Verification point", "Confirm product identity, limited movement, complete seal, and readable unobstructed label.")}${workflowTextarea("exceptionAction", "Exception action", "Hold the pack, record the deviation, and notify the instruction owner.")}${workflowTextarea("notes", "Operating notes", "")}`;
+  if (slug === "pack-variant-routing") return `${workflowTextField("family", "Product or order family", "Candle orders", { required: false })}${workflowTextField("baseRoute", "Default pack instruction", "PK-014 Rev B")}<div class="field field-wide"><div class="routing-editor"><div class="routing-editor-head"><span>Priority</span><span>Observable condition</span><span>Pack instruction</span><span>Operator action</span></div>${[1,2,3,4].map((number) => `<div class="routing-editor-row">${workflowTextField(`priority${number}`, `Rule ${number} priority`, number <= 2 ? String(number * 10) : "", { type: "number", inputmode: "numeric", min: "1", max: "99", step: "1", required: false })}${workflowTextField(`condition${number}`, `Rule ${number} condition`, number === 1 ? "Order tag is GIFT" : number === 2 ? "Item count is 3" : "", { required: false })}${workflowTextField(`route${number}`, `Rule ${number} instruction`, number === 1 ? "PK-014-G Rev A" : number === 2 ? "PK-014-3 Rev C" : "", { required: false })}${workflowTextField(`action${number}`, `Rule ${number} action`, "", { required: false })}</div>`).join("")}</div></div>`;
+  return `${workflowTextField("jobNumber", "Job or batch number", "JOB-082")}${workflowTextField("instructionId", "Instruction ID", "PK-014")}${workflowTextField("revision", "Revision", "B")}${workflowTextField("sku", "SKU or product family", "CND-01")}${workflowTextField("quantity", "Planned quantity", "180", { type: "number", inputmode: "numeric", min: "1", max: "1000000", step: "1" })}${workflowTextField("interval", "Checkpoint interval", "45", { type: "number", inputmode: "numeric", min: "1", max: "1000000", step: "1" })}${workflowTextField("station", "Station", "", { required: false })}${workflowTextField("operator", "Operator", "", { required: false })}${workflowTextField("date", "Planned date", "", { type: "date", required: false })}${workflowTextField("containerLot", "Container / lot", "", { required: false })}${workflowTextField("protectionLot", "Protection / lot", "", { required: false })}${workflowTextField("closureLot", "Closure / lot", "", { required: false })}${workflowTextField("labelLot", "Labels or inserts / lot", "", { required: false })}`;
+}
+
+function workflowToolPage(tool) {
+  const file = `tools/${tool.slug}.html`;
+  const content = workflowContent[tool.slug];
+  const title = tool.title;
+  const schema = { "@context": "https://schema.org", "@graph": [
+    { "@type": "WebApplication", name: title, applicationCategory: "BusinessApplication", operatingSystem: "Any", url: pageUrl(file), description: tool.description, offers: { "@type": "Offer", price: "0", priceCurrency: "USD" } },
+    { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` }, { "@type": "ListItem", position: 2, name: "Tools", item: `${SITE}/tools.html` }, { "@type": "ListItem", position: 3, name: title, item: pageUrl(file) }] }
+  ] };
+  return `${head({ file, title, description: tool.description, schema })}${header("Tools")}
+<main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: "Pack instructions", href: "/pack-instructions.html" }, { label: title }])}<p class="dispatch-meta"><span>Pack instruction workflow</span><span>${tool.type}</span><span>Browser-only record</span></p><h1>${title}</h1><p class="lede">${tool.description}</p></div></header>
+<section class="calculator-console workflow-console"><div class="page-shell"><div class="manifest-panel"><div class="manifest-header"><span>Workflow input record</span><span>User-entered operating data</span></div><form class="calculator-form workflow-form" data-workflow-tool="${tool.slug}" novalidate><div class="manifest-grid">${workflowForm(tool.slug)}</div><div class="form-actions"><button class="button button-primary" type="submit">${tool.slug === "pack-instruction-readiness" ? "Check readiness" : "Generate record"}</button><button class="button button-quiet" type="reset">Reset</button><button class="button button-quiet" type="button" data-print-workflow>Print generated record</button></div><p class="form-error" data-error role="alert" aria-live="polite"></p></form></div><section class="output-strip workflow-result" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Workflow summary</span><span>Planning record — not approval</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter the workflow details to begin.</p></div><dl class="output-values" data-result-values></dl></div><div class="workflow-output" data-workflow-output></div></section></div></section>
+<section class="article-zone"><div class="page-shell article-shell"><article class="article-body"><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">How it works</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav><h2 id="solves">What this workflow tool solves</h2><p>${content.solves}</p><h2 id="inputs">How to choose the inputs</h2><p>${content.inputs}</p><h2 id="method">How the workflow logic works</h2><p>${content.method}</p><h2 id="example">Worked example</h2><div class="example-block"><p>${content.example}</p></div><h2 id="interpretation">How to interpret the output</h2><p>${content.interpretation}</p><h2 id="mistakes">Common mistakes</h2><ul class="check-list">${content.mistakes.map((item) => `<li>${item}</li>`).join("")}</ul><h2 id="limits">Assumptions and limitations</h2><p>${content.limits}</p><div class="caution"><strong>${title} planning boundary:</strong> this output does not certify, approve, guarantee, or diagnose packaging performance; verify the physical pack and apply the responsible operation’s current requirements before releasing this ${tool.type.toLowerCase()} record.</div><h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>For ${title}, begin at the <a href="/pack-instructions.html">Pack Instruction &amp; Job Release hub</a> and keep its reusable-method data separate from batch execution.</li><li>Use <a href="/guides/writing-pack-instructions.html">How to Write and Release Pack Instructions</a> to prepare, trial, route, and close the record.</li><li>Check field meanings in <a href="/reference/pack-instruction-record-fields.html">Pack Instruction and Job Record Fields</a> before release.</li></ol><ul class="related-register"><li><a href="/pack-instructions.html">Pack instruction workflow</a></li><li><a href="/guides/writing-pack-instructions.html">Related guide</a></li><li><a href="/reference/pack-instruction-record-fields.html">Related reference</a></li><li><a href="/tools.html">All tools</a></li></ul><p class="meta-line">Last reviewed: August 13, 2026</p></article></div></section></main><script src="/assets/workflow-tools.js?v=20260813-pack-instructions" defer></script>${footer()}`;
+}
+
 function indexPage(kind, items) {
   const isTools = kind === "Tools";
   const file = `${kind.toLowerCase()}.html`;
-  const title = isTools ? "Packaging Calculators" : kind === "Guides" ? "Packaging Guides" : "Packaging Reference";
-  const description = isTools ? `Browse ${tools.length} practical calculators for package fit, materials, cost, labor, master cartons, and pallet planning.` : kind === "Guides" ? `Read ${guides.length} practical guides for repeatable packaging and dispatch work.` : `Use ${references.length} detailed reference records for packaging terms, units, materials, costs, cartons, and pallet loads.`;
+  const title = isTools ? "Packaging Calculators & Workflow Tools" : kind === "Guides" ? "Packaging Guides" : "Packaging Reference";
+  const description = isTools ? `Browse ${tools.length} calculators and ${workflowTools.length} workflow tools for package fit, materials, cost, labor, load planning, quality records, and pack instructions.` : kind === "Guides" ? `Read ${guides.length} practical guides for repeatable packaging and dispatch work.` : `Use ${references.length} detailed reference records for packaging terms, units, materials, costs, cartons, and pallet loads.`;
   return `${head({ file, title, description, schema: websiteSchema(file, title, description) })}${header(kind)}
 <main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: kind }])}<p class="dispatch-meta"><span>${isTools ? "Operations register" : "Controlled documents"}</span><span>${items.length} active records</span></p><h1>${title}</h1><p class="lede">${description}</p></div></header>
-<section class="content-section"><div class="page-shell">${isTools ? `${operationsTable(items)}<div class="button-row"><a class="button button-primary" href="/quality.html">Open quality &amp; damage control cluster</a></div>` : documentTable(items, kind)}</div></section></main>${footer()}`;
+<section class="content-section"><div class="page-shell">${isTools ? `<div class="section-title"><span class="section-code">Calculators / ${tools.length}</span><h2>Calculation register</h2><p>Enter measured or documented values to calculate one defined packaging output.</p></div>${operationsTable(items)}<div class="section-title tools-subsection"><span class="section-code">Workflow tools / ${workflowTools.length}</span><h2>Record and release workflows</h2><p>Check, organize, and generate operating records without accounts or stored input.</p></div>${workflowOperationsTable()}<div class="button-row"><a class="button button-primary" href="/quality.html">Open quality &amp; damage control cluster</a><a class="button button-quiet" href="/pack-instructions.html">Open pack instruction cluster</a></div>` : documentTable(items, kind)}</div></section></main>${footer()}`;
 }
 
 const guideReferences = {
@@ -1512,7 +1692,8 @@ const guideReferences = {
   "packaging-cost-reduction-checklist": "/reference/packaging-cost-components.html",
   "master-carton-planning": "/reference/master-carton-terms.html",
   "pallet-planning-basics": "/reference/pallet-and-unit-load-terms.html",
-  "packaging-trial-and-damage-review": "/reference/packaging-quality-metrics.html"
+  "packaging-trial-and-damage-review": "/reference/packaging-quality-metrics.html",
+  "writing-pack-instructions": "/reference/pack-instruction-record-fields.html"
 };
 const referenceGuides = {
   "packaging-unit-conversion": "/guides/how-to-measure-a-box.html",
@@ -1521,12 +1702,14 @@ const referenceGuides = {
   "void-fill-yield-factors": "/guides/how-to-choose-void-fill.html",
   "master-carton-terms": "/guides/master-carton-planning.html",
   "pallet-and-unit-load-terms": "/guides/pallet-planning-basics.html",
-  "packaging-quality-metrics": "/guides/packaging-trial-and-damage-review.html"
+  "packaging-quality-metrics": "/guides/packaging-trial-and-damage-review.html",
+  "pack-instruction-record-fields": "/guides/writing-pack-instructions.html"
 };
 
 const referenceTools = {
   "master-carton-terms": "/tools/master-carton-dimensions.html",
-  "packaging-quality-metrics": "/tools/shipping-damage-rate.html"
+  "packaging-quality-metrics": "/tools/shipping-damage-rate.html",
+  "pack-instruction-record-fields": "/tools/pack-instruction-builder.html"
 };
 
 function guideSectionNote(item, detail, heading, index) {
@@ -1666,8 +1849,9 @@ function favicon() {
 
 function indexableFiles() {
   return [
-    "index.html", "tools.html", "guides.html", "reference.html", "quality.html", "about.html", "contact.html", "privacy.html",
+    "index.html", "tools.html", "guides.html", "reference.html", "quality.html", "pack-instructions.html", "about.html", "contact.html", "privacy.html",
     ...tools.map((tool) => `tools/${tool.slug}.html`),
+    ...workflowTools.map((tool) => `tools/${tool.slug}.html`),
     ...guides.map((guide) => `guides/${guide.slug}.html`),
     ...references.map((reference) => `reference/${reference.slug}.html`)
   ];
@@ -1677,7 +1861,7 @@ function discoveryFiles() {
   const urls = indexableFiles().map((file) => pageUrl(file));
   write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}\n</urlset>\n`);
   write("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
-  write("llms.txt", `# Pack Prep Tools\n\nPackaging calculations and operating references for repeatable shipment preparation.\n\n## Calculators (${tools.length})\n${tools.map((tool) => `- [${tool.title}](${SITE}/tools/${tool.slug}.html): ${tool.description}`).join("\n")}\n\n## Guides (${guides.length})\n${guides.map((guide) => `- [${guide.title}](${SITE}/guides/${guide.slug}.html): ${guide.description}`).join("\n")}\n\n## Reference (${references.length})\n${references.map((reference) => `- [${reference.title}](${SITE}/reference/${reference.slug}.html): ${reference.description}`).join("\n")}\n\nAll calculator outputs are planning estimates. Verify physical packs and current supplier, marketplace, carrier, facility, and regulatory requirements.\n`);
+  write("llms.txt", `# Pack Prep Tools\n\nPackaging calculations and operating references for repeatable shipment preparation.\n\n## Calculators (${tools.length})\n${tools.map((tool) => `- [${tool.title}](${SITE}/tools/${tool.slug}.html): ${tool.description}`).join("\n")}\n\n## Workflow tools (${workflowTools.length})\n${workflowTools.map((tool) => `- [${tool.title}](${SITE}/tools/${tool.slug}.html): ${tool.description}`).join("\n")}\n\n## Guides (${guides.length})\n${guides.map((guide) => `- [${guide.title}](${SITE}/guides/${guide.slug}.html): ${guide.description}`).join("\n")}\n\n## Reference (${references.length})\n${references.map((reference) => `- [${reference.title}](${SITE}/reference/${reference.slug}.html): ${reference.description}`).join("\n")}\n\nAll calculator and workflow outputs are planning records. Verify physical packs and current supplier, marketplace, carrier, facility, and regulatory requirements.\n`);
 }
 
 function generate() {
@@ -1694,7 +1878,9 @@ function generate() {
   write("guides.html", indexPage("Guides", guides));
   write("reference.html", indexPage("Reference", references));
   write("quality.html", qualityHub());
+  write("pack-instructions.html", packInstructionsHub());
   tools.slice(1).forEach((tool) => write(`tools/${tool.slug}.html`, calculatorPage(tool)));
+  workflowTools.forEach((tool) => write(`tools/${tool.slug}.html`, workflowToolPage(tool)));
   guides.forEach((guide) => write(`guides/${guide.slug}.html`, articlePage(guide, "Guides")));
   references.forEach((reference) => write(`reference/${reference.slug}.html`, articlePage(reference, "Reference")));
   basicPages.forEach((page) => write(page.file, basicPage(page)));
