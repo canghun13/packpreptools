@@ -1551,3 +1551,263 @@ git status
 - MEDIUM: 별도 device/browser font metric이나 OS별 browser print pagination은 local in-app browser와 다를 수 있다. 이번 CSS 변경은 print output 구조를 건드리지 않았지만 운영 시 실제 print sample을 계속 관찰한다.
 - LOW: `.workflow-record-table`은 현재 두 controlled document에 의도적으로 제한돼 있다. 생성기에 유사한 workflow 문서 표를 추가할 때 이 class 또는 그 문서에 맞는 scoped component를 명시해야 한다.
 - LOW: global stylesheet를 사용하므로 새 CSS를 도입할 때 plain `.content-table`보다 desktop selector의 specificity가 높은지 정적 QA와 390px computed width를 함께 확인한다.
+
+## 2026-08-20 — New workflow cluster discovery (NO-GO)
+
+### 시작 상태와 복구한 원장
+
+- 실제 작업 checkout: 현재 작업 가능한 범위에서 발견한 `packpreptools/repo`; 새 clone이나 개발도구 설치는 하지 않았다. 바깥 디렉터리는 별도 빈 wrapper Git 저장소였으므로 실제 Pack Prep Tools checkout이 아니었다.
+- 시작 local HEAD는 `84d25a5057506812787db350edbb63e67c444477`, 시작 remote main은 `3e85a6df50a8a534db4813c6eadd4d09ecd89197`였다. 작업 트리가 clean이고 3 commits behind인 것을 확인한 뒤 `git fetch origin main`과 `git pull --ff-only origin main`만 사용했다. 동기화 후 조사 시작점 local/origin/remote main은 모두 `3e85a6df50a8a534db4813c6eadd4d09ecd89197`였다.
+- remote는 `https://github.com/canghun13/packpreptools.git`, branch는 `main`. 동기화 직후 최근 commit은 `3e85a6d Fix pack instruction responsive layout`이고 working tree는 clean이었다.
+- 시작 사이트 규모를 generator registry, 생성 HTML, sitemap, QA로 다시 확인했다. 공개 HTML **76개** = 기본·hub·기타 10 + Tool 40(36 Calculator + 4 workflow Tool) + Guide 14 + Reference 12. sitemap은 404를 제외한 **75 URL**이다.
+- Calculator 36개: Box Size, Box Utilization, Box Volume, Bubble Wrap, Bundle Packing Cost, Carton Count, Carton Cube, Case Pack, Cases per Pallet, Dimensional Weight, Insert Quantity, Kitting Cost, Label Cost, Labor Capacity per Shift, Length + Girth, Master Carton Dimensions, Master Carton Weight, Monthly Packaging Spend, Multi-item Box Fit, Order Packing Time, Package Weight & Dimension Variance, Packaging Cost per Order, Packaging Failure Cost, Packaging Material Budget, Packaging Supply Reorder Point, Packaging Trial Comparison, Packaging Waste Allowance, Packing Paper, Pallet Height, Pallet Layer Count, Pallet Utilization, Poly Mailer Size, Prep Batch Time, Shipping Damage Rate, Tape Usage, Void Fill.
+- workflow Tool 4개: Pack Instruction Readiness Checker, Pack Instruction Builder, Pack Variant Routing Planner, Pack Job Traveler Generator.
+- 현재 cluster: Package size and fit, Materials and usage, Cost and inventory, Labor and workflow, Master cartons, Pallet planning, Packaging Quality & Damage Control, Pack Instruction & Job Release. 최근 구현 cluster는 Pack Instruction & Job Release다.
+- authoritative source는 `scripts/generate-site.js`의 registry/template/generation, calculator logic은 `assets/calculators.js`, workflow logic은 `assets/workflow-tools.js`다. 기존 QA는 `scripts/qa.js`, `scripts/verify-calculators.js`, `scripts/verify-workflow-tools.js`다.
+- 사용자 관리 영역은 homepage footer 뒤 badge block이다. KittyLaunch → Sell With Boost → Twelve Tools → Findly.tools → BoostDomainRating의 5 anchors, href/image/order/position을 확인했다. 조사 시작 SHA-256은 `1205454B420A7A14B16F66A984BF5217AF327B33F68FB9E30EBD48824198ED68`이다.
+
+### 제외 원장
+
+- 2026-08-08 계열: Returns & Reverse Logistics, Packaging Purchasing & Quote Analysis, Fulfillment Accuracy & Rework, Shipment Consolidation, Packaging Sustainability.
+- 2026-08-10 계열: Packaging Automation & Equipment Economics, Packaging Changeover & Downtime, Label Roll & Printer Runtime Planning, Stretch Film & Pallet Wrap Planning, Roll/Sheet Cut Yield & Layout, Packaging Supply Storage & Space Planning, Corrugated Compression & Stack Planning, Gross/Tare/Pallet Weight Planning, Packing Station Layout & Capacity.
+- 2026-08-11 계열: Industrial Bags/Liners/Covers, Packaging Version Cutover & Obsolescence, Point-of-use Consumable Replenishment, Order-mix & Dispatch Deadline, Strapping & Edge Protection, Kit Component Availability, Corrugated Partitions & Dividers, Carton Assortment & Box Portfolio, Repack/Overpack Workload, Mailing Tube/Cylindrical Pack.
+- 2026-08-13 discovery 계열: Shipping Label Print Setup & Calibration, Pack Instruction & Job Release, Packaging Spec & Supplier Handoff, Packaging Sample & Proof Approval, Shipping Label Placement & Surface Fit, Carton Closure Troubleshooting, Pack Sequence & Layered Presentation, Shipping Scale Verification & Weighment Record, Dispatch Exception Triage & Escalation, Shipment Photo Evidence & Pack Record, Packing Slip & Shipment Document Prep, Packaging Artwork Preflight & File Handoff.
+- 이미 구현한 Packaging Quality & Damage Control 및 Pack Instruction & Job Release도 제외했다. 아래 후보는 위 family의 이름 변경이나 현재 calculator의 단위·사용자 변형으로 세지 않았다.
+
+### 이번 신규 family와 52개 Tool 가설
+
+각 행은 `Search intent → Inputs → Logic → Outputs → User action` 순서로 비교했다. “가장 가까운 기존”은 중복 여부를 보수적으로 확인하기 위한 것이며, 일부 입력 공유만으로 독립성을 인정하지 않았다.
+
+#### N1. GS1 Logistic Unit Identification & Packaging Hierarchy — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| SSCC Structure & Check Digit Checker / Checker | wholesale shipper; 입력한 logistics ID 오류 / `SSCC validator check digit` | prefix·extension·serial 또는 18자리 → 길이·numeric·GS1 mod-10 → valid structure와 수정 위치 → ERP/label 원본 수정 | 새 serial block·오류마다 | 기존 없음; 식별자 검증이라 계산기와 독립 |
+| SSCC Logistics Label Draft / Generator | pallet/carton shipper; 물류 단위 label draft / `SSCC pallet label generator` | SSCC·from/to·reference·label size → AI(00)와 barcode payload 구성 → printable label draft → test-scan·partner 확인 | logistics unit마다 | Label Cost와 달리 identifier artifact 생성 |
+| Packaging Hierarchy Multiplier Checker / Checker | multi-level SKU owner; each-inner-case-pallet 수량 불일치 / `packaging hierarchy checker` | levels·parent qty·base qty → multiplier chain 재계산 → mismatch level → master data 수정 | SKU/pack change마다 | Case Pack은 한 단계 계산; multi-level consistency는 독립 |
+| Hierarchy Identifier Handoff Sheet / Builder | data owner; level별 GTIN/SSCC 역할 혼동 / `GS1 packaging hierarchy worksheet` | level·trade/logistics role·identifier·qty → role/level rule mapping → hierarchy sheet와 gaps → GS1/trading partner 검토 | SKU onboarding마다 | Pack Instruction record와 목적·사용자가 다름; 단 official/account data 의존 |
+
+- 실제 수요는 있으나 독립적으로 강한 Tool은 약 **3개**다. check digit/SSCC label/validator는 공식·무료 도구가 이미 해결하고, 4번째부터 GS1 계정·GDSN·trading-partner master data로 넘어간다.
+
+#### N2. Export Carton Shipping Marks — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| Carton Shipping Mark Batch Generator / Generator | exporter; carton별 mark 반복 작성 / `shipping mark generator carton` | main mark·destination·PO·carton range·weights·dims → carton 번호별 render → one-mark-per-carton print set → PDF/print | export shipment마다 | 기존 label calculator 없음; artifact는 독립 |
+| Carton Range Gap Checker / Checker | export clerk; C/NO 중복·누락 / `carton number sequence checker` | carton IDs/ranges·expected total → set/interval 비교 → gap/duplicate list → packing list와 수정 | multi-carton shipment마다 | Carton Count는 수량 추정; 식별 sequence 검증은 독립 |
+| Shipping Mark Layout Preview / Planner | operator; 긴 mark가 label face에 안 맞음 / `shipping mark layout preview` | paper/mark size·line text·font scale → line wrap/bounds 측정 → fit preview·overflow warning → 내용 축약·크기 조정 | mark revision마다 | Label placement 제외 후보와 인접하지만 surface placement가 아닌 print layout |
+| Handling Mark Composer / Selector | shipper; handling symbols/words 선택 / `carton handling mark generator` | user-selected handling needs·language → icon/text set 조합 → side-mark block → consignee/carrier 확인 | shipment profile마다 | static decision tree에 가까워 독립 Tool 강도 낮음 |
+
+- 강한 독립 Tool은 약 **2개**다. batch generation·range checking·layout·handling mark가 결국 하나의 mark editor mode로 수렴한다. Worowo와 GainingDocx가 no-login 입력, carton range, weights/dimensions, handling marks, per-carton preview, print/PDF/HTML까지 이미 제공한다.
+
+#### N3. Parcel Billing Evidence & Adjustment Review — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| Manifest vs Billed DIM Adjustment Checker / Comparator | ecommerce ops; billed dimensions가 manifest와 다름 / `dim weight adjustment audit` | manifested/billed dims·weights·divisor·charge delta → 두 billable weight 재계산 → adjustment delta/evidence gaps → 측정 record 확보 | invoice마다 | Dimensional Weight+Variance 입력을 쓰지만 청구 비교/action은 다름 |
+| Parcel Surcharge Evidence Builder / Builder | billing owner; surcharge dispute 자료 누락 / `shipping surcharge dispute checklist` | surcharge type·invoice line·address/service facts·evidence refs → user rules와 completeness check → evidence map → carrier portal 검토 | disputed line마다 | generic document 성격; live carrier rule 없이는 판정 불가 |
+| Duplicate Parcel Charge Detector / Checker | small shipper; tracking/charge 중복 / `duplicate shipping charge checker` | pasted invoice rows·tracking·date·amount → keyed duplicate grouping → candidate duplicates → 원 invoice 확인 | weekly invoice마다 | 기존 비용 계산기와 달리 row matching; bulk parser 필요 |
+| Parcel Dispute Packet Generator / Generator | owner; 이메일/claim packet 정리 / `carrier dispute letter generator` | confirmed discrepancy·contract reference·photos/measures → structured summary → draft packet → 사용자가 계약·deadline 확인 후 제출 | confirmed case마다 | Packing document/exception 후보와 겹치며 legal/contract disposition 위험 |
+
+- 강한 독립 Tool은 약 **3개**지만 정확한 audit는 invoice schema, contract rate, service event, current surcharge rule과 claims deadline이 필요하다. static estimate는 기존 DIM/Variance의 확장에 그치고, 실제 recovery는 계정 연결형 SaaS가 강하다.
+
+#### N4. Irregular-item Measurement & Orientation Capture — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| Irregular Bounding-box Measurement Sheet / Builder | irregular-item seller; 어디를 재야 할지 불명확 / `measure irregular package worksheet` | shape notes·max extents·measurement points·photos refs → axis/maximum capture order → measurement sheet → physical remeasure | item model마다 | Box Size는 rectangular result; evidence procedure는 독립이나 guide 성격 강함 |
+| Orientation Capture Planner / Planner | packer; 회전 가능 방향 누락 / `irregular item orientation planner` | allowed orientations·upright/fragile/protrusion flags → candidate orientation set → capture/test order → physical fit trials | new item/pack마다 | Multi-item Box Fit과 달리 orientation constraints 기록; solver 없으면 얕음 |
+| Protrusion & Non-machinable Review / Checker | seller; finished shape의 돌출·rolling 특성 누락 / `irregular parcel checker` | finished shape observations·user carrier thresholds → condition match → research flags → current carrier rule 확인 | service/pack change마다 | Length+Girth와 인접; proprietary live rules 없이 결론 불가 |
+| Irregular Pack Trial Comparator / Comparator | fragile/odd item seller; 두 orientation trial 비교 / `irregular packaging test comparison` | trial orientations·finished dims·movement/damage observations → comparable-field delta → review table → pack trial 선택 | prototype마다 | Packaging Trial Comparison과 상당 부분 중복 |
+
+- 강한 독립 Tool은 약 **2개**다. 정확한 shape capture와 placement는 AR/3D/hardware 영역이고, static web에서는 measurement worksheet와 기존 fit/trial 변형으로 축소된다.
+
+#### N5. Package Dimension Drift & Measurement Process Control — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| Spec-to-Sample Dimension Comparator / Comparator | packaging receiver; 여러 축의 spec 대비 편차 / `carton dimension tolerance checker` | nominal L/W/H·user tolerances·observations → per-axis delta/range → out-of-user-band observations → hold for owner review | lot/sample마다 | Package Variance는 planned/observed 1세트; multi-axis tolerance table은 확장 |
+| Multi-sample Drift Summary / Checker | line owner; lot 내 trend 파악 / `packaging dimension drift spreadsheet` | timestamp/sample measurements → mean/range/trend → drift visualization → measurement process 조사 | run/lot마다 | Variance calculator의 bulk/statistics 확장; quality pass/fail 위험 |
+| Repeated Measurement Consistency / Checker | operator; 측정자/도구 반복성 불명 / `package measurement repeatability checker` | repeated readings·operator/gauge IDs·user limit → within/between range → consistency note → method/gauge 재확인 | gauge/operator check마다 | Shipping scale verification 제외 후보와 같은 instrument-check pattern |
+| Critical Dimension Inspection Record / Generator | small manufacturer; 측정 evidence 분산 / `carton inspection record template` | lot/spec/sample IDs·critical dims·observations → structured rows → inspection record → responsible quality owner disposition | receipt/production lot마다 | Quality cluster와 generic inspection form에 인접 |
+
+- 강한 독립 Tool은 약 **2개**다. 통계 기능은 기존 Variance의 multi-row 확장이고, disposition을 제공하면 AQL/quality acceptance 영역으로 넘어간다. 업계 tolerance도 supplier/process별로 달라 user-provided 값만으로는 cluster depth가 부족하다.
+
+#### N6. Corrugated Structural Style & Dieline Planning — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| FEFCO Style Needs Selector / Selector | seller/designer; 구조 code 선택 어려움 / `FEFCO box style selector` | access/closure/loading/flatness/user constraints → feature-to-style mapping → candidate styles·questions → converter 확인 | new pack마다 | Box Style glossary를 interactive tree로 감싼 수준이 될 위험 |
+| Internal-to-Blank Dimension Planner / Calculator | converter-facing owner; panel/blank 초안 / `RSC blank size calculator` | internal dims·style·board caliper·user allowances → style geometry → panel/blank dimensions → converter review | size/style마다 | Box Size와 logic/output이 다르지만 manufacturing allowance 책임 큼 |
+| Parametric Dieline Draft / Generator | designer; flat pattern 생성 / `free box dieline generator` | style·L/W/H·caliper·glue/bleed → cut/fold geometry → SVG/PDF/DXF draft → printer/die-maker verification | design마다 | 기존 없음; CAD-like engine이 필요 |
+| Fold/Glue Handoff Checker / Checker | artwork owner; cut/crease/glue layer 누락 / `dieline handoff checker` | layer names·bleed/safe/glue values·file metadata → required-set comparison → missing/ambiguous list → converter preflight | revision마다 | Artwork Preflight 제외 후보와 직접 인접 |
+
+- 강한 독립 Tool은 약 **2개**다. style selection은 glossary, blank/dieline은 한 geometry engine, handoff는 최근 제외한 artwork preflight다. 여러 무료 경쟁자가 live 2D/3D, board compensation, manufacturing score, sheet layout, SVG/PDF/DXF/PNG까지 제공한다.
+
+#### N7. Packaging Material Receiving Inspection — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| Receipt Inspection Readiness Builder / Builder | warehouse receiver; PO/spec/equipment 준비 누락 / `packaging receiving inspection checklist` | material type·PO/spec refs·available gauges·required evidence → selected preparation fields → dock worksheet → inspection 준비 | delivery마다 | Pack Instruction readiness와 다른 stage/user지만 같은 completeness engine |
+| Sample Spread Planner / Planner | receiver; top layer만 검사 / `incoming inspection sampling worksheet` | lot/pallet count·user-selected sample count·risk locations → distribution algorithm → pull map → physical sampling | lot마다 | AQL 수를 invent하지 않으면 logistics helper로 독립 가능하나 scope 좁음 |
+| Packaging Observation Recorder / Generator | inspector; dimensions/joint/print observations 분산 / `corrugated receiving inspection form` | lot IDs·spec refs·measurements·photo refs → structured record → observation report → quality owner review | receipt마다 | Quality/Damage record와 generic mobile form 경쟁 |
+| Supplier Nonconformance Handoff / Generator | buyer; evidence handoff 불완전 / `packaging nonconformance report template` | confirmed issue·affected qty·evidence·requested response → completeness/render → NCR draft → supplier/owner disposition | issue마다 | Supplier handoff·exception 후보와 중복; contractual disposition 위험 |
+
+- 강한 독립 Tool은 약 **3개**지만 4번째부터 supplier quality/NCR가 된다. 무료 forms/checklist builders와 mobile inspection SaaS가 barcode/PO scan, photos, conditional failure fields, sync/WMS integration까지 해결한다. static version은 기존 quality record와 generic form 사이에서 얕다.
+
+#### N8. Cold-chain Pack-out Preparation — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| Thermal Lane Intake Builder / Builder | food/pharma shipper; lane assumptions 누락 / `cold chain packaging planner` | product temperature band·transit·ambient assumptions·shipment format·validation refs → completeness only → lane brief → qualified packaging review | lane/season마다 | 기존 없음; 안전상 recommendation은 제공 불가 |
+| Coolant Conditioning Schedule / Planner | operator; pre-conditioning timing 기록 / `ice pack conditioning schedule` | user-approved SOP times·freezer capacity·ship cutoff·pack counts → backward schedule → conditioning batches → 실행/record | dispatch batch마다 | Prep Batch Time과 scheduling logic이 겹치며 thermal 성능 근거는 외부 |
+| Cold-chain Pack-out Checklist / Generator | packer; validated configuration 순서 누락 / `cold chain packout checklist` | user-owned validated configuration·components·sequence·logger → job checklist → printable record → pack execution | shipment/batch마다 | Pack Instruction Builder의 product-specific template variation |
+| Logger Placement & Handoff Record / Generator | quality owner; logger ID/위치/수령 정보 누락 / `temperature logger placement record` | logger IDs·positions·start/stop·recipient instructions → structured manifest → handoff sheet → monitor/retrieve data | controlled shipment마다 | record는 독립이나 compliance/data logger workflow 의존 |
+
+- 겉보기에는 4개지만 strong independent count는 약 **2개**다. packout/checklist는 Pack Instruction 변형이고 schedule은 Prep Batch Time 변형이다. recommendation·performance claim은 validated thermal data 없이는 안전하지 않다. WHO, vendor suites, route-risk services와 logger ecosystems가 더 깊다.
+
+#### N9. Non-hazardous Liquid Containment Preparation — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| Containment Layer Readiness Checker / Checker | liquid seller; primary/secondary/outer layer 누락 / `leak proof liquid packaging checklist` | user product classification·approved closure/barrier/outer pack·evidence → completeness → missing layer list → approved method 확인 | SKU/method마다 | quality readiness pattern; safety/legal classification 불가 |
+| Absorbent Capacity Worksheet / Calculator | non-hazardous liquid seller; worst-case absorbent 기록 / `absorbent material calculator liquid shipping` | liquid volume·units·user-measured absorbency factor·allowance → capacity arithmetic → required user-calibrated amount → physical spill test | pack size마다 | Void Fill/Bubble Wrap과 다른 logic이나 performance guarantee 위험 |
+| Closure Test Log Builder / Generator | brand; lot별 invert/squeeze test 기록 / `bottle leak test log` | closure lot·torque/user method·observations·time → structured log → exceptions → responsible owner review | closure lot마다 | Packaging Trial/Quality cluster와 겹침 |
+| Liquid Pack Configuration Record / Builder | packer; bottle orientation·barrier·upright method 전달 / `liquid packout worksheet` | approved component IDs·orientation·secondary barrier·cushioning → ordered record → pack sheet → job release | SKU/variant마다 | Pack Instruction Builder의 material/step template variation |
+
+- 강한 독립 Tool은 약 **2개**다. 다른 두 개는 Quality Trial과 Pack Instruction 변형이다. hazardous/non-hazardous 분류, carrier rules, closure/material compatibility와 performance 책임 때문에 static selector는 부적합하다.
+
+#### N10. ESD Electronics Pack-out Control — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| ESD Packaging Requirement Intake / Builder | electronics seller; device sensitivity/handling facts 누락 / `ESD packaging worksheet` | device/approved control plan·contact/shield needs·handling stages → completeness → requirement brief → ESD owner/supplier 확인 | part/revision마다 | 기존 없음; device classification은 사용자 입력이어야 함 |
+| Protective Packaging Configuration Checker / Checker | packer; bag/foam/tape/label 조합 mismatch / `ESD packaging checker` | approved material properties/IDs·contact sequence → user rule comparison → mismatch list → approved BOM 수정 | pack method마다 | Material selector처럼 보이나 verified electrical properties 없으면 판정 불가 |
+| ESD Pack-out Record / Generator | operator; seal/symbol/lot/operator record 누락 / `ESD packaging record template` | part/lot·bag/foam/tape IDs·seal/symbol checks·operator → structured record → job sheet → shipment handoff | batch마다 | Pack Job Traveler의 specialized template |
+| Shielding Bag Condition Log / Checker | warehouse; 재사용 bag condition 추적 / `ESD bag inspection checklist` | bag ID/use count·visual/seal observations·user rejection rules → condition record → quarantine/retest → owner disposition | reuse cycle마다 | Returns/Sustainability 및 quality inspection에 인접; test equipment 필요 |
+
+- 강한 독립 Tool은 약 **2개**다. 표준은 ESD Association/IEC material tests와 control plan을 요구하고, 색상만으로 성능을 판단할 수 없다. static record/checker는 certification·safety 오해 위험이 크다.
+
+#### N11. Accessible Package Opening Evaluation — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| Opening Action Task Analyzer / Builder | package designer; pinch/twist/tool/multi-action barrier 기록 / `accessible packaging checklist` | opening steps·required actions·one-hand/tool flags → action taxonomy → barrier map → prototype redesign | prototype마다 | 기존 없음; usability workflow로 독립 |
+| Opening Force Measurement Log / Generator | tester; 힘 측정과 조건 분산 / `package opening force test sheet` | instrument/readings·grip/opening point·conditions → summary only → measurement log → trained test review | test round마다 | Package Variance와 달리 usability measure지만 test method 필요 |
+| Inclusive Feature Review / Checker | designer; contrast/tactile/instruction/entry-point 누락 / `inclusive packaging evaluation tool` | observed features·user-owned criteria → completeness/traceability → review matrix → user testing 계획 | design revision마다 | official Microsoft checklist를 UI로 감싼 수준 위험 |
+| Prototype Accessibility Comparator / Comparator | brand; prototype A/B opening experience 비교 / `easy open packaging comparison` | user-panel observations·force readings·task success notes → side-by-side deltas → unresolved barriers → further user testing | prototype round마다 | Trial Comparison의 usability specialization |
+
+- 강한 독립 Tool은 약 **3개**지만 official Microsoft free checklist가 이미 구체적이고, ISO 17480 및 Arthritis Australia certification은 instrument/user-panel testing을 요구한다. Pack Prep Tools가 정적 점수나 pass/fail을 제공하면 접근성을 잘못 보증할 위험이 있다.
+
+#### N12. Wooden Crate & Export Pack Preparation — REJECT
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| Cargo-to-Crate Clearance Estimator / Calculator | custom shipper; cargo+padding 외형 초안 / `shipping crate size calculator` | cargo dims·user-approved clearance/padding·panel thickness → nested dimension arithmetic → internal/external crate draft → crating engineer 확인 | job마다 | Box Size와 유사하나 crate panel/access output; 구조강도 없음 |
+| Crate Material Takeoff Estimator / Calculator | crate shop; panel/slat 초도 물량 / `wooden crate material calculator` | crate dims·panel/slat coverage·thickness·user waste → surface/board-foot arithmetic → material estimate/empty weight → quote/stock check | crate마다 | Packaging material budget과 다른 fabrication logic |
+| Crate Access & Opening Selector / Selector | equipment shipper; top/side/removable panel 선택 / `shipping crate selector` | cargo handling·lift points·unloading/access constraints → feature mapping → candidate opening scheme·questions → crating provider review | cargo type마다 | static vendor selector; engineering depth 낮음 |
+| Export Wood Marking Readiness Record / Checker | exporter; ISPM 15 evidence/mark location 누락 / `ISPM 15 crate checklist` | destination/user requirements·material certification refs·mark observations → completeness only → missing evidence list → certified provider/broker 확인 | export job마다 | certification 판정을 피하면 단순 record; 법적/plant-health 유지관리 큼 |
+
+- 강한 독립 Tool은 약 **3개**다. sizing/material takeoff/access/export check는 실제로 다르지만 crate strength, blocking/bracing, lifting, dangerous cargo와 ISPM 15 compliance 책임을 회피하면 cluster 핵심이 빠진다. free calculators와 professional CAD/quoting products가 이미 존재한다.
+
+#### N13. Packaging Master Data Quality & Channel Mapping — REJECT (경계 후보)
+
+| Tool / type | 사용자·문제 / 검색 의도 | I→L→O→A | 반복 이유 | 가장 가까운 기존 / 독립성 |
+|---|---|---|---|---|
+| Packaging Data Completeness Checker / Checker | SKU data owner; level별 필수 field 누락 / `packaging master data checklist` | user-defined channel schema·SKU/level fields → required-set comparison → gap matrix → PIM/ERP 보완 | SKU onboarding마다 | Pack Instruction Readiness와 engine 유사, 대상 data/action은 다름 |
+| Unit-of-measure Chain Validator / Checker | data owner; each/case/pallet conversion 충돌 / `packaging UOM hierarchy validator` | level multipliers/base qty → chain products/cross-check → inconsistency list → master data 수정 | hierarchy change마다 | N1 hierarchy checker와 같은 logic이므로 별도 strong Tool 아님 |
+| Channel Packaging Mapping Matrix / Generator | marketplace/wholesale brand; channel별 field 이름 연결 / `packaging data mapping template` | channel/user field names·source fields·transform notes → mapping table → unresolved fields → integration handoff | channel launch마다 | Supplier/spec handoff 제외 후보 및 generic PIM 영역에 인접 |
+| Duplicate Configuration Finder / Checker | multi-SKU operator; 같은 identifier에 다른 qty/dims / `packaging master data duplicate checker` | pasted records·keys·dims/qty → group/conflict detection → duplicates/conflicts → source owner 확인 | bulk data refresh마다 | 기존 계산기와 독립이나 CSV schema/enterprise data 의존 |
+
+- 강한 독립 Tool은 약 **2개**다. GS1 hierarchy와 supplier/spec handoff를 다시 묶은 경계 후보이며, 실제 가치가 있으려면 PIM/ERP/GDSN schema, versioning, user accounts와 data persistence가 필요하다. 따라서 12개 core family 숫자에는 의존하지 않고 추가로만 기록한다.
+
+### 외부 검색·long-tail·경쟁 기능 확인
+
+- keyword volume/GSC 신규 landing data에는 접근하지 못했다. 수치를 만들지 않았고 exact/long-tail SERP 반복, official/vendor documentation, 무료 interactive tool의 실제 field/output, SaaS scope, community 질문을 사용했다.
+- 대표 query/long-tail: `SSCC label generator`, `GS1 packaging hierarchy checker`, `shipping mark generator carton range`, `dim weight adjustment audit small business`, `measure irregular item for shipping worksheet`, `carton dimension tolerance checker`, `free FEFCO dieline generator`, `packaging material receiving inspection form`, `cold chain packout checklist`, `liquid leak test log shipping`, `ESD packaging checklist`, `accessible packaging opening force test`, `wooden export crate calculator`, `packaging master data hierarchy validator`를 조사했다. small warehouse, manual, batch, multi-SKU, no-login, worksheet, spreadsheet, generator 변형도 함께 확인했다.
+- N1: GS1 Logistic Label Guideline은 SSCC를 logistics unit의 mandatory identifier로 정의하고 구조·검증을 규정한다. GS1 Ireland check digit calculator, BoxTools, ShipmentSentry, JA Technology가 check digit, validator, GS1-128, batch pallet label까지 무료로 제공한다. hierarchy는 GS1 account/GDSN/Synkka/PIM 영역이다.
+  - https://www.gs1.org/standards/gs1-logistic-label-guideline/1-3
+  - https://www.gs1ie.org/tools-services/tools/check-digit-calculator/
+  - https://boxtools.app/en/sscc-label-generator
+- N2: Worowo는 Main Mark, destination, consignee, PO, SKU, origin, carton from/to, net/gross weight, measurement, notes, four handling marks를 받아 carton별 preview 20개와 Letter/A4 print/PDF를 no-login으로 제공한다. 실제 UI를 직접 열어 해당 inputs와 outputs를 확인했다. GainingDocx도 print/PDF/editable HTML 범위를 제공한다.
+  - https://www.worowo.com/packing-shipping/shipping-mark-generator/
+  - https://gainingdocx.com/tools/shipping-mark-generator
+- N3: ShipWave 실제 UI는 monthly spend, parcel volume, carrier를 받아 late-delivery/address correction/DIM reclass/surcharge의 directional estimate를 내며, line-by-line audit는 실제 invoice와 shipment data가 필요하다고 명시한다. Last Mile Solutions는 PDF/JPEG/PNG upload 또는 line paste 후 surcharge category를 찾고 full dollar breakdown은 email gate다. LateShipment, ConData, ParcelClaims 등은 carrier account/invoice/contract/SLA 기반 자동 claim SaaS다.
+  - https://shipwave.app/tools/carrier-invoice-audit
+  - https://www.lastmile.us/audit
+  - https://www.lateshipment.com/get-a-free-refunds-eligibility-audit/
+- N4: Canada Post는 irregular item도 가장 큰 세 축, 즉 들어갈 수 있는 최소 직육면체 기준으로 재도록 안내한다. PackPilot는 AR capture, cylinders/soft bags/irregular gear, orientation/access constraints, 3D plan과 PDF를 제공하고 MobileDemand/xDIM 계열은 camera/hardware dimensioning을 제공한다. static worksheet만으로는 경쟁 깊이를 따라갈 수 없다.
+  - https://origin-www.canadapost.ca/cpc/en/support/articles/abcs-of-mailing/how-to-cube-an-item-and-calculate-the-ve-of-its-actual-weight.page
+  - https://packpilot.io/
+- N5/N7: 실제 receiving guidance는 dimensions, squareness, joints, print, quantity, pallets/layers sampling과 photo evidence를 요구한다. Cargosnap 같은 mobile inspection SaaS는 PO/barcode scan, shipment-linked photo/video, structured checklist, real-time sync, WMS/ERP integration을 제공한다. Makeform과 Miratag는 no-code/free checklist, conditional failure evidence, Accept/Hold/Reject fields를 제공한다.
+  - https://www.boxwaale.in/blogs/corrugated-packaging-quality-checklist
+  - https://www.cargosnap.com/resources/blog/mobile-apps-for-incoming-goods-inspection-what-to-look-for
+  - https://www.makeform.ai/tools/ai-material-inspection-checklist-generator
+- N6: FEFCO official code는 국제 구조 분류다. PackagingTools.io 실제 UI는 seven structures, internal dimensions, material/flute/caliper, grain, bleed/safe/glue, order qty를 받아 2D/3D, engineering score, inside/outside/blank size, sheet optimization, cost estimate, SVG/PDF/DXF/PNG를 no-login으로 제공했다. PackMyMan, FreeBoxTemplate, Gráfico Impresores, vendor quote calculators도 free dieline/FEFCO options를 제공한다.
+  - https://www.fefco.org/sites/default/files/files/FEFCO%20Code_WEB%287%29.pdf
+  - https://packagingtools.io/design/dieline-generator/
+  - https://www.packmyman.com/
+- N8: WHO는 cold-room/equipment temperature mapping tool과 supported logger workflow를 배포한다. Tempk는 selector, ice/dry-ice calculators, coolant/insulation reference, checklist 등 cluster 전체를 제공하고 TempClarity는 hub/corridor weather 기반 route risk와 next safe ship date를 제공한다. 정적 추천은 validation을 대체할 수 없다.
+  - https://www.who.int/publications/m/item/cold-chain-equipment-and-dry-store-temperature-mapping-tool
+  - https://www.tempcontrolpack.com/cold-chain-tools/
+  - https://www.tempclarity.com/
+- N9: liquid SERP는 primary seal, absorbent secondary barrier, rigid outer pack, closure test를 반복하지만 product/carrier classification이 중요하다. 사용자 측 absorbency 값으로 산술 worksheet는 가능해도 safety/compliance cluster는 만들 수 없다.
+  - https://www.packagetheworld.com/blog/how-to-ship-liquids-ecommerce-leak-proof-packaging-guide
+- N10: DataScope의 ESD checklist는 shielding package, dissipative holder, markings, bag condition, ESD-compatible tape를 다룬다. ESD Association은 packaging material evaluation test methods를 standards bundle로 제공한다. verified material properties/control plan 없이 selector 결과를 내면 위험하다.
+  - https://datascope.io/library/en/template/esd-controls-checklist
+  - https://www.esda.org/store/standards/product/262/esd-manufacturing-essential-standards-bundle/
+- N11: Microsoft의 free accessible packaging checklist 실제 페이지는 contrast, tactile wayfinding, plain language, opening force, one-hand/pinch/twist/grasp/tool, entry point, action sequence, tabs까지 이미 구체적으로 제공한다. ISO 17480은 instrument/user-based evaluation과 conformance를 다루고, Arthritis Australia는 testing/certification을 운영한다.
+  - https://inclusive.microsoft.design/articles/creating-accessible-packaging
+  - https://standards.iteh.ai/catalog/standards/iso/1ab55687-6974-43d9-8721-2ca0a4a9deaf/iso-17480-2015
+- N12: CrateCalculator와 WoodworkingAdvisor는 size/clearance/panel/board feet/weight/cost를 무료 계산한다. BoxCalc는 item constraints, padding, weight, rotation, fragility, layer visualization, CSV/Excel, PDF/HTML/Excel export를 제공하고 Crate Pro는 design/cost/ISPM 15 tracking을 제공한다. 구조 안전을 제외한 작은 static subset만으로 4-tool cluster를 정당화하지 못했다.
+  - https://cratecalculator.com/
+  - https://box-calc.com/index_en.html
+  - https://www.cratepro.com/
+- N13: Phantm, AcuSpecs, PackR8, SAP/GS1 systems가 structured component/level records, completeness, validation, approval/versioning, supplier capture, compliance evidence, hierarchy rule checks를 제공한다. no-account static paste tool은 일부 duplicate/gap만 찾을 수 있어 generic data utility에 가깝다.
+  - https://www.phantm.com/services/software
+  - https://acuspecs.com/
+  - https://help.sap.com/docs/SAP_S4HANA_MANUFACTURING_LOGISTICS/25996e2761154fefa67bfbefa4457bb7/9699a56b1f76402ebfce2c634891fa87.html
+
+### 대표 competitor 실제 UI와 mobile 확인
+
+- Worowo Shipping Mark Generator: login 없음, 위 12개 text/range fields와 handling marks, carton 1–20 자동 preview, Letter/A4, Print/Save PDF를 확인했다. generation·range·layout·handling 가설이 한 editor에 이미 결합돼 있었다.
+- BoxTools SSCC Label Generator: Free/no-login, extension/prefix/serial/from/to/reference/existing SSCC/batch/label size inputs, mod-10 validation, AI(00), GS1-128, A6/4×6/100×150, Copy/SVG/PDF/batch HTML를 확인했다. `GS1 prefix는 할당하지 않는다`, production test-scan 필요 경계도 명시한다.
+- PackagingTools.io Dieline Studio: free/no-sign-up, style/dimensions/flute/caliper/grain/manufacturing inputs, 2D/3D/engineering score/blank size/sheet utilization/cost와 four export formats를 확인했다. Pack Prep Tools가 만들 수 있는 static subset보다 현저히 깊다.
+- ShipWave Carrier Invoice Audit: 390px에서 form controls가 277px 한 열로 배치되고 document horizontal overflow는 0이었다. 실제 audit FAQ는 manifested dimensions, invoice, carrier commitments, published rules, account 연결을 요구한다. 다른 세 경쟁 페이지는 in-app viewport override가 이미 열린 desktop tabs에는 일관되게 적용되지 않아 mobile 수치로 단정하지 않았고, desktop DOM/inputs/outputs만 경쟁 기능 근거로 사용했다.
+
+### 후보별 gate 요약과 최종 판단
+
+| Family | 확인된 intent/반복성 | 무료·전문 경쟁 | 기존 중복/안전·유지관리 | 강한 독립 Tool | 판정 / 실패 Gate |
+|---|---|---|---|---:|---|
+| N1 GS1 ID & hierarchy | shipment/SKU마다 높음 | official + multiple free labels/validators + PIM | standards/account/trading partner data | 3 | REJECT — competition, data dependency, 4-tool gate |
+| N2 Shipping marks | export shipment마다 높음 | free batch mark/PDF/HTML | one editor modes, handling tree 약함 | 2 | REJECT — independence, competition |
+| N3 Parcel billing evidence | weekly invoice마다 높음 | estimate tools + mature recovery SaaS | contract/live invoice/SLA dependency | 3 | REJECT — static fit, maintenance, safety |
+| N4 Irregular measurement | new odd SKU마다 중간 | AR/3D/hardware tools | existing fit/trial overlap | 2 | REJECT — depth, independence |
+| N5 Dimension drift | lot/run마다 중간 | spreadsheets/QMS/checklists | Variance expansion, AQL/pass risk | 2 | REJECT — overlap, safety |
+| N6 FEFCO/dieline | design마다 높음 | strong free CAD-like tools | geometry modes + preflight excluded | 2 | REJECT — competition, independence |
+| N7 Receiving inspection | receipt마다 높음 | free forms + mobile inspection SaaS | quality/NCR scope, generic forms | 3 | REJECT — independence, fit/safety |
+| N8 Cold chain | lane/season/batch마다 높음 | WHO/vendor/logger/route suites | validated thermal performance required | 2 | REJECT — safety, static fit |
+| N9 Liquids | SKU/closure lot마다 중간 | guides/vendor/carrier docs | Trial/Instruction overlap, classification risk | 2 | REJECT — overlap, safety |
+| N10 ESD | part/batch마다 중간 | standards/checklist/specialist supply | electrical test/control plan required | 2 | REJECT — safety, evidence |
+| N11 Accessible opening | prototype마다 중간 | Microsoft free criteria + formal testing | human-panel/certification boundary | 3 | REJECT — safety, 4-tool gate |
+| N12 Wooden crate/export | job마다 높음 | free calculators + CAD/quote suites | structural/export responsibility | 3 | REJECT — safety, competition |
+| N13 Packaging master data | onboarding/change마다 높음 | PIM/GS1/SAP platforms | recent spec-handoff adjacency, account/data | 2 | REJECT — non-new boundary, site fit |
+
+- **최종 결정: NO-GO.** 12개 core family와 1개 boundary family, 총 52개 Tool 가설을 검토했지만 13개 GO 조건을 모두 통과하는 family가 없다. 가장 가까웠던 후보는 N3 Parcel Billing Evidence, N7 Packaging Material Receiving Inspection, N11 Accessible Package Opening, N12 Wooden Crate & Export Pack Preparation이었으나 각각 strong independent Tool이 최대 3개였고 live data/contract, quality disposition, human testing/certification, structural/export safety라는 결정적 gate를 실패했다.
+- 따라서 production HTML/CSS/JS, generator/registry/manifest, sitemap/llms, navigation, calculator/workflow logic은 변경하지 않았다. 신규 page·cluster·artifact도 만들지 않았고 unrelated cleanup도 하지 않았다. 이번 commit 대상은 이 `handover.md` 기록뿐이다.
+- 재검토 조건: (1) GSC/외부 문의에서 특정 long-tail의 반복 landing intent가 실제로 쌓이고, (2) 같은 family 안에서 account/API 없이 서로 다른 I→L→O→A를 가진 4개 Tool이 증명되며, (3) strong free suite가 해결하지 않는 small-operator gap이 실제 사용자 workflow로 확인되고, (4) pass/fail·certification·safety/contract 결론 없이도 각 output이 직접 다음 행동을 만들 때만 다시 GO 검토한다. 특히 parcel audit는 stable invoice CSV schema와 user-supplied contract rules, receiving은 disposition 없는 evidence workflow 4개, accessibility는 recognized open test method와 user-panel boundary, crate는 authoritative non-structural planning scope가 확보돼야 한다.
+
+### 기본 QA와 보존 확인
+
+- 현재 셸 PATH에 `npm`이 없어 `npm test` 첫 시도는 명령을 시작하지 못했다. 새 설치는 하지 않고, 현재 Codex 환경에서 이미 제공된 bundled Node executable을 확인한 뒤 동일 Node scripts를 직접 실행했다.
+- JS syntax: `scripts/generate-site.js`, `scripts/qa.js`, `scripts/verify-calculators.js`, `scripts/verify-workflow-tools.js` 모두 `node --check` PASS.
+- `node scripts/qa.js`: PASS — 76 HTML, sitemap 75 URL, JavaScript 7; 36 calculators, 4 workflow tools, 14 guides, 12 references; duplicate long paragraph/sentence 0; calculator input-definition responsive override 36/36.
+- `node scripts/verify-calculators.js`: PASS — 36 calculators, 181 independent checks.
+- `node scripts/verify-workflow-tools.js`: PASS — 46 normal/boundary/error/safety/deterministic checks.
+- production generation은 NO-GO 규칙에 따라 실행하지 않았다. `index.html`을 수정하지 않았고 badge block SHA-256는 `1205454B420A7A14B16F66A984BF5217AF327B33F68FB9E30EBD48824198ED68`, anchors 5개, href/order가 그대로다.
+- commit 전 `git diff --check`, staged diff, 변경 파일이 `handover.md` 하나뿐인지 다시 확인한다. commit/push 후 local HEAD, origin/main, `git ls-remote` main, branch, clean working tree를 이 section의 Git 마감에 추가한다.
+
+### Git 마감
+
+- 조사 시작 기준: `3e85a6df50a8a534db4813c6eadd4d09ecd89197` (local = origin/main = remote main after safe fast-forward).
+- closing commit/push/hash/clean 결과는 아래 후속 기록에서 확정한다.
