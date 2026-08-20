@@ -1813,3 +1813,75 @@ git status
 - 조사 기록 commit: `7ae0237122d416d796d1001ee35cd6498893fa89` (`Research new workflow clusters and record no-go`). 변경은 `handover.md` 1개, 260 lines 추가뿐이다.
 - `git push origin main` 성공 후 `git fetch origin main`과 `git ls-remote origin refs/heads/main`으로 확인했다. 이 조사 commit 시점 local HEAD = origin/main = remote main = `7ae0237122d416d796d1001ee35cd6498893fa89`, branch `main`, working tree clean이었다.
 - 위 hash 검증 결과를 남기는 이 closing note도 `handover.md`만 변경한다. closing note commit/push 뒤의 최종 hash와 clean 상태는 작업 최종 보고에서 확정한다.
+
+## 2026-08-20 Existing Search Asset Priority Review — OBSERVE
+
+### 시작 상태와 실제 원장
+
+- 실제 작업 경로: `C:\Users\cangh\OneDrive\문서\packpreptools`. 기존 checkout을 사용했고 새 clone, 도구 설치, 시스템 환경 변경은 하지 않았다.
+- 시작 branch는 `main`, remote는 `https://github.com/canghun13/packpreptools.git`, working tree는 clean이었다. 시작 local HEAD와 시작 `origin/main`은 `3e85a6df50a8a534db4813c6eadd4d09ecd89197`, 실제 `git ls-remote origin refs/heads/main`은 `fadcb98db6a31b26773e909fe68be4249ee4412d`였다.
+- `git fetch origin main` 후 local이 3 commits behind임을 확인하고 `git pull --ff-only origin main`만 사용해 `fadcb98db6a31b26773e909fe68be4249ee4412d`로 fast-forward했다. 최근 production commit인 `3e85a6d Fix pack instruction responsive layout`과 이후 discovery/push/mobile-audit 기록 commits를 모두 복원했다.
+- 실제 시작 규모: 공개 HTML **76개** = 기본·hub·기타 10 + Tool 40(**Calculator 36 + workflow Tool 4**) + Guide 14 + Reference 12. sitemap은 404를 제외한 **75 URL**, JavaScript는 7개다.
+- 현재 cluster는 Package size and fit, Materials and usage, Cost and inventory, Labor and workflow, Master cartons, Pallet planning, Packaging Quality & Damage Control, Pack Instruction & Job Release다. authoritative source는 `scripts/generate-site.js`, calculator logic은 `assets/calculators.js`, workflow logic은 `assets/workflow-tools.js`다.
+
+### 최신 검색·유입 자료와 접근 범위
+
+- 저장소와 현재 제공된 attachment 범위에서 CSV, ZIP, XLSX, TSV 형태의 GSC/Bing/GA4 export를 찾지 못했다. attachment registry에는 과거 작업 지시 text만 있었고 분석 export는 없었다.
+- in-app browser의 Google Search Console 진입은 인증된 property가 아니라 공개 `/search-console/about` 페이지로 연결됐다. 인증된 GSC, GA4, Bing Webmaster 계정 또는 해당 API/connector에는 접근하지 못했으며 접근했다고 가정하지 않았다.
+- 따라서 최신 수치나 검색량을 추정하지 않았다. 현재 사용할 수 있는 가장 최신 first-party 검색 자료는 이 문서에 기록된 **2026-08-13 주간 GSC snapshot**이다. 이번 2026-08-20 검토 시점의 새 성과 데이터는 아니다.
+- 해당 snapshot의 page signal은 Master Carton Dimensions 4 clicks / 102 impressions / average position 15.00, Master Carton Weight 1 / 52 / 12.33, Carton Count 0 / 49 / 7.78, Master Carton Terms 0 / 30 / 24.23, Case Pack 0 / 14 / 12.71이었다. query signal은 `master carton size calculator` 1 / 11 / 6.91, `master carton calculator` 1 / 9 / 28.56, `master carton dimensions` 0 / 6 / 7.17, `carton quantity` 0 / 4 / 7.75, `master carton size` 0 / 1 / 10, `one carton is how many` 0 / 1 / 4, `how many are in a carton` 0 / 1 / 10이었다.
+- 이 신호를 현재 수치처럼 사용하지 않았다. 특히 Master Carton/Carton Count는 같은 날 worked example, generator copy, related workflow가 이미 보강됐으므로 수정 이후의 새 export 없이 추가 title/H1/logic 변경 효과를 판단할 수 없다.
+
+### 기존 영역 비교, SERP intent, 경쟁 결과
+
+| 기존 영역 | 실제 intent와 SERP | 현재 페이지 상태 | 후보 범주 / 판단 |
+|---|---|---|---|
+| Master Carton Dimensions + Carton Count | `master carton size calculator`는 제품/내포장 치수와 layout에서 master carton size·cube·weight까지 계획하려는 calculator/planning intent다. `carton count calculator units per carton`은 required units를 full cartons와 partial remainder로 바꾸려는 calculator intent다. Poleview, Easy China Warehouse, PackCalc가 orientation·CBM·DIM weight·container/pallet까지 넓게 제공하고 Calculator Academy, Simple Calculator Tools가 carton arithmetic을 제공한다. Pack Prep Tools Tools hub도 해당 query 결과에 노출됐다. | 2026-08-13에 Carton Count 예제를 125 ÷ 24 = 6 cartons, final carton 5 units로 바로잡았고 Master Carton guide/reference boilerplate와 related links를 보강했다. title/H1/input/output과 live first screen은 intent에 맞고 새 post-change data가 없다. | A/E/F/G/H 검토 후 **J OBSERVE** |
+| Packaging Cost per Order | SERP는 material component와 labor를 합치는 calculator intent가 중심이며 일부 결과는 monthly volume·damage trade-off까지 확장한다. The Calc Library, FoodCostCalculators와 여러 seller calculators가 경쟁한다. | live page는 box/mailer, cushioning, tape, label, other materials, material waste, packing minutes, hourly rate와 material/labor breakdown을 이미 제공한다. cost boundary, limitations, worked example, Monthly Packaging Spend next action이 있다. 신규 first-party signal이 없다. | B/C/D/F 검토 후 **J OBSERVE** |
+| Pallet Utilization | `pallet utilization calculator carton` SERP는 case orientation, TI/HI, height/weight limits, diagrams까지 기대하는 planning/calculator intent다. SupplyScope, Fulfill.com, OneCart, FreightKit, ParcelCal 등 무료 결과가 밀집돼 있다. | 현재 Pallet Utilization은 user-entered cases per layer의 footprint utilization을 투명하게 계산하고, orientation/fit은 별도 Cases per Pallet과 Pallet Layer Count가 담당한다. intent→input→logic→output→action이 다른 페이지들이므로 cannibalization이나 오류로 단정하지 않았다. first-party signal 없이 3D/optimizer 범위를 붙일 근거가 없다. | A/B/D/F 검토 후 **J OBSERVE** |
+| Box Size | SERP는 product dimensions + per-side cushioning에서 internal size를 구하는 기본 intent와 multi-item/standard box recommendation의 확장 intent가 혼재한다. BoxYourBrand, Cubit Packaging, ParcelCal, Commmerce, LoadBlok 등이 경쟁한다. | 현재 page는 product L/W/H, cushioning, clearance와 unit을 받아 minimum internal size를 계산하고 physical sample verification으로 연결한다. basic exact intent는 충족하며 확장 recommendation은 기존 Multi-item Box Fit과 역할이 다르다. 신규 first-party signal이 없다. | A/B/H 검토 후 **J OBSERVE** |
+| Shipping Damage Rate | exact query는 전용 calculator보다 damage metric 설명, packaging guide, TCO 자료가 주로 나타났다. tool-shaped SERP 수요는 아직 약하다. | 100/1 illustrative defaults, benchmark가 아니라는 note, observed rate/unaffected count/frequency, error handling, limits와 quality workflow가 이미 있다. Quality cluster 출시 직후라 새 landing/query data가 없다. | C/D/G 검토 후 **J OBSERVE** |
+| Pack Instruction Builder | `packing work instruction template packaging`은 Word/PDF template와 supplier work-instruction 문서 intent가 주류다. | Pack Prep Tools는 정적 template 복제가 아니라 선택 입력에서 재사용 가능한 record를 생성하는 4-tool workflow를 이미 제공한다. 2026-08-13 출시와 `3e85a6d` responsive fix 직후라 새 data 없이 copy/metadata를 바꾸지 않았다. | A/B/F/H 검토 후 **J OBSERVE** |
+| Dimensional Weight | calculator intent는 명확하지만 Packwire, ParcelCal, DimWeightCalc 등 무료 carrier/divisor calculators가 매우 밀집돼 있다. | 기존 calculator와 reference가 core calculation/limitations를 제공하고 technical QA도 통과한다. 이번에 확인된 first-party growth signal은 없다. | A/G/I 검토 후 **J OBSERVE** |
+
+- 검색량 수치는 확보하지 못했으며 만들지 않았다. 실제로 확인한 대표 query는 `master carton size calculator`, `carton count calculator units per carton`, `packaging cost per order calculator`, `pallet utilization calculator carton`, `box size calculator product dimensions packaging`, `shipping damage rate calculator packaging`, `packing work instruction template packaging`, `dimensional weight calculator package`다.
+- 대표 경쟁/대체 결과:
+  - https://www.poleviewfactory.com/tools/carton-calculator.html
+  - https://calculator.academy/units-per-carton-calculator/
+  - https://simplecalculatortools.net/business/carton-quantity-required-calculator.html
+  - https://www.thecalclibrary.com/packaging-cost-calculator
+  - https://supplyscope.io/tools/pallet-utilisation-calculator/
+  - https://www.fulfill.com/pallet-calculator
+  - https://parcelcal.com/pallet-calculator
+  - https://boxyourbrand.com/tools/box-size-calculator/
+  - https://parcelcal.com/box-size-calculator
+  - https://www.template.net/editable/106786/packing-work-instruction
+
+### 최종 결정과 가장 가치 있는 다음 작업 1개
+
+- **최종 결정: OBSERVE / NO-GO.** production page, generator, calculator/workflow logic, navigation, sitemap, llms, CSS를 수정하지 않는다.
+- 현재 가장 강한 search signal은 Master Carton/Carton Count지만 최신 자료가 이미 완료된 2026-08-13 보강 전후를 분리하지 못한다. page intent와 first-screen output, example, related workflow에 명백한 오류도 발견하지 못했다. 지금 title/meta/content를 다시 바꾸면 작은 과거 표본에 과잉 반응하는 셈이다.
+- **현재 가장 가치 있는 다음 작업 1개는 2026-08-13 보강 이후 기간을 포함하는 새 GSC landing-page + query export를 확보한 뒤 Master Carton Dimensions와 Carton Count의 impressions, clicks, position, 반복 long-tail을 같은 기간으로 재비교하는 것**이다. 그 데이터가 오기 전에는 category J 관찰을 유지한다.
+- GO 재검토 조건: (1) post-change export에서 같은 landing/query intent가 반복되고, (2) 최소한 query↔output/label/snippet/workflow의 구체적 mismatch가 확인되며, (3) 단순 CTR 변동이나 한 자릿수 impressions가 아닌 방향성 있는 증거가 있을 때다. Master Carton보다 다른 existing landing이 더 강한 반복 organic signal을 보이면 그 페이지를 같은 기준으로 우선한다.
+
+### QA, live 확인, 보존
+
+- 현재 shell PATH에는 `node`가 없어 첫 direct QA 명령은 시작되지 않았다. 새로 설치하지 않고 Codex workspace에 이미 bundled된 Node executable로 동일한 저장소 scripts를 실행했다.
+- `scripts/qa.js`: **PASS** — 76 HTML, 75 sitemap URLs, 7 JavaScript files; 36 calculators, 4 workflow tools, 14 guides, 12 references; duplicate long paragraph/sentence 0; calculator input-definition responsive override 36/36.
+- `scripts/verify-calculators.js`: **PASS** — 36 calculators, 181 independent checks.
+- `scripts/verify-workflow-tools.js`: **PASS** — 46 normal, boundary, error, safety, deterministic checks.
+- JavaScript syntax: `assets/calculators.js`, `assets/workflow-tools.js`, `assets/site.js`, `scripts/generate-site.js` 모두 `node --check` **PASS**.
+- production 변경이 없으므로 수정 페이지 대상 1440/1280/1024/768/390 full browser matrix는 실행 대상이 아니었다. 대신 live site에서 Master Carton Dimensions, Carton Count, Packaging Cost, Pallet Utilization, Box Size, Shipping Damage Rate, Pack Instruction Builder의 7 pages를 1440px와 390px, 총 14 combinations로 확인했다. title/H1/form/action이 존재했고 horizontal overflow는 전부 0이었다.
+- Shipping Damage Rate live interaction: 100 shipments / 1 damaged → **1% observed damage rate**, 99 unaffected, 1 per 100; shipments 0은 `Shipments reviewed must be greater than zero.`; Reset은 100/1로 복원; 390px overflow 0. 최근 default/reset/error behavior를 보존했다.
+- repository homepage user-managed badge block은 기존 SHA-256 `1205454B420A7A14B16F66A984BF5217AF327B33F68FB9E30EBD48824198ED68`, anchors 5개다. live 390px에서도 KittyLaunch → Sell With Boost → Twelve Tools → Findly.tools → BoostDomainRating의 5 href/image/order와 footer 다음 위치, GA4 `G-XR7JWJ36CD`, overflow 0을 확인했다. `index.html`과 generator는 수정하지 않았다.
+- 최종 사이트 규모는 시작과 동일한 공개 HTML 76개, Calculator 36, workflow Tool 4, Guide 14, Reference 12, 기본·hub·기타 10, sitemap 75 URL이다.
+- 변경 파일은 `handover.md` 1개뿐이다. production generation은 실행하지 않았다. 남은 위험은 아래와 같다.
+  - HIGH: 없음.
+  - MEDIUM: 2026-08-13 이후 authenticated organic performance data 부재로 최근 보강 효과와 진짜 우선순위를 검증할 수 없다.
+  - LOW: actual SERP는 시점·지역·개인화에 따라 달라질 수 있고, 경쟁 도구는 빠르게 확장 중이다. GA4 raw direct traffic은 자동 QA/본인 테스트와 분리되지 않아 이번 우선순위 근거로 쓰지 않았다.
+- commit 전 `git diff --check`, 변경 파일 범위, badge block hash를 재확인한다. commit/push 뒤 local HEAD, `origin/main`, actual remote main, branch, clean working tree와 Pages 상태는 아래 Git 마감에 기록한다.
+
+### Git 마감
+
+- 조사와 QA 기준 동기화 hash: `fadcb98db6a31b26773e909fe68be4249ee4412d`.
+- handover 기록 commit, push, hash 일치와 Pages 확인 결과는 commit 후 이 section을 보완한다.
