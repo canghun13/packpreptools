@@ -1884,4 +1884,6 @@ git status
 ### Git 마감
 
 - 조사와 QA 기준 동기화 hash: `fadcb98db6a31b26773e909fe68be4249ee4412d`.
-- handover 기록 commit, push, hash 일치와 Pages 확인 결과는 commit 후 이 section을 보완한다.
+- 조사 기록 commit: `f73402214b39aaa95ba53c489fb5c3572c65ad3b` (`Record existing search asset priority review`). 변경은 `handover.md` 1개, 72 lines 추가뿐이며 첫 `git push origin main`은 성공했다.
+- 첫 push 직후 `git fetch origin main`과 `git ls-remote origin refs/heads/main`으로 local HEAD = `origin/main` = actual remote main = `f73402214b39aaa95ba53c489fb5c3572c65ad3b`, branch `main`, working tree clean을 확인했다.
+- 이 Git 마감 note도 `handover.md`만 변경한다. closing-note commit/push 뒤 최종 hash와 clean 상태, Pages/live 확인은 작업 최종 보고에서 확정한다.
