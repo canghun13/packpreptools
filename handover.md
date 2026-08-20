@@ -1773,7 +1773,7 @@ git status
 - Worowo Shipping Mark Generator: login 없음, 위 12개 text/range fields와 handling marks, carton 1–20 자동 preview, Letter/A4, Print/Save PDF를 확인했다. generation·range·layout·handling 가설이 한 editor에 이미 결합돼 있었다.
 - BoxTools SSCC Label Generator: Free/no-login, extension/prefix/serial/from/to/reference/existing SSCC/batch/label size inputs, mod-10 validation, AI(00), GS1-128, A6/4×6/100×150, Copy/SVG/PDF/batch HTML를 확인했다. `GS1 prefix는 할당하지 않는다`, production test-scan 필요 경계도 명시한다.
 - PackagingTools.io Dieline Studio: free/no-sign-up, style/dimensions/flute/caliper/grain/manufacturing inputs, 2D/3D/engineering score/blank size/sheet utilization/cost와 four export formats를 확인했다. Pack Prep Tools가 만들 수 있는 static subset보다 현저히 깊다.
-- ShipWave Carrier Invoice Audit: 390px에서 form controls가 277px 한 열로 배치되고 document horizontal overflow는 0이었다. 실제 audit FAQ는 manifested dimensions, invoice, carrier commitments, published rules, account 연결을 요구한다. 다른 세 경쟁 페이지는 in-app viewport override가 이미 열린 desktop tabs에는 일관되게 적용되지 않아 mobile 수치로 단정하지 않았고, desktop DOM/inputs/outputs만 경쟁 기능 근거로 사용했다.
+- 동일한 390px override 탭에서 대표 4개를 순차 재확인했다. browser content viewport는 375px였고 SSCC와 ShipWave overflow는 0, main inputs는 각각 301px와 277px의 한 열이었다. Worowo는 inputs 315px 한 열이지만 document overflow 8px, PackagingTools.io는 main selects 313px이나 document overflow 40px가 측정됐다. 경쟁 기능 깊이 판단과 별개로 두 competitor도 mobile polish가 완전하지는 않았다. ShipWave audit FAQ는 manifested dimensions, invoice, carrier commitments, published rules, account 연결을 요구한다.
 
 ### 후보별 gate 요약과 최종 판단
 
