@@ -1923,4 +1923,8 @@ git status
 
 ### Git·배포 마감
 
-- 기능 commit/push와 GitHub Pages, actual remote hash, 실배포 5폭 재검증 결과는 아래 closing note에서 확정한다.
+- 기능 commit `2ea283556a547ac0bd3b12a0cfe112e095ee3eb1` (`Add pallet pattern cross-check`)은 위 5개 파일, 86 insertions / 17 deletions이며 `origin/main` push에 성공했다. push 직후 local HEAD = origin/main = actual `git ls-remote` main = `2ea283556a547ac0bd3b12a0cfe112e095ee3eb1`, branch `main`, working tree clean을 확인했다.
+- GitHub Pages `pages-build-deployment` run [32678974813](https://github.com/canghun13/packpreptools/actions/runs/32678974813)은 정확히 feature SHA `2ea2835`를 사용했고 build 21s, deploy 9s, report-build-status 4s, 전체 Success였다. artifact digest는 `sha256:8f905fc6c9390076595ea97a4367f31f847f026f9391f322fd013a074ecf0ddb`다. Node.js 20 deprecation warning 1개는 GitHub의 `actions/upload-artifact@v4` runtime 안내이며 build/deploy 실패나 site console error가 아니다.
+- 실배포 `/tools/pallet-utilization.html`은 target-only asset `20260824-pallet-pattern`과 `Last reviewed: August 24, 2026`을 제공한다. 1440/1280/1024/768/390px에서 실제 `innerWidth`를 각각 확인하고 기본 Calculate를 실행했다. 전 폭에서 `100% footprint utilization`, `9 cases/layer`, 10 entered pattern-review 문구, horizontal overflow 0, clipped text 0, console error 0이었다. output card 폭은 각각 1240/1233/977/721/355px로 정상 축소됐다.
+- 실배포 회귀는 Homepage, Tools, Packaging Cost, Master Carton Planning Guide, Packaging Trial and Shipping Damage Review, Pallet and Unit Load Terms, Pack Instruction hub를 1440/390px 총 14조합으로 다시 확인했다. H1 정상, overflow/clipping/console error 모두 0이고 Packaging Cost 기본 계산은 `$2.69`다. Homepage badge 5개의 href/image/order도 운영 사이트에서 그대로다.
+- 이 배포 확인 closing note는 `handover.md`만 추가 변경한다. closing-note commit/push가 새 Pages run을 시작하더라도 production 기능 파일은 `2ea2835`와 동일하다. 최종 closing SHA의 local/origin/actual remote 일치, clean working tree, 마지막 Pages success는 작업 최종 보고에서 확정한다.
