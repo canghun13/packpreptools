@@ -1928,3 +1928,369 @@ git status
 - 실배포 `/tools/pallet-utilization.html`은 target-only asset `20260824-pallet-pattern`과 `Last reviewed: August 24, 2026`을 제공한다. 1440/1280/1024/768/390px에서 실제 `innerWidth`를 각각 확인하고 기본 Calculate를 실행했다. 전 폭에서 `100% footprint utilization`, `9 cases/layer`, 10 entered pattern-review 문구, horizontal overflow 0, clipped text 0, console error 0이었다. output card 폭은 각각 1240/1233/977/721/355px로 정상 축소됐다.
 - 실배포 회귀는 Homepage, Tools, Packaging Cost, Master Carton Planning Guide, Packaging Trial and Shipping Damage Review, Pallet and Unit Load Terms, Pack Instruction hub를 1440/390px 총 14조합으로 다시 확인했다. H1 정상, overflow/clipping/console error 모두 0이고 Packaging Cost 기본 계산은 `$2.69`다. Homepage badge 5개의 href/image/order도 운영 사이트에서 그대로다.
 - 이 배포 확인 closing note는 `handover.md`만 추가 변경한다. closing-note commit/push가 새 Pages run을 시작하더라도 production 기능 파일은 `2ea2835`와 동일하다. 최종 closing SHA의 local/origin/actual remote 일치, clean working tree, 마지막 Pages success는 작업 최종 보고에서 확정한다.
+
+## 2026-08-24 — Aggressive new workflow cluster discovery (NO-GO)
+
+### 시작 Git 상태와 실제 사이트 원장
+
+- 실제 작업 경로: `C:\Users\cangh\OneDrive\문서\packpreptools`. 기존 checkout을 사용했고 clone, 도구 설치, 시스템 환경 변경은 하지 않았다.
+- 시작 branch `main`, remote `https://github.com/canghun13/packpreptools.git`, working tree clean. 시작 local HEAD와 추적 `origin/main`은 `aff5498e77094283f2bdb476e6cf41962f7eca21`, 실제 `git ls-remote origin refs/heads/main`은 `bca2ffd84ae5041c8439e4afa6107d9218c28de0`였다.
+- `git fetch origin main` 후 local이 2 commits behind인 것을 확인하고 clean tree에서 `git pull --ff-only origin main`만 실행했다. 시작 동기화 hash는 local = origin/main = actual remote main = `bca2ffd84ae5041c8439e4afa6107d9218c28de0`이다.
+- 최신 상태는 공개 HTML **76개**, sitemap **75 URL**, Tool **40개** = Calculator **36개** + workflow Tool **4개**, Guide **14개**, Reference **12개**, 기본·hub·기타 **10개**, JavaScript **7개**다.
+- 현재 cluster는 Package size and fit, Materials and usage, Cost and inventory, Labor and workflow, Master cartons, Pallet planning, Packaging Quality & Damage Control, Pack Instruction & Job Release다. 최신 Pallet Utilization은 9-case simple-grid reference와 10-case pattern review를 포함하며 계산 검증은 186 checks다.
+- authoritative source는 `scripts/generate-site.js`, calculator logic은 `assets/calculators.js`, workflow logic은 `assets/workflow-tools.js`; 검증은 `scripts/qa.js`, `scripts/verify-calculators.js`, `scripts/verify-workflow-tools.js`다.
+
+### Exclusion inventory
+
+- 최근 handover의 source labels 51개를 합치고 이미 구현된 Pack Instruction 중복을 제거해 **50개의 distinct exclusion families**로 만들었다.
+- 2026-08-08: Returns/Reverse Logistics, Packaging Purchasing/Quote, Fulfillment Accuracy/Rework, Shipment Consolidation, Sustainability.
+- 2026-08-10: Automation/Equipment Economics, Changeover/Downtime, Label Roll/Printer Runtime, Stretch Film/Pallet Wrap, Roll/Sheet Cut Yield, Supply Storage/Space, Corrugated Compression/Stack, Gross/Tare/Pallet Weight, Packing Station Layout/Capacity.
+- 2026-08-11: Industrial Bags/Liners/Covers, Version Cutover/Obsolescence, Point-of-use Replenishment, Order-mix/Dispatch Deadline, Strapping/Edge Protection, Kit Availability, Partitions/Dividers, Carton Portfolio, Repack/Overpack, Mailing Tube/Cylindrical Pack.
+- 2026-08-13: Shipping Label Print Setup, Pack Instruction & Job Release, Supplier Handoff, Sample/Proof Approval, Label Placement, Closure Troubleshooting, Pack Sequence, Scale Verification, Dispatch Exception, Photo Evidence, Shipment Documents, Artwork Preflight.
+- 2026-08-20: GS1 Logistic ID/Hierarchy, Export Carton Shipping Marks, Parcel Billing Evidence, Irregular-item Measurement, Dimension Drift/Measurement Process Control, FEFCO/Dieline, Material Receiving Inspection, Cold-chain Packout, Non-hazardous Liquid Containment, ESD Electronics Packout, Accessible Opening, Wooden Crate/Export, Packaging Master Data/Channel Mapping.
+- 이미 구현된 Quality & Damage Control도 exclusion이다. 아래 후보에서 buyer/seller, product, material, carrier 이름만 바꾼 변형과 위 영역의 단순 재명명은 세지 않았다.
+
+### 1차 discovery — 32 genuinely new families / 128 Tool hypotheses
+
+아래 capsule은 `Tool name [type] — U(target user); P(problem); Q(search intent); I(inputs); L(core logic); O(output); A(next action); R(repeat-use); E(closest existing Tool); Δ(difference)` 순서다. 4개 가설은 탐색용이며, 같은 식의 역산이나 동일 generator의 분할은 strong independent Tool로 승격하지 않았다.
+
+#### 1. Small-parts count-by-weight packout — 손계수 대신 중량으로 포장 수량을 준비·교차확인
+
+- Average Piece Weight Builder [Calculator] — U small-parts seller; P 기준 단중 부재; Q `average piece weight calculator`; I sample count/weight/tare; L `(gross-tare)/count`; O APW; A scale reference 설정; R SKU/lot마다; E Weight Variance; Δ 출고 중량 편차가 아니라 count reference 생성.
+- Parts Count by Weight [Calculator] — U packer; P 용기 안 수량 추정; Q `parts counting by weight calculator`; I gross/tare/APW; L net/APW rounding; O estimated pieces/remainder; A 수량 보충·제거; R pack마다; E Package Weight Variance; Δ expected-vs-actual package가 아니라 unknown count 추정.
+- Target Pack Weight Builder [Planner] — U kitting/parts packer; P 목표 개수의 scale target 부재; Q `target pack weight piece count`; I APW/target count/tare/tolerance; L multiply + user tolerance; O target gross band; A checkweigher target 입력; R SKU/pack size마다; E Package Weight Variance; Δ variance 측정 전 목표 band 생성.
+- Bulk-to-Packs Yield Planner [Planner] — U batch packer; P bulk stock으로 만들 full packs 수 불명; Q `bulk weight pack yield calculator`; I stock net/APW/units per pack; L floor twice + remainder; O packs/loose pieces/residual weight; A batch size 확정; R lot마다; E Carton Count; Δ cartons가 아니라 weight-derived units. **초기 판정: promising, 그러나 reciprocal weight engine 비중 큼.**
+
+#### 2. Apparel assortment & prepack ratio planning — size demand를 정수 prepack으로 변환
+
+- Size Curve Allocator [Planner] — U apparel buyer; P 총 buy를 size별 정수로 배분; Q `apparel size curve calculator`; I total + user size shares; L largest remainder; O size quantities/deviation; A PO 수량 확정; R style/buy마다; E Carton Count; Δ demand-share allocation.
+- Prepack Ratio Generator [Builder] — U wholesaler; P carton ratio가 demand curve를 왜곡; Q `garment assortment pack ratio`; I shares/case capacity; L constrained integer allocation; O per-carton ratio/max gap; A ratio pack 지정; R style/carton마다; E Case Pack; Δ size mix 포함.
+- Prepack Carton Requirement [Planner] — U distributor; P prepack ratio로 order 충족 시 overage; Q `prepack cartons required calculator`; I requested size quantities/pack ratio; L max ceiling by size; O cartons/overage by size; A pack count 또는 ratio 수정; R order마다; E Carton Count; Δ limiting size가 결정.
+- Store-to-Prepack Fit Comparator [Comparator] — U multi-store allocator; P 여러 store curve에 한 prepack 적합도 비교; Q `prepack optimization store allocation`; I store demands/candidate ratios; L deviation/shortage matrix; O ranked ratio/store gaps; A ratio 분리·loose units 결정; R allocation cycle마다; E Trial Comparison; Δ apparel integer allocation. **초기 판정: promising, retail-planning 경계.**
+
+#### 3. Shelf-ready retail display preparation — shelf opening·facing·case pack을 함께 검토
+
+- Shelf Facing Capacity [Calculator] — U small wholesaler; P shelf에 몇 facing/depth가 놓이는지 불명; Q `shelf facing calculator`; I shelf/product dimensions; L orthogonal grid; O facings/depth/capacity; A display width 조정; R SKU/shelf마다; E Multi-item Box Fit; Δ retail shelf surface.
+- Case-pack-to-Shelf Fit [Checker] — U retail supplier; P case pack이 shelf capacity와 불일치; Q `case pack shelf capacity calculator`; I case units/shelf capacity; L quotient/remainder; O full refills/leftover; A case pack 변경; R retailer/SKU마다; E Case Pack; Δ replenishment action.
+- Display Tray Wall/Opening Planner [Planner] — U PDQ shipper; P tray cut-down 후 product retention/visibility 불명; Q `display tray size calculator`; I product/tray/opening/retain heights; L user-threshold dimensional checks; O clearance/visible area warnings; A sample tray 조정; R design마다; E Box Size; Δ open-display geometry.
+- Shelf-ready Opening Trial Comparator [Comparator] — U supplier; P tear-open alternatives 비교; Q `shelf ready packaging trial checklist`; I trial time/damage/units/operator score; L normalized user-weight ranking; O comparison table; A sample 선택; R trial마다; E Packaging Trial Comparison; Δ retail opening task지만 동일 comparison core. **초기 판정: promising, 기존 geometry/quality overlap.**
+
+#### 4. Security seal lifecycle & reconciliation — numbered seals의 issue→affix→return/used 흐름
+
+- Seal Sequence Gap/Duplicate Checker [Checker] — U dispatch supervisor; P pasted serial list의 gap/duplicate; Q `seal number sequence checker`; I prefix/start/end/observed IDs; L parse/sort/range diff; O missing/duplicate/unexpected; A physical stock 확인; R receipt/audit마다; E Package Count Verification; Δ serialized consumable identity.
+- Seal Inventory Reconciliation [Comparator] — U seal custodian; P opening + received가 issued/returned/destroyed와 안 맞음; Q `security seal inventory reconciliation`; I user-entered counts/lists; L stock ledger equation + set reconciliation; O expected vs observed discrepancies; A investigate rows; R shift/audit마다; E Packaging Supply Reorder; Δ chain-of-custody status.
+- Issued-vs-Affixed Seal Match [Checker] — U dock verifier; P issued/affixed/departure IDs mismatch; Q `seal verification log`; I load/issued/affixed/verified IDs; L exact normalized match; O mismatch flags; A hold and follow site procedure; R shipment마다; E Pack Release Checklist; Δ serialized security handoff.
+- Seal Issue/Return Record Builder [Generator] — U small freight operation; P paper log 누락; Q `security seal log template`; I seal/load/event/operator/time/status; L required-field/event-state rules; O printable record; A retain per policy; R event마다; E Pack Record Generator; Δ persistent lifecycle record가 핵심. **초기 판정: promising, audit/persistence 의존.**
+
+#### 5. Moisture-controlled dry-pack preparation — barrier bag·desiccant·HIC 준비
+
+- User-basis Desiccant Unit Calculator [Calculator] — U electronics/metal shipper; P supplier rule에서 unit 수 산정; Q `desiccant calculator packaging`; I bag area/volume/user coefficient/duration; L explicit supplied formula; O required units; A supplier rule와 대조; R pack design마다; E Cushioning Volume; Δ moisture load.
+- Barrier Bag Allowance Planner [Planner] — U dry-pack operator; P product+seal margin에 필요한 bag size; Q `moisture barrier bag size calculator`; I product dims/seal/fold/margin; L flat-bag geometry; O min bag dimensions; A stock bag 선택; R SKU마다; E Poly Mailer Size; Δ barrier seal folds지만 geometry overlap.
+- HIC/Desiccant Placement Sheet [Generator] — U packer; P indicator/desiccant placement 일관성; Q `dry pack checklist humidity indicator card`; I package/quantities/locations/sequence; L completeness rules; O job sheet; A pack/verify; R job마다; E Pack Instruction Builder; Δ dry-pack content지만 same generator core.
+- Dry-pack Exposure Timer Worksheet [Planner] — U moisture-sensitive packer; P open exposure 누적 기록; Q `dry pack exposure time tracker`; I open/close intervals/user max; L elapsed sum; O remaining time/warning; A reseal/bake per own procedure; R lot마다; E none; Δ time-state logic. **초기 판정: weak-to-promising, standards and persistent timing.**
+
+#### 6. Heat-seal operating-window preparation — temperature·pressure·dwell 시험을 실행 가능한 계획으로 변환
+
+- Dwell/Conveyor Speed Calculator [Calculator] — U band/tunnel sealer operator; P seal zone 길이와 속도에서 dwell 불명; Q `heat seal dwell time conveyor speed calculator`; I heated length/speed; L distance/speed; O dwell or inverse speed; A machine starting point 설정; R job/equipment마다; E Packing Capacity; Δ physical exposure time.
+- Heat-seal Trial Matrix Builder [Builder] — U small pouch packer; P temp/pressure/dwell 조합 시험 누락; Q `heat seal trial matrix template`; I user min/max/steps/replicates; L Cartesian matrix with limits; O numbered trial sheet; A physical seal tests 실행; R film/machine lot마다; E Packaging Trial Comparison; Δ test plan 생성이나 quality cluster와 연결.
+- Tested Window Analyzer [Comparator] — U packaging technician; P trial 결과에서 acceptable region 불명; Q `heat seal process window analysis`; I tested settings + user pass observations; L group accepted contiguous ranges; O observed window/gaps; A confirmation trial; R film/machine마다; E Packaging Trial Comparison; Δ multi-factor window지만 same tested-data comparison.
+- Seal Symptom Troubleshooter [Troubleshooter] — U operator; P weak/burned/wrinkled/contaminated seal의 next check 불명; Q `heat seal troubleshooting`; I symptom/material/machine/observations; L rule matrix; O cause candidates/ordered checks; A one-variable test; R exception마다; E Quality Checklist; Δ heat-specific diagnosis. **초기 판정: promising, 2개는 기존 Quality logic과 겹침.**
+
+#### 7. Shrink-tunnel run setup — film·zone·speed 시험 준비
+
+- Tunnel Dwell Calculator [Calculator] — U shrink operator; P tunnel 길이/속도에서 exposure 불명; Q `shrink tunnel dwell time calculator`; I tunnel length/conveyor speed; L distance/speed; O dwell; A supplier range와 비교; R setup마다; E Packing Capacity; Δ heat exposure.
+- Zone Recipe Worksheet [Generator] — U operator; P multi-zone settings 기록 누락; Q `shrink tunnel setup sheet`; I zone temperatures/air/steam/speed/film; L required-field/config consistency; O printable recipe; A trial run; R SKU/film마다; E Pack Instruction Builder; Δ equipment recipe, same builder family.
+- Shrink Trial Comparator [Comparator] — U small manufacturer; P wrinkles/dog-ears/burn across trials 비교; Q `shrink wrap trial comparison`; I settings/defect counts/throughput; L user-weight comparison; O ranked trials; A confirm candidate; R setup마다; E Packaging Trial Comparison; Δ shrink-specific observations only.
+- Film Width/Cut Length Planner [Planner] — U manual shrink packer; P film blank size; Q `shrink film size calculator`; I product girth/length/overlap; L wrap geometry; O width/cut length; A cut film; R product마다; E Mailer/Bag calculators; Δ material mode. **초기 판정: weak, one engine plus existing overlaps.**
+
+#### 8. Vacuum-compression pack planning — soft goods의 measured compression 결과를 출고 결정에 사용
+
+- Compression Ratio Calculator [Calculator] — U apparel/bedding seller; P loose vs vacuum volume 변화; Q `vacuum compression ratio calculator`; I measured before/after dims; L volume ratio; O ratio/savings; A DIM 재측정; R SKU/bag마다; E DIM Weight; Δ measured compression stage.
+- Vacuum Bag Fit Planner [Planner] — U soft-goods packer; P compressed target와 seal allowance fit; Q `vacuum bag size calculator`; I measured compressed dims/bag/seal margin; L geometry; O fit/clearance; A bag 선택; R SKU마다; E Poly Mailer Size; Δ vacuum state지만 same geometry.
+- Recovery Trial Comparator [Comparator] — U brand QA; P 압축 시간별 rebound/damage 비교; Q `compression recovery test packaging`; I duration/recovered dims/condition; L change percentages + user ranking; O comparison; A max hold time 설정; R material trial마다; E Packaging Trial Comparison; Δ soft-goods outcome.
+- Vacuum Pack Job Sheet [Generator] — U packer; P valves/folds/seal/recheck 순서; Q `vacuum packing checklist apparel`; I product/bag/target/recheck; L completeness/sequence; O instruction; A pack and verify; R SKU/job마다; E Pack Instruction Builder; Δ same generator core. **초기 판정: weak.**
+
+#### 9. Pouch fill & headspace preparation — user-measured fill과 closure reserve를 계획
+
+- Fill Height Calculator [Calculator] — U dry-goods seller; P target volume/area에서 fill height; Q `pouch fill height calculator`; I measured cross-section/fill volume; L volume/area approximation; O height; A sample fill; R SKU/quantity마다; E Bag Size; Δ content fill state.
+- Headspace Reserve Checker [Checker] — U pouch packer; P fill이 seal zone 침범; Q `pouch headspace calculator`; I pouch height/fill height/seal/handling reserve; L remaining vs user minimum; O clearance warning; A fill/size 조정; R pack size마다; E Bag Size; Δ closure reserve.
+- Bulk Fill-to-Pouch Yield [Planner] — U batch packer; P bulk volume/weight에서 pouch count; Q `pouch yield calculator`; I bulk net/target fill/waste; L floor and remainder; O full pouches/residual; A batch plan; R lot마다; E Material Waste; Δ product fill yield.
+- Fill Trial Comparator [Comparator] — U seller; P pouch size/fill alternatives 비교; Q `pouch fill comparison`; I size/fill/headspace/cost/leak observations; L constraint + user score; O options; A sample choice; R SKU trial마다; E Trial Comparison; Δ pouch variables. **초기 판정: weak, one geometry/yield family.**
+
+#### 10. Put-wall / cubby batch sort planning — mixed-order batch를 physical slots로 배치
+
+- Cubby Capacity Checker [Checker] — U small fulfillment operator; P order cube/weight가 slot 초과; Q `put wall cubby capacity`; I order lines/cube/weight + slot limits; L constraint checks; O fit/fail reason; A reassign slot; R wave마다; E Multi-item Box Fit; Δ pre-pack sorting location.
+- Batch-to-Cubby Allocator [Planner] — U batch picker; P orders를 available cubbies에 배정; Q `put wall slot allocation`; I order sizes/priority + slot capacities; L deterministic first-fit; O slot map/unassigned; A stage batch; R wave마다; E Carton Assortment none; Δ order-to-sort-slot allocation.
+- Put-wall Wave Size Planner [Planner] — U supervisor; P cubby count/dwell에서 safe wave size; Q `put wall batch size`; I slots/occupied/expected completion/buffer; L capacity over time; O releasable orders; A release/hold wave; R wave마다; E Packing Capacity; Δ sort-wall WIP.
+- Cubby Dwell Review [Comparator] — U supervisor; P long-held slots blocking flow; Q `put wall dwell time`; I order start/complete/exception times; L elapsed/rank vs user target; O stalled list; A clear/escalate; R shift마다; E Dispatch Deadline excluded; Δ slot occupancy. **초기 판정: promising, WMS state dependency.**
+
+#### 11. Pick-tote/order-container allocation — batch pick에서 order separation 유지
+
+- Tote Slot Fit [Checker] — U batch picker; P order cube/weight/lines가 tote slot 초과; Q `pick tote capacity calculator`; I order metrics/slot limits; L constraints; O fit reasons; A larger tote/split; R order마다; E Multi-item Box Fit; Δ pre-pack tote.
+- Orders-to-Totes Allocator [Planner] — U small warehouse; P multiple orders를 tote set에 배정; Q `order tote allocation`; I orders/totes/capacity; L bin packing heuristic; O assignment; A label totes; R wave마다; E Multi-item Box Fit; Δ workflow container assignment.
+- Tote Split Record [Generator] — U picker; P split order parts 누락; Q `split order tote sheet`; I order/SKUs/totes; L coverage check; O pick map; A pick/recombine; R split마다; E Pack Instruction Builder; Δ order location record.
+- Tote Utilization Comparator [Comparator] — U supervisor; P tote sizes 비교; Q `picking tote utilization`; I order set/tote alternatives; L simulate fill; O count/utilization/overflow; A tote standard 선택; R assortment change마다; E Carton Portfolio excluded; Δ picking container. **초기 판정: weak, WMS/data and bin-packing overlap.**
+
+#### 12. Dispatch staging-lane allocation — completed shipments를 dock lanes에 배치
+
+- Lane Capacity Checker [Checker] — U dispatch lead; P staged pallets/carts가 lane limits 초과; Q `dock staging lane capacity`; I load footprint/count/lane area/user limits; L area/count constraints; O fit/warnings; A alternate lane; R dispatch마다; E Pallet Utilization; Δ dock WIP.
+- Loads-to-Lanes Planner [Planner] — U small warehouse; P carrier/cutoff/load size별 lane assignment; Q `dispatch staging lane planner`; I loads/lanes/priority/capacity; L deterministic constraint allocation; O lane board/unassigned; A stage; R shift마다; E Order-mix/Deadline exclusion; Δ physical lane allocation.
+- Lane Release Sequence [Planner] — U dock lead; P blocked sequence/door conflict; Q `dock staging sequence`; I departure order/lane access/move time; L dependency ordering; O release queue; A move loads; R dispatch wave마다; E Pack Sequence excluded; Δ dock-only dependency.
+- Staging Congestion Scenario [Comparator] — U supervisor; P lane plan alternatives 비교; Q `dock staging capacity planning`; I load schedule/lane options; L peak WIP simulation; O peak occupancy/conflicts; A reschedule; R day plan마다; E Packing Capacity; Δ outbound buffer simulation. **초기 판정: promising but WMS/schedule data and exclusion proximity.**
+
+#### 13. Packaging component lot genealogy — packaging lots를 finished job과 연결
+
+- Component-to-Job Coverage Checker [Checker] — U small manufacturer; P job의 packaging lot 누락; Q `packaging lot traceability checklist`; I job/components/required lot fields; L set coverage; O missing/duplicate links; A complete record; R job마다; E Pack Release Checklist; Δ lot identity.
+- Pack Lot Record Builder [Generator] — U pack operator; P container/closure/label lots가 흩어짐; Q `packaging batch record template`; I job + component lots/qty/operators; L completeness and safe escaping; O local printable/CSV record; A retain internally; R batch마다; E Pack Record Generator; Δ genealogy fields but same artifact core.
+- Suspect Lot Impact Finder [Checker] — U quality coordinator; P pasted history에서 affected jobs 찾기; Q `lot traceability impact analysis`; I suspect lot + user-pasted records; L exact join/filter; O affected jobs/shipments; A follow own disposition; R exception마다; E Damage Rate none; Δ reverse trace.
+- Lot Usage Reconciliation [Comparator] — U inventory/production; P issued quantity vs recorded jobs vs remainder; Q `lot usage reconciliation`; I opening/receipts/issues/scrap/observed; L ledger equation; O discrepancy; A recount/investigate; R batch/audit마다; E Supply Reorder; Δ lot ledger. **초기 판정: promising, persistence/compliance and strong free local tool.**
+
+#### 14. Packaging component shelf-life/expiry staging — adhesive/ink/film 등의 user-supplied usable dates 관리
+
+- Remaining-life Calculator [Calculator] — U pack material custodian; P job date까지 남은 기간; Q `material shelf life calculator`; I expiry/job date/user minimum; L date difference; O remaining days/gap; A choose another lot; R job/lot마다; E Reorder Point; Δ time suitability.
+- FEFO Job Lot Selector [Selector] — U small pack operation; P 여러 lots 중 먼저 쓸 usable lot; Q `FEFO lot selector`; I lot IDs/expiry/qty/job qty/min life; L filter + earliest expiry; O selected/split shortage; A stage lots; R job마다; E Reorder Point; Δ per-job FEFO.
+- Expiry Staging Board [Generator] — U supervisor; P near-expiry lots visibility; Q `expiry inventory spreadsheet`; I user lots/dates/qty/thresholds; L date buckets; O printable board; A use/review; R weekly; E Supply Reorder; Δ expiry focus.
+- Life-at-Completion Checker [Checker] — U pack planner; P job finish/ship date에 minimum life 부족; Q `remaining shelf life check`; I lot expiry/planned dates/user rule; L compare; O gaps; A reschedule/substitute; R job마다; E none; Δ time constraint. **초기 판정: promising, 3 tools share date ledger and supplier validation.**
+
+#### 15. Packaging tool/fixture issue readiness — jigs, gauges, cutters를 job에 준비
+
+- Job Tool Readiness Checker [Checker] — U pack lead; P required fixture missing/out of service; Q `packaging line setup checklist tools`; I job requirements/available/status; L set/status match; O gaps; A stage/repair; R job마다; E Pack Release Checklist; Δ physical tooling.
+- Fixture Issue Sheet [Generator] — U tool crib/packer; P 누가 어떤 jig를 가져갔는지 기록; Q `tool issue return log`; I job/tool/person/time/status; L state validation; O printable record; A issue/return; R movement마다; E Pack Record Generator; Δ asset custody but persistence needed.
+- Shared Tool Conflict Planner [Planner] — U supervisor; P concurrent jobs가 같은 fixture 요구; Q `shared tool scheduling`; I jobs/times/tools; L interval conflicts; O collision list; A resequence; R schedule마다; E Packing Capacity; Δ discrete resource conflict.
+- Setup Kit Comparator [Comparator] — U lead; P alternate fixture kits의 time/error 비교; Q `packaging setup tool kit`; I candidate kit/time/missing/error observations; L user score; O ranked kit; A standardize; R trial마다; E Trial Comparison; Δ tool set. **초기 판정: weak, generic operations not packaging-search-led.**
+
+#### 16. Retention/reference sample pack management — 승인 기준 sample의 준비·대조·보관
+
+- Retention Sample Quantity Planner [Planner] — U small manufacturer; P lots/periods별 sample 수량 부족; Q `retention sample quantity calculator`; I lots/user samples per lot/periods; L multiplication + user rules; O quantity/containers; A reserve units; R batch마다; E Carton Count; Δ retained not shipped.
+- Reference Pack Contents Checker [Checker] — U quality lead; P reference pack 구성 누락; Q `reference sample checklist packaging`; I user-required components/observed; L set comparison; O missing/extras; A complete pack; R sample마다; E Pack Release Checklist; Δ retained evidence.
+- Sample Location Index Builder [Generator] — U small operation; P sample 위치 기록 산재; Q `retention sample log template`; I lot/sample/location/date; L field validation; O printable/CSV index; A store; R batch마다; E Pack Record Generator; Δ ongoing ledger.
+- Reference-vs-Current Comparator [Comparator] — U operator; P current pack와 approved reference 차이; Q `golden sample comparison checklist`; I user features/current observations; L field comparison; O differences; A hold/review per procedure; R job/change마다; E Package Weight/Dimension Variance; Δ broader qualitative configuration. **초기 판정: weak, sample approval exclusion and persistence.**
+
+#### 17. Carton pre-erection buffer planning — 빈 carton WIP를 과다·부족 없이 준비
+
+- Pre-erect Quantity Planner [Planner] — U manual line lead; P next interval에 필요한 erected cartons; Q `carton pre assembly planning`; I pack rate/horizon/current buffer/safety units; L demand-current; O erect quantity; A assign work; R interval마다; E Packing Capacity; Δ empty-carton WIP.
+- Erected-carton Space Checker [Checker] — U small warehouse; P erected buffer가 floor/rack area 초과; Q `erected carton storage calculator`; I erected dims/count/stack/user space; L stack footprint; O space/fit; A reduce batch; R carton/job마다; E Supply Storage exclusion; Δ short-lived WIP but same space core.
+- Erector-to-Packer Balance [Comparator] — U supervisor; P manual erection rate와 pack consumption imbalance; Q `carton erector throughput calculator`; I rates/buffer/shift; L flow balance; O starvation/accumulation time; A reassign labor; R shift마다; E Packing Capacity; Δ sub-process balance.
+- Pre-erection Work Card [Generator] — U operator; P size/qty/closure prep 혼선; Q `carton setup work order`; I carton/job/qty/stack/hand-off; L completeness; O card; A erect/stage; R job마다; E Pack Instruction Builder; Δ same instruction core. **초기 판정: weak, existing capacity/storage/instruction.**
+
+#### 18. Manual bagging/sealing cell balance — fill·seal·label/inspect handoff 속도 맞춤
+
+- Station Balance Calculator [Calculator] — U manual pack lead; P fill/seal/inspect cycle imbalance; Q `packaging line balance calculator`; I cycle times/operators; L bottleneck/capacity; O rate/utilization; A rebalance people; R job마다; E Packing Capacity; Δ multi-step cell but automation/capacity exclusions.
+- Buffer Size Planner [Planner] — U small manufacturer; P steps 사이 WIP buffer; Q `packaging line buffer calculator`; I upstream/downstream rates/disruption time; L rate gap × time; O units/space; A set WIP cap; R setup마다; E Packing Capacity; Δ inter-step buffer.
+- Batch Handoff Card [Generator] — U operators; P partial batch count/state 손실; Q `packaging batch handoff sheet`; I job/from/to/qty/time/issues; L completeness; O handoff record; A transfer; R batch마다; E Pack Record Generator; Δ handoff artifact.
+- Staffing Scenario Comparator [Comparator] — U lead; P operator 배치 alternatives; Q `packaging line staffing calculator`; I station times/operators/scenarios; L parallel capacity simulation; O throughput/wait; A assign staff; R shift/job마다; E Packing Labor; Δ same labor/capacity engine. **초기 판정: weak, exclusion overlap.**
+
+#### 19. Postal flat/large-envelope physical preparation — dimensions·aspect·flexibility·uniformity 사전 점검
+
+- Letter Aspect Ratio Checker [Checker] — U stationery/small mail seller; P address orientation이 machinability ratio를 벗어남; Q `USPS letter aspect ratio calculator`; I address-parallel length/height; L length/height vs current published range; O ratio/status; A rotate/design/official verify; R mailpiece마다; E Package Size; Δ mail processing orientation.
+- Flat Size Class Checker [Checker] — U flat-mail sender; P letter/flat/parcel physical bounds 혼동; Q `USPS flat size checker`; I dimensions/thickness; L current rule boundaries; O candidate physical class; A use official postage tool; R format마다; E DIM Weight; Δ carrier classification, not billing weight.
+- Flexibility Test Worksheet [Generator] — U commercial mail prep; P manual bend test 기록 불일치; Q `USPS flat flexibility test`; I dimensions/test orientation/deflection observations; L published procedure prompts; O test record; A official mailpiece review; R design/sample마다; E Quality Checklist; Δ carrier procedure.
+- Uniform Thickness Checker [Checker] — U envelope packer; P contents bumps가 허용 variance 초과; Q `USPS uniform thickness flat`; I min/max thickness/edge zone/shape; L difference + rule checklist; O gap/candidate status; A redistribute contents/verify; R pack configuration마다; E Dimension Variance; Δ local surface variation. **초기 판정: promising demand, carrier-rule maintenance and same classification action.**
+
+#### 20. Corrosion/VCI pack preparation — 금속 shipment의 user-specified VCI configuration 기록
+
+- VCI Coverage Allowance Planner [Planner] — U metal-parts shipper; P supplier coverage rule 적용량; Q `VCI packaging calculator`; I surface/volume/user supplier ratio; L explicit user coefficient; O material quantity; A supplier data 확인; R SKU/package마다; E Cushioning Volume; Δ corrosion media.
+- VCI Enclosure Gap Checker [Checker] — U packer; P VCI source와 surfaces 거리/closure 조건 누락; Q `VCI packaging checklist`; I user max distance/placement/enclosure; L rule checks; O gaps; A reposition/seal; R job마다; E Pack Release Checklist; Δ corrosion configuration.
+- VCI Job Sheet [Generator] — U industrial packer; P clean/dry/wrap/date steps 일관성; Q `VCI packing procedure template`; I product/material/lot/placement/user rules; L completeness; O instruction; A pack; R job마다; E Pack Instruction Builder; Δ same instruction core.
+- Corrosion Trial Comparator [Comparator] — U packaging engineer; P VCI alternatives의 observed outcomes/cost 비교; Q `VCI packaging test comparison`; I user test/cost/material/observations; L ranking; O comparison; A physical validation; R trial마다; E Packaging Trial Comparison; Δ material-specific. **초기 판정: weak, vendor-specific rules and existing workflow cores.**
+
+#### 21. Magnetic-item shipment screening — carrier-defined magnetic field test 준비
+
+- Distance Reading Worksheet [Generator] — U magnet seller; P specified distance/orientation readings 기록; Q `shipping magnets compass test`; I user procedure/distance/readings/orientation; L completeness; O test sheet; A carrier review; R SKU/pack마다; E Quality Checklist; Δ magnetic field evidence.
+- User-threshold Field Checker [Checker] — U shipper; P measured field가 chosen carrier limit와 비교; Q `magnet shipping field strength limit`; I measured value/unit/user threshold; L unit convert/compare; O margin; A official acceptance check; R configuration마다; E none; Δ field measurement.
+- Shielding Trial Comparator [Comparator] — U magnet shipper; P shielding configurations 비교; Q `magnetic shielding packaging test`; I materials/layers/field readings/weight/cost; L multi-metric table; O ranked observations; A test selected pack; R trial마다; E Packaging Trial Comparison; Δ magnetic metric.
+- Magnet Pack Instruction [Generator] — U operator; P orientation/separation/shielding 순서; Q `how to pack magnets for shipping checklist`; I product/config/user carrier procedure; L completeness; O work card; A pack/measure; R job마다; E Pack Instruction Builder; Δ same generator. **초기 판정: reject, carrier/dangerous-goods-like responsibility and only one distinct measurement tool.**
+
+#### 22. Cleanroom double-bagging preparation — nested bag layers와 transfer sequence 기록
+
+- Layer Configuration Checker [Checker] — U clean assembly shipper; P required inner/outer layers·closure mismatch; Q `cleanroom double bagging checklist`; I user layer spec/observed config; L set/order checks; O gaps; A correct configuration; R job마다; E Pack Release Checklist; Δ contamination-control layers.
+- Nested Bag Size Planner [Planner] — U operator; P each bag layer에 product+previous bag clearance; Q `double bagging size calculator`; I product/layer thickness/clearances/seal reserves; L iterative geometry; O min sizes; A select bags; R SKU마다; E Bag Size; Δ repeated layer mode of same geometry.
+- Transfer Sequence Builder [Generator] — U cleanroom operator; P wipe/bag/transfer steps 누락; Q `cleanroom bagging procedure`; I user zones/layers/steps; L dependency ordering; O work instruction; A perform transfer; R process마다; E Pack Instruction Builder; Δ same builder.
+- Layer Trial Comparator [Comparator] — U engineer; P bag sets의 time/tear/particle observations 비교; Q `cleanroom packaging validation`; I trials/results/cost; L compare; O table; A controlled validation; R change마다; E Packaging Trial Comparison; Δ regulated validation proximity. **초기 판정: reject, cleanroom/medical validation risk and overlap.**
+
+#### 23. Powder/dust escape containment — dry particulate pack의 closure-zone cleanliness와 secondary containment
+
+- Headspace/Dust-zone Checker [Checker] — U craft/mineral powder seller; P fill이 seal contamination zone 침범; Q `powder pouch headspace`; I measured fill/seal zone/user reserve; L clearance; O gap; A lower fill/larger pouch; R SKU마다; E Pouch Headspace family; Δ particulate risk.
+- Secondary Containment Size Planner [Planner] — U nonhazardous powder seller; P primary pouch를 overbag에 넣을 fit; Q `powder packaging overbag size`; I primary dims/absorbent/user clearance; L geometry; O min bag; A select overbag; R pack size마다; E Poly Mailer Size/Repack exclusion; Δ product-specific variant.
+- Dust Leak Trial Record [Generator] — U seller; P shake/invert trial observations 누락; Q `powder packaging leak test`; I user procedure/cycles/observations; L completeness; O record; A review pack; R trial마다; E Packaging Trial/Inspection; Δ same quality core.
+- Cleanup/Rework Estimate [Calculator] — U operator; P leakage event labor/material cost; Q `powder packaging cleanup cost`; I event count/minutes/material; L cost sum; O expected rework cost; A compare pack; R period마다; E Failure Cost/Rework exclusion; Δ excluded cost core. **초기 판정: reject, exclusions and safety boundary.**
+
+#### 24. Odor-containment pack preparation — user-observed odor barrier configuration 비교
+
+- Layer Configuration Builder [Builder] — U scented-product seller; P inner/outer closure stack 일관성; Q `odor proof packaging checklist`; I product/layers/closures/user rules; L completeness; O pack instruction; A pack; R SKU마다; E Pack Instruction Builder; Δ material-specific.
+- Odor Trial Comparator [Comparator] — U seller; P bag alternatives의 blind observation/cost 비교; Q `odor barrier packaging test`; I user panel observations/time/cost; L user scoring; O comparison; A physical confirm; R material change마다; E Packaging Trial Comparison; Δ sensory metric.
+- Seal Perimeter/Material Planner [Calculator] — U packer; P barrier tape/seal length; Q `odor proof bag sealing`; I bag perimeter/layers/overlap; L length sum; O material length; A cut material; R bag size마다; E Tape Length; Δ same formula/material variation.
+- Containment Recheck Schedule [Planner] — U seller; P storage timepoints 누락; Q `odor packaging test schedule`; I user timepoints/samples; L schedule enumeration; O recheck plan; A perform observation; R trial마다; E Inspection Checklist; Δ test scheduling. **초기 판정: weak, subjective outcome and existing cores.**
+
+#### 25. Light-sensitive/opaque protection preparation — opacity layer와 light-exposure 기록
+
+- Layer Opacity Checklist [Checker] — U photo/resin/cosmetic seller; P opaque barrier/config 누락; Q `light sensitive product packaging checklist`; I user material requirements/observed layers; L set checks; O gaps; A add approved barrier; R SKU/job마다; E Pack Release Checklist; Δ light exposure.
+- Exposure Budget Worksheet [Planner] — U operator; P unpacked handling intervals 누적; Q `light exposure time tracker`; I user max + intervals; L elapsed sum; O remaining budget; A cover/repack; R lot마다; E none; Δ time state, persistence.
+- Opaque Pack Trial Comparator [Comparator] — U small brand; P packaging alternatives의 measured transmission/user observations; Q `opaque packaging comparison`; I user measurements/cost/weight; L compare; O ranked table; A supplier/test verify; R material change마다; E Trial Comparison; Δ light metric.
+- Light-protection Job Sheet [Generator] — U packer; P cover/transfer/label sequence; Q `light sensitive packing procedure`; I product/barrier/user steps; L completeness; O instruction; A pack; R job마다; E Pack Instruction Builder; Δ same builder. **초기 판정: weak, measurement equipment and overlap.**
+
+#### 26. Spool/reel shipping preparation — flange, core, unwind direction, blocking 정보를 pack record로 연결
+
+- Reel Flange Clearance Checker [Checker] — U cable/film supplier; P carton/cradle가 flange를 압박; Q `reel packaging dimensions`; I reel OD/width/flange + container clearance; L geometry; O gaps; A choose support; R reel/SKU마다; E Box Size; Δ cylindrical reel geometry, Mailing Tube exclusion proximity.
+- Reel Count/Layer Planner [Planner] — U industrial shipper; P reels per layer/carton; Q `reel packing calculator`; I reel dims/carton/user orientation; L circle/grid approximation; O count/layout note; A sample fit; R carton/reel마다; E Master Carton; Δ circular packing but same fit family.
+- Unwind-direction Pack Mark Sheet [Generator] — U converter; P reel direction/core/lot handoff 오류; Q `reel packaging label unwind direction`; I job/reel/unwind/core/lot; L required fields; O record; A attach internally; R reel/job마다; E Shipping Marks exclusion/Pack Record; Δ excluded documentation.
+- Reel Protection Comparator [Comparator] — U engineer; P cradle/flange pad alternatives 비교; Q `reel shipping damage prevention`; I trial damage/cost/time/weight; L compare; O ranked options; A physical test; R change마다; E Trial Comparison; Δ product-specific. **초기 판정: reject, geometry/document/quality variants.**
+
+#### 27. Cable/hose coil preparation — bend radius·coil diameter·ties를 출고 pack으로 변환
+
+- Minimum Coil Diameter Checker [Checker] — U cable/hose seller; P coil이 user/supplier minimum bend radius 위반; Q `cable coil diameter calculator`; I user min bend radius/target coil diameter; L diameter vs 2R; O margin; A enlarge coil; R SKU마다; E Mailing Tube/Irregular exclusion; Δ bend constraint.
+- Coil Length/Turns Planner [Calculator] — U packer; P required length의 approximate turns; Q `cable coil turns calculator`; I cable length/coil mean diameter; L length/circumference; O turns; A prepare coil; R order마다; E Material Length; Δ product winding.
+- Coil-to-Box Fit [Checker] — U seller; P coil OD/height가 carton에 fit; Q `coil packaging box size`; I coil/carton/clearance; L dimensional fit; O fit/gaps; A choose box; R order마다; E Box Size; Δ cylindrical variant.
+- Tie-position Work Card [Generator] — U operator; P tie count/locations/connector protection 누락; Q `cable coiling packaging instructions`; I user rules/coil/ends; L completeness; O card; A pack; R SKU마다; E Pack Instruction Builder; Δ same generator. **초기 판정: weak, only bend checker distinct.**
+
+#### 28. Nested-product separator sequencing — nested items 사이 pad 위치와 removal order
+
+- Nest Stack Height Planner [Calculator] — U cookware/container seller; P nested stack height; Q `nested product stack height calculator`; I first height/increment/count; L first + increments; O height; A carton select; R quantity마다; E Box Size/Carton Count; Δ nesting geometry.
+- Separator Quantity Planner [Calculator] — U packer; P interleave pads 수; Q `interleave sheet quantity calculator`; I items/stacks/top-bottom rules; L adjacency count; O separators; A stage pads; R pack마다; E Material Quantity; Δ simple count.
+- Nest Clearance Checker [Checker] — U seller; P separator thickness 포함 stack가 carton 초과; Q `nested packing calculator`; I stack/pads/carton/clearance; L sum/compare; O fit; A reduce count; R pack마다; E Multi-item Box Fit; Δ same geometry.
+- Removal Sequence Sheet [Generator] — U packer; P orientation/handles/separators 순서; Q `nested product packing instructions`; I product/layers/user rules; L ordered artifact; O sheet; A pack; R SKU마다; E Pack Instruction Builder; Δ same generator. **초기 판정: weak, one geometry/count engine.**
+
+#### 29. Fragile-surface interleave preparation — glass/finished surfaces 사이 보호재 수량·coverage·순서
+
+- Interleave Sheet Quantity [Calculator] — U glass/print seller; P stack 사이 sheet 수; Q `interleaving sheets calculator`; I items/stacks/top-bottom; L adjacency; O sheet count; A cut/stage; R order마다; E Material Quantity; Δ specific material variation.
+- Surface Coverage Checker [Checker] — U packer; P sheet가 protected face보다 작음; Q `interleaf sheet size calculator`; I face/sheet/edge reserve; L dimensional compare; O coverage margins; A resize; R SKU마다; E Box Size; Δ 2D coverage.
+- Stack Pressure/Weight Worksheet [Calculator] — U shipper; P lower item에 쌓이는 user-allowed load; Q `glass stack packaging weight`; I item weights/count/user threshold; L cumulative load; O per-level max; A reduce stack; R quantity마다; E Master Carton Weight; Δ internal stack distribution.
+- Interleave Sequence Builder [Generator] — U operator; P face orientation/pad/order 누락; Q `glass packing instructions`; I items/orientation/material/user steps; L sequence; O work card; A pack; R SKU마다; E Pack Instruction Builder; Δ product-specific. **초기 판정: weak, material/persona variations.**
+
+#### 30. Garment-on-hanger shipment preparation — hanging width/rail/drape/cover를 계획
+
+- Garments-per-Rail Planner [Calculator] — U apparel wholesaler; P hanger thickness로 rail capacity; Q `garments per rail calculator`; I usable rail length/average hanger pitch; L floor(length/pitch); O garments/unused rail; A assign rails; R style/load마다; E Carton Count; Δ hanging resource.
+- Hanging Container Fit Checker [Checker] — U garment shipper; P garment drop/rail height/container clearance; Q `garment on hanger container dimensions`; I garment/rail/container/clearances; L dimension checks; O fit/gaps; A change container/fold; R style마다; E Box Size; Δ hanging orientation.
+- Cover Quantity/Length Planner [Planner] — U GOH operator; P shrouds/covers 수량·길이; Q `garment rail cover calculator`; I garments per group/rail length/overlap; L grouping + length; O covers/material; A stage; R load마다; E Industrial Covers exclusion; Δ excluded material family.
+- GOH Load Sheet [Generator] — U apparel operator; P rail/style/count handoff; Q `garment on hanger packing list`; I load/rail/styles/counts; L coverage; O record; A load/verify; R shipment마다; E Shipment Documents exclusion; Δ excluded artifact. **초기 판정: reject, 2/4 excluded variants.**
+
+#### 31. Retail PDQ/display assembly preparation — display components를 조립·채움·cartonize
+
+- Display Component Coverage Checker [Checker] — U promotional packer; P base/header/tray/fastener 누락; Q `PDQ display assembly checklist`; I user BOM/observed; L set comparison; O missing/extras; A complete assembly; R display마다; E Kit Availability exclusion; Δ same component availability.
+- Product Facing Fill Planner [Planner] — U retail supplier; P display slots에 variant quantities 배분; Q `counter display product quantity calculator`; I slot rows/columns/user variant shares; L integer allocation; O variant map; A fill display; R campaign/SKU마다; E Apparel assortment; Δ display context.
+- Display-to-Case Fit [Checker] — U shipper; P assembled/folded display가 case에 fit; Q `PDQ display shipping carton`; I display/case/clearance; L geometry; O fit; A fold/change case; R design마다; E Box Size; Δ same fit.
+- Display Assembly Card [Generator] — U operator; P component/sequence/fill orientation; Q `PDQ assembly instructions`; I user BOM/steps/photos refs; L ordered record; O work card; A assemble; R job마다; E Pack Instruction Builder; Δ same builder. **초기 판정: reject, kit/fit/instruction recombination.**
+
+#### 32. Serialized promotional insert collation — order groups에 numbered/coded inserts를 정확히 나눔
+
+- Insert Range Splitter [Planner] — U small campaign shipper; P serial ranges를 batches에 배분; Q `serial number range splitter`; I start/end/batch sizes; L contiguous range partition; O ranges; A issue batches; R campaign마다; E Carton Count; Δ serialized ranges.
+- Insert Duplicate/Gap Checker [Checker] — U operator; P scanned/pasted insert IDs 누락·중복; Q `number sequence gap checker`; I expected range/observed IDs; L set diff; O missing/duplicate; A recount; R batch마다; E Package Count Verification; Δ serialized list.
+- Order-to-Insert Matcher [Checker] — U campaign fulfillment; P order group와 insert code mismatch; Q `insert code verification`; I user mapping/orders/observed codes; L exact mapping; O mismatches; A correct before release; R order/batch마다; E Pack Release Checklist; Δ routing configuration.
+- Collation Batch Sheet [Generator] — U packer; P range/order/remaining handoff; Q `insert collation worksheet`; I job/ranges/counts/operator; L required coverage; O sheet; A collate/verify; R batch마다; E Pack Record Generator; Δ same record core and kit-like routing. **초기 판정: reject, Pack Instruction/Kit/verification recombination.**
+
+### 1차 압축 결과
+
+- 32 families와 128 Tool hypotheses를 `Intent → Input → Logic → Output → Action`으로 비교했다. 명백한 기존 family 재명명은 discovery 전 제거했고, 위 목록에서 추가로 **obvious REJECT 10**, **weak 12**, **promising 10**으로 압축했다.
+- promising 10: Count-by-weight, Apparel assortment/prepack, Shelf-ready display, Security seal lifecycle, Moisture dry-pack, Heat-seal window, Put-wall/cubby allocation, Dispatch staging lanes, Packaging component lot genealogy, Postal flat preparation.
+- weak 12: Shrink-tunnel setup, Vacuum compression, Pouch fill/headspace, Pick-tote allocation, Component shelf-life, Tool/fixture readiness, Retention samples, Carton pre-erection buffer, Manual bagging cell balance, Corrosion/VCI, Odor containment, Light-sensitive protection.
+- obvious REJECT 10: Magnetic-item screening, Cleanroom double-bagging, Powder/dust containment, Spool/reel, Cable/hose coil, Nested separators, Fragile-surface interleave, GOH, Retail PDQ, Serialized insert collation. 사유는 safety/carrier responsibility, 이미 제외된 family 결합, product/material persona variation, 또는 동일 geometry/generator의 분할이다.
+
+### 중간 후보 10개 검증
+
+정확한 keyword-volume 도구, 인증된 GSC/GA4/Bing export에는 접근하지 못했고 수치를 만들지 않았다. Google 실제 SERP, 일반 web search, vendor calculator, 공식 문서, specialist software, forum/Reddit의 반복 문제를 함께 봤다.
+
+| family | 반복 query/문제 신호 | 실제 경쟁 범위 | static/overlap 판정 | strong independent Tools | 중간 판정 |
+|---|---|---|---|---:|---|
+| Count-by-weight | `parts counting by weight calculator`, `average piece weight`, `counting scale sample size`; small parts를 10/25/50/100 samples로 잡는 scale workflow와 Reddit/제조 현장 질문 반복 | UP Scales가 tare/gross/APW→count를 무료로 완결; Calculator Academy가 APW/total/count 세 solve modes; Rice Lake가 sample adequacy guidance | static 가능, 그러나 APW/count/target은 같은 reciprocal equation; 기존 Weight Variance와 일부 연결 | 2 | finalist |
+| Apparel assortment/prepack | `apparel size curve calculator`, `garment assortment pack ratio`, `prepack cartons required`, `store allocation prepack`; Excel로 total buy를 size shares에 배분하는 질문 반복 | Textile School이 largest-remainder ratio+cartons+overage 무료 제공; Retail Plan/RetailNorthstar live size curve; Oracle/ToolsGroup이 store/prepack optimization | static 가능하지만 retail planning으로 범위 확장; 4번째를 만들면 동일 integer allocation engine 또는 enterprise store data | 3 | finalist |
+| Shelf-ready display | `case pack shelf facing calculator`, `shelf ready packaging trial`, `retail display tray size`; supplier guides는 많음 | PackCalc case builder/size tools, case-pack calculators, JA Technology류 shelf/case planning이 case pack+facings+days supply까지 결합 | 3개가 기존 Box Fit/Case Pack/Trial Comparison logic; opening trial만 독립성이 약함 | 2 | REJECT |
+| Security seal lifecycle | `security seal log`, `seal inventory reconciliation`, `issued affixed seal verification`, `seal issue return tracker`; CTPAT job aid가 receipt log, issue update, periodic inventory reconciliation을 명시 | MangoApps 무료-view template; SealsLog/FlightSeal/STM이 issue→return→audit history, roles, photos, search, immutable events 제공 | local checker는 가능하나 유용한 cluster의 중심은 persistent append-only ledger, identity, permissions, retention | 3 | finalist |
+| Moisture dry-pack | `desiccant calculator packaging`, `moisture barrier bag units`, `dry pack humidity indicator card`; vendor/support pages 다수 | Clariant, AGM, Desiccare, SCS/Desco, EXCOR가 무료 desiccant calculators; supplier/standard-specific coefficients와 HIC rules | 핵심 calculator가 이미 무료로 밀집; bag sizing/instruction은 기존 Tool; standards maintenance와 electronics/medical 오인 위험 | 1 | REJECT |
+| Heat-seal window | `heat seal dwell time`, `temperature pressure dwell calculator`, `heat seal process window`, `heat seal troubleshooting`; film/machine별 시행착오 질문 반복 | GORTEF starting-setting calculator, PackFlow multi-input calculator, Steven Abbott thermal simulator, equipment inspection systems와 manuals | dwell은 static; trial matrix/window는 기존 Quality Trial, troubleshooter는 물리 test를 대체 못함 | 2 | finalist |
+| Put-wall/cubby | `put wall slot allocation`, `put wall batch size`, `cubby dwell`; warehouse literature와 vendors가 30–50 order waves, slot dwell/mis-sort를 다룸 | JASCI/Warehouse Bridge 등 WMS/hardware가 live orders, capacity, scans, lights, dwell을 통합 | offline scenario는 가능하지만 real value는 live WMS order/slot state와 scan events; Dispatch/Capacity 영역과 인접 | 3 | REJECT |
+| Dispatch staging lanes | `dock staging lane capacity`, `loads to lanes`, `staging congestion`; warehouse planning 문서 존재 | WMS/dock scheduling SaaS와 layout planners가 appointments, doors, live status를 통합 | 4 hypotheses 중 sequence가 Pack Sequence/Dispatch Deadline exclusion, capacity는 Pallet/Capacity 재사용; live schedule 의존 | 2 | REJECT |
+| Packaging lot genealogy | `packaging lot traceability spreadsheet`, `batch packaging record`, `suspect lot impact`; spreadsheets와 제조 forum에서 packaging material lots 추적 반복 | Enerpize/Finite Field templates, Stocksmith SaaS; CapsuleM8는 account 없이 browser-local CSV register와 forward/back trace를 이미 무료 제공 | static 가능하지만 persistent multi-record ledger가 본체이며 recall/compliance 오인 위험; Pack Record와 Receiving Inspection 인접 | 3 | REJECT |
+| Postal flat prep | `USPS flat size checker`, `letter aspect ratio calculator`, `flat flexibility test`, `uniform thickness`; USPS forum에서 flat/parcel 혼동 반복 | USPS Retail Postage Calculator, Postal Explorer/DMM/QSG, EDDM checker, mailer size checkers | static 규칙 가능하나 carrier-specific current-rule maintenance; 4 pages는 한 mailpiece classifier를 쪼개는 구조 | 2 | finalist |
+
+### Finalist 5개 — Tool-level SERP 및 I→L→O→A 검증
+
+#### A. Small-parts count-by-weight packout — **REJECT, strong 2**
+
+| proposed Tool / actual query | SERP와 무료 Tool | independent I→L→O→A | 판정 |
+|---|---|---|---|
+| Average Piece Weight / `average piece weight calculator sample count` | Calculator Academy 한 page가 total/count→unit, unit/count→total, total/unit→count를 모두 제공; Rice Lake는 10 minimum, larger sample, 0.1% capacity guidance | sample count+weight → divide → APW → scale reference | 유용하지만 Count tool의 calibration step이며 별도 action이 약함 |
+| Parts Count / `count parts by weight calculator tare gross` | UP Scales가 gross/tare/sample unit weight와 mixed units로 즉시 count | gross/tare/APW → subtract/divide → count → add/remove parts | **strong 1** |
+| Target Pack Weight / `target pack weight calculator piece count` | exact result는 count scale 기능/일반 item weight solve modes가 지배 | APW/count/tare → multiply/add → target gross → scale target | same reciprocal equation; 독립 불인정 |
+| Bulk-to-Packs Yield / `bulk weight pack yield calculator units per pack` | exact packaging-specific free result는 적지만 batch/yield calculators와 spreadsheets 존재 | stock net/APW/pack qty → estimated units + floor division → full packs/remainder → batch work | **strong 2** |
+
+- Demand는 명확하고 small seller fit도 좋다. 하지만 4 URL을 만들면 APW/count/target이 같은 식의 solve mode가 된다. 변동성·scale resolution을 넣은 reliability checker는 물리 sample distribution과 scale specs가 필요하고 arbitrary confidence를 피하면 planning note 이상이 되기 어렵다.
+- Closest existing: Package Weight Variance, Package Count Verification, Carton Count. Unknown count와 batch yield action은 다르지만 cluster Hard Gate 4에는 미달한다.
+
+#### B. Apparel assortment & prepack ratio — **REJECT, strong 3**
+
+| proposed Tool / actual query | SERP와 무료 Tool | independent I→L→O→A | 판정 |
+|---|---|---|---|
+| Size Curve Allocator / `apparel size curve allocation calculator order quantity` | Retail Plan/RetailNorthstar/Topology live tools와 spreadsheets | total+shares → largest remainder → integer size buy → PO | **strong 1**, 경쟁 강함 |
+| Prepack Ratio Generator / `garment assortment pack ratio generator` | Textile School은 shares+capacity+order에서 ratio, deviation, cartons, overage를 무료로 한 화면에 제공 | demand curve+capacity → constrained ratio → pack composition → specify ratio | **strong 2**, direct competitor 완결 |
+| Prepack Carton Requirement / `prepack cartons required calculator` | Textile School output에 cartons/overage 포함; wholesale/prepack docs | requested sizes+ratio → max ceilings → cartons/overage → adjust ratio | ratio engine의 downstream mode; 별도 불인정 |
+| Store Fit Comparator / `store allocation prepack assortment optimization` | Oracle Retail/ToolsGroup/HIVERY가 store×SKU history, inventory, prepack constraints로 최적화 | multi-store demand+candidates → deviation matrix → store gaps → split ratios | **strong 3**이나 enterprise data 필요 |
+
+- Long-tail은 size curve, size run, pack ratio, store allocation, footwear/apparel prepacks로 넓다. 다만 free core calculator가 정확히 존재하고, 4번째 독립 problem은 store-level demand/history를 요구해 Pack Prep Tools의 single-job static 범위를 벗어난다.
+- Closest existing: Carton Count, Case Pack, Master Carton, Trial Comparison. 단순 carton math와는 다르지만 4-tool gate 미달 및 사이트가 retail assortment planning으로 흐른다.
+
+#### C. Security seal lifecycle — **REJECT, strong 3**
+
+| proposed Tool / actual query | SERP와 무료/유료 Tool | independent I→L→O→A | 판정 |
+|---|---|---|---|
+| Sequence Gap/Duplicate / `seal number sequence gap duplicate checker` | exact tool SERP는 약하고 generic sequence tools가 노출; seal vendor docs는 integrity/numbering 설명 중심 | expected+observed IDs → set diff → gaps/duplicates → count physical stock | **strong 1**, exact tool intent 약함 |
+| Inventory Reconciliation / `security seal inventory reconciliation worksheet tool` | CTPAT job aid와 audit docs는 reconciliation을 요구; dedicated free calculator보다 logs/SaaS | opening+receipts-events+observed → ledger/set reconcile → discrepancies → investigate | **strong 2** |
+| Issued/Affixed Match / `issued affixed seal number verification log` | MangoApps High-Security Seal Log가 issued/affixed/verified fields와 discrepancy flow를 무료로 보여줌 | three IDs+load → normalize/match → hold flag → site procedure | **strong 3** |
+| Issue/Return Tracker / `security seal issue return tracker software` | SealsLog이 issue/return/outstanding/broken stock/search/roles/immutable audit를 제공; STM/FlightSeal도 full lifecycle | events+identity+time → persistent state machine → lifecycle/audit → retain/search | static one-shot record로는 core value 미충족 |
+
+- CTPAT 자료는 inventory log와 periodic reconciliation을 명시해 문제는 실제다. 그러나 usable cluster가 되려면 append-only history, role separation, attachments, identity, retention과 cross-session search가 핵심이다. local form 4개로 쪼개면 audit trail처럼 오해되거나 records가 유실된다.
+- Closest existing: Pack Release Checklist/Pack Record Generator/Exception Log. Serialized identity는 다르지만 fourth strong Tool이 account/database dependency Gate에서 실패한다.
+
+#### D. Heat-seal operating window — **REJECT, strong 2**
+
+| proposed Tool / actual query | SERP와 무료/전문 Tool | independent I→L→O→A | 판정 |
+|---|---|---|---|
+| Dwell/Speed / `heat seal dwell time conveyor speed calculator packaging` | TOSS speed calculation, GORTEF conveyor/heat tools, PackFlow | heated length+speed → distance/time → dwell/inverse speed → set starting point | **strong 1** |
+| Trial Matrix / `heat seal trial matrix temperature pressure dwell` | process documents/templates; MangoApps verification log; physical test standards | user ranges → Cartesian trials → test sheet → run tests | existing Packaging Trial workflow의 test-plan mode |
+| Tested Window / `heat seal process window analysis tool seal strength` | Steven Abbott thermal simulator와 scientific/QA tools; professional testers map seal-strength plateau | tested settings+observations → accepted ranges → observed window → confirmation trial | existing Trial Comparison의 multi-factor analysis; 독립 불인정 |
+| Symptom Troubleshooter / `heat seal defect troubleshooting tool packaging` | manufacturer manuals and UGI guide repeat weak/open/burn/wrinkle/contamination causes; inline vision/thermal systems dominate assurance | symptom+conditions → rule matrix → ordered checks → one-variable physical test | **strong 2**, guidance only |
+
+- 실제 시행착오·반복 수요는 충분하고 static implementation도 가능하다. 그러나 trial matrix/window는 이미 Quality & Damage Control의 Trial Comparison/Inspection과 본질적으로 겹치며, material presets를 넣으면 supplier/film-specific arbitrary values와 maintenance risk가 생긴다. 4 strong Tools가 아니라 2다.
+
+#### E. Postal flat/large-envelope preparation — **REJECT, strong 2**
+
+| proposed Tool / actual query | SERP와 공식 Tool | independent I→L→O→A | 판정 |
+|---|---|---|---|
+| Letter Aspect Ratio / `USPS letter aspect ratio calculator machinable` | USPS Publication 25가 length/height 1.3–2.5를 직접 설명; size checkers 존재 | oriented dimensions → ratio/range → candidate status → rotate/redesign | **strong 1** |
+| Flat Size Class / `USPS flat size checker calculator large envelope` | USPS Retail Postage Calculator와 Postal Explorer가 dimensions/class를 무료 제공 | L/W/T → current boundaries → candidate class → official price/acceptance check | **strong 2**, official competitor |
+| Flexibility Worksheet / `USPS flat flexibility test tool checker` | QSG/DMM official manual procedure가 중심이며 physical bending/deflection이 필요 | measurements+observations → prompts → record → postal review | calculator가 물리 판정을 증명 못함 |
+| Uniform Thickness / `USPS uniform thickness flat mailpiece checker` | QSG가 edge exclusion과 1/4-inch variance를 한 physical standards flow에 포함 | min/max/location → variance/checklist → candidate status → redistribute | Flat Classifier의 한 constraint; 별도 Tool 불인정 |
+
+- seller confusion과 recurring forum questions는 분명하다. 그러나 4 pages는 사실상 한 carrier mailpiece classifier의 dimension/aspect/flexibility/thickness sections다. carrier rule 업데이트와 현장 acceptance를 계속 책임져야 하며, official calculator/DMM보다 Pack Prep Tools가 제공할 workflow gap도 좁다.
+
+### 대표 검색 결과·경쟁 출처
+
+- Count-by-weight: https://upscales.buyweighingmachine.com/public/parts-counting-calculator.html, https://calculator.academy/item-weight-calculator/, https://www.ricelake.com/counting
+- Apparel: https://www.textileschool.com/calculators/pack-ratio-assortment/, https://retail-plan.com/tools/size-curve-calculator, https://docs.oracle.com/cd/E75762_01/assortplan/pdf/140/ap-140-cc-ug.pdf
+- Security seals: https://www.mangoapps.com/templates/forms/high-security-seal-log, https://www.sealslog.com/, https://www.cummins.com/sites/default/files/2024-07/CTPAT-Job-Aid-Seal-Security-Procedures-October-2021.pdf
+- Heat seal: https://www.gortef.com.au/resources/tools/heat-seal-temperature-calculator, https://packflowcalc.com/heat-sealing, https://www.stevenabbott.co.uk/practical-mechanical/Heat-Seal.php
+- Postal flats: https://pe.usps.com/businessmail101?ViewName=Flats, https://pe.usps.com/text/dmm300/101.htm, https://postcalc.usps.com/Calculator/ShapeAndSize?ccode=US&country=0
+- Intermediate checks: https://www.jascicloud.com/features/putwall-picks-to-cart, https://www.capsulem8.com/tools/batch-lot-traceability-log, https://www.clariant.com/en/Business-Units/Care-Chemicals/Cargo-and-Device-Protection/Desiccant-Calculator
+
+### 최종 판단
+
+- **Final decision: NO-GO.** 32 genuinely new families, 128 Tool hypotheses, intermediate 10, finalists 5를 거쳤지만 모든 후보가 minimum 4 strong independent Tools Hard Gate에 실패했다.
+- 가장 가까운 후보는 Apparel assortment와 Security seal lifecycle로 각각 strong 3이었다. Apparel의 fourth Tool은 store-level historical data/enterprise optimizer가 되었고, Security seal의 fourth Tool은 persistent audit ledger/account/roles가 필요했다.
+- Count-by-weight는 검색·반복사용·small-seller fit이 강하지만 strong 2이며 4 pages로 만들면 동일 reciprocal formula를 분할한다. Heat seal과 Postal flats도 strong 2다.
+- production 변경은 **0**이다. HTML, CSS, JavaScript, generator, registry, navigation, sitemap, llms, robots, content page, homepage badge block을 수정하지 않았고 generation도 실행하지 않았다. 변경 파일은 이 `handover.md` 1개뿐이다.
+- GO 재검토 조건은 다음처럼 구체적이어야 한다.
+  - Count-by-weight: reciprocal formula가 아닌 별도 search intent를 가진 두 작업(예: scale-resolution/sample-variation을 user-measured data로 안전하게 판단하는 독립 checker와 실제 pack reconciliation workflow)이 반복 query/free-tool gap으로 확인될 때.
+  - Apparel: small operator용 fourth workflow가 store history/API 없이 독립 action을 만들고, Textile School/Retail Plan이 커버하지 않는 query가 GSC 또는 반복 SERP에서 보일 때.
+  - Security seals: audit/compliance를 표방하지 않으면서 one-session paste/compare/export만으로도 4 independent actions가 확인되거나, 프로젝트가 persistent local record product를 명시적으로 허용할 때.
+  - Heat seal: 기존 Quality Trial과 다른 2개 이상의 반복 task query가 확인되고 supplier presets 없이 user-measured data만으로 deterministic action을 낼 수 있을 때.
+  - Postal flats: multi-carrier가 아니라 Pack Prep Tools 범위에 맞는 carrier-neutral physical prep 문제 4개가 독립적으로 확인될 때.
+
+### Baseline QA·browser·보존
+
+- 현재 PATH에는 `node`가 없어 새 설치는 하지 않았다. Codex workspace에 이미 포함된 bundled Node executable로 동일 scripts를 실행했다.
+- JavaScript syntax: `scripts/generate-site.js`, `scripts/qa.js`, `scripts/verify-calculators.js`, `scripts/verify-workflow-tools.js`, `assets/calculators.js`, `assets/workflow-tools.js`, `assets/site.js` 모두 `node --check` **PASS**.
+- `scripts/qa.js`: **PASS** — 76 HTML, 75 sitemap URLs, 7 JavaScript files; 36 calculators, 4 workflow tools, 14 guides, 12 references; duplicate long paragraphs/sentences 0; calculator mobile input-table override 36/36.
+- `scripts/verify-calculators.js`: **PASS** — 36 calculators, 186 independent checks.
+- `scripts/verify-workflow-tools.js`: **PASS** — 46 normal/boundary/error/safety/deterministic checks.
+- production 변경이 없어 신규 page 5-width matrix는 대상이 아니다. 대신 실배포 Homepage, Tools, Pallet Utilization, Shipping Damage Rate, Pack Instruction hub를 1440px/390px 총 10 combinations로 확인했다. 모든 H1 정상, horizontal overflow 0, visible viewport escape 0, console errors 0.
+- homepage 390px에서 user-managed badge는 footer 다음 위치의 5개이며 repository 기준 순서 KittyLaunch → Sell With Boost → Twelve Tools → Findly.tools → BoostDomainRating을 유지한다. 로컬 badge block SHA-256는 작업 시작 기준 `1205454B420A7A14B16F66A984BF5217AF327B33F68FB9E30EBD48824198ED68`이고 `index.html` diff 0이다.
+- 남은 위험: HIGH 없음. MEDIUM — keyword-volume/GSC post-2026-08-13 first-party data 부재, security/apparel의 실제 small-operator demand 크기를 수치로 확인하지 못함. LOW — SERP는 지역·시점에 따라 달라지고 2026 검색 결과 중 신규 vendor/tool pages는 빠르게 변할 수 있음.
