@@ -1887,3 +1887,40 @@ git status
 - 조사 기록 commit: `f73402214b39aaa95ba53c489fb5c3572c65ad3b` (`Record existing search asset priority review`). 변경은 `handover.md` 1개, 72 lines 추가뿐이며 첫 `git push origin main`은 성공했다.
 - 첫 push 직후 `git fetch origin main`과 `git ls-remote origin refs/heads/main`으로 local HEAD = `origin/main` = actual remote main = `f73402214b39aaa95ba53c489fb5c3572c65ad3b`, branch `main`, working tree clean을 확인했다.
 - 이 Git 마감 note도 `handover.md`만 변경한다. closing-note commit/push 뒤 최종 hash와 clean 상태, Pages/live 확인은 작업 최종 보고에서 확정한다.
+
+## 2026-08-24 — Pallet Utilization simple-grid cross-check upgrade
+
+### 시작 상태와 우선순위 판정
+
+- 실제 Pack Prep Tools checkout의 branch는 `main`, remote는 `https://github.com/canghun13/packpreptools.git`, 시작 working tree는 clean이었다. 시작 local HEAD `fadcb98db6a31b26773e909fe68be4249ee4412d`가 actual remote main `aff5498e77094283f2bdb476e6cf41962f7eca21`보다 3 commits 뒤인 것을 확인한 뒤 `git fetch`와 `git pull --ff-only origin main`만 사용해 `aff5498e77094283f2bdb476e6cf41962f7eca21`로 동기화했다.
+- 저장소와 이번 attachment 범위에는 새 GSC/Bing/GA4 CSV·ZIP·XLSX·TSV export가 없다. 사용할 수 있는 최신 first-party 검색 자료는 2026-08-13 GSC snapshot이며, 같은 날 완료된 Master Carton/Carton Count 보강 이후의 성과를 분리할 수 없어 해당 검색 신호 페이지는 계속 OBSERVE로 두었다.
+- Phase A에서 Master Carton/Carton Count, Packaging Cost, Box Utilization/Multi-item Box Fit, Packaging Supply Reorder Point, Quality Trial Comparison, Pallet Utilization/Cases per Pallet을 비교했다. 앞 후보들은 최근 보강 관찰 기간이 부족하거나 이미 결과 해석·다음 행동을 제공했다.
+- **선정 작업:** `/tools/pallet-utilization.html`. 같은 기본 manifest인 48 × 40 pallet, 16 × 12 case에서 Pallet Utilization은 10 cases/layer를 기본값으로 `100% footprint utilization`만 출력하지만, 관련 Cases per Pallet은 single-orientation grid를 9 cases/layer로 계산했다. 본문에는 area-only 한계가 있었어도 핵심 결과에는 이 차이를 드러내는 패턴 검토 신호가 없어 사용자가 100%를 배치 증명처럼 읽을 수 있었다. Phase A에서 명확한 기능·의사결정 UX 결함을 찾았으므로 Phase B 신규 cluster 탐색은 실행하지 않았다.
+
+### 원인과 구현 범위
+
+- authoritative source는 `scripts/generate-site.js`, 계산 로직은 `assets/calculators.js`, 회귀 검증은 `scripts/verify-calculators.js`다. 생성된 `tools/pallet-utilization.html`만 직접 편집하지 않았다.
+- `assets/calculators.js`의 Pallet Utilization은 기존에 case area × entered count와 pallet area만 비교했다. 각 footprint가 pallet에 직교 방향으로 놓이는지, 입력 count가 all-straight/all-rotated simple grid reference를 넘는지 계산하지 않았다.
+- 기존 area utilization과 `rate > 100` guard를 유지하면서, Cases per Pallet과 같은 straight/90° rotated single-orientation capacity를 계산해 `Simple-grid reference`와 `Pattern check`를 결과에 추가했다. 입력 count가 reference 초과/일치/미만일 때 각각 명확한 행동 문구를 제공한다. 한 case도 어느 직교 방향으로 놓이지 않는 경우는 area가 100% 이하더라도 오류로 차단한다.
+- 초과는 “불가능”으로 단정하지 않고 mixed-orientation 또는 engineered pattern 검증이 필요하다고 표시한다. 48 × 40 / 16 × 12 / 10 기본 예제는 100% area와 9-case simple-grid reference의 차이를 의도적으로 보여준다.
+- generator의 formula, worked example, interpretation, mistakes, limitations, review date를 target page에만 보강했고 target page에만 `20260824-pallet-pattern` asset query를 적용했다. 기존 `Next action: After:` 중복 문구도 target 생성 경로에서 정리했다. 다른 calculator metadata, input, output, CSS, Guide/Reference, navigation, sitemap, workflow logic은 변경하지 않았다.
+- 계산 검증에 reference 초과, 일치, 미만, 어느 방향으로도 case 1개가 놓이지 않는 입력을 추가해 independent checks를 181에서 186으로 늘렸다.
+
+### 로컬 QA
+
+| viewport | 기본 계산 결과 | simple-grid/pattern 결과 | horizontal overflow | text clipping | overlap / console |
+|---|---|---|---:|---:|---|
+| 1440px | 100% footprint utilization | 9 cases/layer, 10 entered review | 0 | 0 | 0 / 0 |
+| 1280px | 100% footprint utilization | 9 cases/layer, 10 entered review | 0 | 0 | 0 / 0 |
+| 1024px | 100% footprint utilization | 9 cases/layer, 10 entered review | 0 | 0 | 0 / 0 |
+| 768px | 100% footprint utilization | 9 cases/layer, 10 entered review | 0 | 0 | 0 / 0 |
+| 390px | 100% footprint utilization | 4개 결과 row가 317.8px 전체 폭으로 자연스럽게 줄바꿈, 9 cases/layer, 10 entered review | 0 | 0 | 0 / 0 |
+
+- 실제 브라우저 interaction: 9 cases → `90%`와 `Matches the single-orientation simple-grid reference.`; 8 cases → `80%`와 `Below the 9-case simple-grid reference.`; 10 × 10 pallet에 12 × 4 case → orthogonal-fit 오류; 10 × 10에 6 × 6 case 3개 → area-overflow 오류; Reset → 48/40/16/12/10 기본값과 idle prompt 복원.
+- 자동 QA PASS: 공개 HTML 76, sitemap URL 75, JavaScript 7; Calculator 36, workflow Tool 4, Guide 14, Reference 12; broken/duplicate/content 문제 0; responsive calculator input table 36/36. Calculator verification 36개/186 checks, workflow verification 46 checks 모두 PASS. `git diff --check` PASS.
+- 회귀 browser QA: Homepage, Tools, Packaging Cost, Master Carton Planning Guide, Packaging Trial and Shipping Damage Review, Pallet and Unit Load Terms, Pack Instruction hub를 1440px와 390px에서 확인했고 14개 조합 모두 H1 정상, horizontal overflow 0, clipped text 0, console error 0이었다. Packaging Cost 기본 계산 `$2.69`, 음수 오류, Reset idle을 유지했고 390px mobile menu도 `aria-expanded=true`, display grid로 정상 열렸다.
+- 사용자 관리 homepage badge block은 생성 전 기준과 동일한 SHA-256 `1205454B420A7A14B16F66A984BF5217AF327B33F68FB9E30EBD48824198ED68`, anchors 5개, `index.html` diff 0이다. 브라우저에서도 footer 바로 다음 위치와 KittyLaunch → Sell With Boost → Twelve Tools → Findly.tools → BoostDomainRating의 href/image/수/순서를 확인했다.
+
+### Git·배포 마감
+
+- 기능 commit/push와 GitHub Pages, actual remote hash, 실배포 5폭 재검증 결과는 아래 closing note에서 확정한다.

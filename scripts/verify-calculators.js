@@ -140,6 +140,18 @@ for (const [id, cases] of Object.entries(phaseCases)) {
   checks += 1;
 }
 
+const palletPatternReview = calculators["pallet-utilization"]({ palletLength:48, palletWidth:40, caseLength:16, caseWidth:12, casesPerLayer:10, unit:"in" });
+assert.strictEqual(palletPatternReview.values["Simple-grid reference"], "9 cases/layer");
+assert.match(palletPatternReview.values["Pattern check"], /exceeds the 9-case simple-grid reference/);
+checks += 2;
+const palletPatternMatch = calculators["pallet-utilization"]({ palletLength:48, palletWidth:40, caseLength:16, caseWidth:12, casesPerLayer:9, unit:"in" });
+assert.strictEqual(palletPatternMatch.values["Pattern check"], "Matches the single-orientation simple-grid reference.");
+checks += 1;
+const palletPatternBelow = calculators["pallet-utilization"]({ palletLength:48, palletWidth:40, caseLength:16, caseWidth:12, casesPerLayer:8, unit:"in" });
+assert.strictEqual(palletPatternBelow.values["Pattern check"], "Below the 9-case simple-grid reference.");
+checks += 1;
+throws("pallet-utilization", { palletLength:10, palletWidth:10, caseLength:12, caseWidth:4, casesPerLayer:1, unit:"in" });
+
 primary("shipping-damage-rate", { shipments: 1250, damaged: 14 }, 1.12, 0.001, "observed rate");
 primary("shipping-damage-rate", { shipments: 100, damaged: 0 }, 0, 0.001, "zero-damage boundary");
 throws("shipping-damage-rate", { shipments: 10, damaged: 11 });

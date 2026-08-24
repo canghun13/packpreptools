@@ -469,7 +469,24 @@
     const cases = positive(input.casesPerLayer, "Cases per layer", { max: 1000000 });
     const rate = caseL * caseW * cases / (palletL*palletW) * 100;
     if (rate > 100) throw new Error("Entered case footprints exceed the pallet footprint.");
-    return { primary: `${round(rate,1)}% footprint utilization`, values: { "Used footprint": `${round(caseL*caseW*cases,2)} ${input.unit || "in"}²`, "Pallet footprint": `${round(palletL*palletW,2)} ${input.unit || "in"}²`, "Unused footprint": `${round(palletL*palletW-caseL*caseW*cases,2)} ${input.unit || "in"}²` } };
+    const straight = Math.floor(palletL / caseL) * Math.floor(palletW / caseW);
+    const rotated = Math.floor(palletL / caseW) * Math.floor(palletW / caseL);
+    const simpleGrid = Math.max(straight, rotated);
+    if (simpleGrid < 1) throw new Error("The case footprint does not fit on the pallet in either orthogonal orientation.");
+    const patternCheck = cases > simpleGrid
+      ? `Review — ${cases} entered exceeds the ${simpleGrid}-case simple-grid reference; verify a mixed-orientation or engineered pattern.`
+      : cases === simpleGrid
+        ? "Matches the single-orientation simple-grid reference."
+        : `Below the ${simpleGrid}-case simple-grid reference.`;
+    return {
+      primary: `${round(rate,1)}% footprint utilization`,
+      values: {
+        "Used footprint": `${round(caseL*caseW*cases,2)} ${input.unit || "in"}²`,
+        "Unused footprint": `${round(palletL*palletW-caseL*caseW*cases,2)} ${input.unit || "in"}²`,
+        "Simple-grid reference": `${simpleGrid} cases/layer`,
+        "Pattern check": patternCheck
+      }
+    };
   }
 
   function whole(value, label, options) {

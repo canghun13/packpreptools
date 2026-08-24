@@ -239,7 +239,7 @@ const phaseTools = [
   ["cases-per-pallet", "Cases per Pallet Calculator", "Estimate straight-grid cases per pallet across a user-entered layer count.", [["palletLength","Pallet length","48","length"],["palletWidth","Pallet width","40","length"],["caseLength","Case length","16","length"],["caseWidth","Case width","12","length"],["layers","Layer count","5","count"]], "Cases per pallet = best straight or rotated grid per layer × layers", "A 48 × 40 in pallet with 16 × 12 in cases fits 9 cases per layer and 45 across five layers in a single-orientation grid.", ["pallet-layer-count","pallet-utilization"], "/guides/pallet-planning-basics.html"],
   ["pallet-layer-count", "Pallet Layer Count Calculator", "Calculate required pallet layers within a user-entered maximum.", [["cases","Case quantity","86","count"],["casesPerLayer","Cases per layer","10","count"],["maxLayers","Maximum layers","10","count"]], "Layers = round up (case quantity ÷ cases per layer)", "Eighty-six cases at 10 per layer require nine layers, with six cases on the top layer.", ["cases-per-pallet","pallet-height"], "/guides/pallet-planning-basics.html"],
   ["pallet-height", "Pallet Height Calculator", "Check pallet, load, and top allowance against a user-entered height maximum.", [["palletHeight","Empty pallet height","6","length"],["caseHeight","Case height","10","length"],["layers","Layer count","6","count"],["topAllowance","Top cap allowance","2","length"],["maxHeight","Maximum planned height","72","length"]], "Total height = empty pallet height + case height × layers + top allowance", "A 6 in pallet with six 10 in layers and 2 in top allowance totals 68 in, below a 72 in planning maximum.", ["pallet-layer-count","pallet-utilization"], "/reference/pallet-and-unit-load-terms.html"],
-  ["pallet-utilization", "Pallet Utilization Calculator", "Estimate pallet footprint utilization from case footprint and cases per layer.", [["palletLength","Pallet length","48","length"],["palletWidth","Pallet width","40","length"],["caseLength","Case length","16","length"],["caseWidth","Case width","12","length"],["casesPerLayer","Cases per layer","10","count"]], "Footprint utilization = case footprint × cases per layer ÷ pallet footprint × 100", "Ten 16 × 12 in case footprints use 100% of a 48 × 40 in pallet footprint by area.", ["cases-per-pallet","pallet-height"], "/reference/pallet-and-unit-load-terms.html"]
+  ["pallet-utilization", "Pallet Utilization Calculator", "Estimate pallet footprint utilization from case footprint and cases per layer.", [["palletLength","Pallet length","48","length"],["palletWidth","Pallet width","40","length"],["caseLength","Case length","16","length"],["caseWidth","Case width","12","length"],["casesPerLayer","Cases per layer","10","count"]], "Footprint utilization = case footprint × cases per layer ÷ pallet footprint × 100; simple-grid reference = the better of straight and 90° rotated single-orientation grids", "Ten 16 × 12 in case footprints use 100% of a 48 × 40 in pallet footprint by area, but exceed the nine-case single-orientation grid reference. That result requires a verified mixed-orientation or engineered layer pattern.", ["cases-per-pallet","pallet-height"], "/reference/pallet-and-unit-load-terms.html"]
 ].map(([slug,title,description,fields,formula,example,related,doc]) => ({
   slug, title, short: description, description, unit: fields.some((field) => field[3] === "length"), currency: fields.some((field) => field[3] === "currency"),
   fields, formula, example,
@@ -252,6 +252,8 @@ const phaseTools = [
   related, doc
 }));
 tools.push(...phaseTools);
+
+phaseTools.find(({ slug }) => slug === "pallet-utilization").reviewed = "August 24, 2026";
 
 const qualityTools = [
   {
@@ -648,11 +650,11 @@ const toolContent = {
     ["Before: confirm layer count and all vertical allowances.", "After: measure the restrained load and verify route, rack, equipment, and weight clearance."]
   ),
   "pallet-utilization": profile(
-    "Use Pallet Utilization to compare the summed case footprint area in one layer with the pallet footprint. It is an area-efficiency indicator, not a pattern solver. Cases per Pallet determines a simple grid count; utilization shows how much nominal area that entered count represents.",
+    "Use Pallet Utilization to compare the summed case footprint area in one layer with the pallet footprint, then cross-check the entered count against the better straight or rotated single-orientation grid. It is an area-efficiency indicator and pattern-review prompt, not a pattern solver. Cases per Pallet uses the same simple-grid reference across a full load.",
     "Use the usable pallet length and width, finished case footprint, and the verified cases per layer. Keep all dimensions in one unit. If the pattern requires gaps, corner clearance, or no-load zones, reduce the usable footprint or evaluate the drawing separately.",
-    "A low percentage may indicate a poor footprint match, but can be necessary for edge clearance or stability. A high percentage near 100% still does not prove the cases fit without overlap because area ignores arrangement. Compare the percentage with an actual layer diagram.",
-    ["Treating 100% area as proof of a valid layout.", "Ignoring pallet edge clearance or deck support.", "Using case internal dimensions.", "Comparing utilization across pallets without the same overhang and stability rules."],
-    "The calculation compares areas only and excludes placement geometry, mixed rotations, gaps, overhang, deck-board support, partial cases, containment, weight distribution, compression, and handling stability.",
+    "A low percentage may indicate a poor footprint match, but can be necessary for edge clearance or stability. If the entered count exceeds the simple-grid reference, treat the result as a pattern-review signal: a mixed-orientation or engineered layout may work, but area alone cannot prove it. Matching or staying below the reference still requires a physical layer check.",
+    ["Treating 100% area as proof of a valid layout.", "Reading an exceeded simple-grid reference as proof that no mixed pattern can work.", "Ignoring pallet edge clearance or deck support.", "Using case internal dimensions."],
+    "The percentage compares nominal areas. The cross-check tests only all-straight and all-rotated orthogonal grids; it does not solve mixed orientations, interlocking patterns, spacing, overhang, deck gaps, stability, compression, weight distribution, restraint, or handling rules.",
     ["Before: verify case and usable pallet footprints.", "After: compare with the Cases per Pallet grid and validate a physical layer pattern."]
   ),
   "shipping-damage-rate": profile(
@@ -1551,7 +1553,7 @@ function fieldAdvice(tool, field) {
   return advice;
 }
 
-const masterCartonWorkflowTools = new Set(["master-carton-dimensions", "master-carton-weight", "carton-count", "case-pack", "carton-cube"]);
+const stripAfterPrefixTools = new Set(["master-carton-dimensions", "master-carton-weight", "carton-count", "case-pack", "carton-cube", "pallet-utilization"]);
 
 function calculatorPage(tool) {
   const file = `tools/${tool.slug}.html`;
@@ -1579,7 +1581,8 @@ function calculatorPage(tool) {
   const inputRows = tool.fields.map((field) => `<tr><th>${field[1]}</th><td>${fieldAdvice(tool, field)}</td></tr>`).join("");
   const calculationFlow = `<ol class="procedure-list"><li><strong>Validate the ${tool.title} manifest:</strong> confirm that ${tool.fields.slice(0, 3).map((field) => field[1].toLowerCase()).join(", ")} describe the same ${tool.title} pack, batch, or planning period.</li><li><strong>Calculate ${toolOperations[tool.slug].output.toLowerCase()}:</strong> apply <span class="inline-formula">${tool.formula}</span> without rounding intermediate values for ${tool.title}.</li><li><strong>Review the ${toolOperations[tool.slug].output.toLowerCase()} breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this ${tool.title} result.</li></ol>`;
   const workflowLinks = content.workflow.map((item) => `<li>${item}</li>`).join("");
-  const nextAction = masterCartonWorkflowTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1];
+  const nextAction = stripAfterPrefixTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1];
+  const calculatorAssetVersion = tool.slug === "pallet-utilization" ? "20260824-pallet-pattern" : "20260802-quality";
   return `${head({ file, title, description: tool.description, schema })}${header("Tools")}
 <main id="main">
   <header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: title }])}<p class="dispatch-meta"><span>${toolOperations[tool.slug].category}</span><span>Calculation utility</span></p><h1>${title}</h1><p class="lede">${tool.description}</p></div></header>
@@ -1602,7 +1605,7 @@ function calculatorPage(tool) {
     <h2 id="workflow">Related workflow</h2><ol class="procedure-list">${workflowLinks}</ol><ul class="related-register">${related}<li><a href="${tool.doc}">Related guide or reference</a></li>${qualityTools.some(({ slug }) => slug === tool.slug) ? '<li><a href="/quality.html">Quality &amp; damage control cluster</a></li>' : ""}<li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: ${tool.reviewed || REVIEWED}</p>
   </article></div></section>
-</main><script src="/assets/calculators.js?v=20260802-quality" defer></script>${footer()}`;
+</main><script src="/assets/calculators.js?v=${calculatorAssetVersion}" defer></script>${footer()}`;
 }
 
 const workflowContent = {
