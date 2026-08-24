@@ -2294,3 +2294,11 @@ git status
 - production 변경이 없어 신규 page 5-width matrix는 대상이 아니다. 대신 실배포 Homepage, Tools, Pallet Utilization, Shipping Damage Rate, Pack Instruction hub를 1440px/390px 총 10 combinations로 확인했다. 모든 H1 정상, horizontal overflow 0, visible viewport escape 0, console errors 0.
 - homepage 390px에서 user-managed badge는 footer 다음 위치의 5개이며 repository 기준 순서 KittyLaunch → Sell With Boost → Twelve Tools → Findly.tools → BoostDomainRating을 유지한다. 로컬 badge block SHA-256는 작업 시작 기준 `1205454B420A7A14B16F66A984BF5217AF327B33F68FB9E30EBD48824198ED68`이고 `index.html` diff 0이다.
 - 남은 위험: HIGH 없음. MEDIUM — keyword-volume/GSC post-2026-08-13 first-party data 부재, security/apparel의 실제 small-operator demand 크기를 수치로 확인하지 못함. LOW — SERP는 지역·시점에 따라 달라지고 2026 검색 결과 중 신규 vendor/tool pages는 빠르게 변할 수 있음.
+
+### Git·Pages 마감
+
+- 조사 기준 동기화 hash: `bca2ffd84ae5041c8439e4afa6107d9218c28de0`.
+- 조사 기록 commit: `37a85feb79d86da6f9e3e2da7625e129676b7224` (`Research new workflow clusters and record no-go`). 변경은 `handover.md` 1개, 366 lines 추가뿐이며 `origin/main` push에 성공했다.
+- 해당 commit의 GitHub Pages `pages build and deployment` run [32725572668](https://github.com/canghun13/packpreptools/actions/runs/32725572668)은 정확히 `37a85feb79d86da6f9e3e2da7625e129676b7224`를 사용했고 **completed / success**였다.
+- 실도메인 Homepage는 HTTP 응답과 H1 `Packaging decisions, ready for dispatch.`, 36 calculators, 기존 navigation/footer를 제공했다. production asset 변경이 없으므로 앞의 1440/390 browser regression 결과와 일치한다.
+- 이 closing note도 `handover.md`만 변경한다. closing-note commit/push 뒤 최종 local HEAD, `origin/main`, actual remote main 일치와 clean working tree는 작업 최종 보고에서 확정한다.
