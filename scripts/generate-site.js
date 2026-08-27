@@ -361,6 +361,106 @@ const qualityTools = [
 
 tools.push(...qualityTools);
 
+const adhesiveTools = [
+  {
+    slug: "adhesive-bead-volume",
+    title: "Adhesive Bead Volume Calculator",
+    reviewed: "August 27, 2026",
+    short: "Convert a round bead diameter and path length into adhesive volume and mass per pack.",
+    description: "Estimate packaging adhesive bead volume and mass from bead diameter, path length, path count, density, and a user-entered process allowance.",
+    unit: true,
+    currency: false,
+    fields: [["diameter","Round bead diameter","0.125","length"],["length","Bead length per pack","24","length"],["beads","Bead paths per pack","2","count"],["density","Adhesive density","0.98","density"],["waste","Setup and process allowance","8","percent"]],
+    formula: "Planned volume = π × (bead diameter ÷ 2)² × path length × path count × (1 + allowance %)",
+    example: "Two 24 in paths of 0.125 in round bead equal about 9.65 mL nominal volume. With an 8% allowance and density of 0.98 g/mL, plan about 10.42 mL or 10.22 g per pack.",
+    interpretation: "Use the volume as a starting material plan, then replace theoretical bead dimensions with a weighed production sample when available.",
+    assumptions: "The fresh bead is modeled as a round cylinder. Squeeze-out, compression, stringing, start-stop tails, purge, and actual density can change use.",
+    related: ["adhesive-batch-requirement","adhesive-output-calibration"],
+    doc: "/guides/packaging-hot-melt-setup.html"
+  },
+  {
+    slug: "adhesive-batch-requirement",
+    title: "Adhesive Batch Requirement Calculator",
+    reviewed: "August 27, 2026",
+    short: "Turn measured grams per pack into run quantity and whole adhesive containers.",
+    description: "Calculate packaging adhesive required for a production run from measured use per pack, allowance, and container mass.",
+    unit: false,
+    currency: false,
+    fields: [["packs","Packs in run","2400","count"],["gramsPerPack","Measured adhesive per pack","2.4","mass-g"],["waste","Setup and process allowance","8","percent"],["containerKg","Adhesive container mass","15","mass-kg"]],
+    formula: "Run requirement = packs × measured grams per pack ÷ 1,000 × (1 + allowance %)",
+    example: "A 2,400-pack run using 2.4 g per pack needs 5.76 kg nominally and 6.221 kg with an 8% allowance, so one 15 kg container covers the plan.",
+    interpretation: "Stage whole containers from the result while keeping setup purge and recoverable remainder visible in the operating record.",
+    assumptions: "Use per-pack consumption from a representative weighed sample. The tool does not predict adhesive shelf life, pot life, transfer loss, or supplier pack availability.",
+    related: ["adhesive-bead-volume","adhesive-melt-rate-capacity"],
+    doc: "/guides/packaging-hot-melt-setup.html"
+  },
+  {
+    slug: "intermittent-bead-savings",
+    title: "Intermittent Bead Savings Calculator",
+    reviewed: "August 27, 2026",
+    short: "Compare a continuous adhesive pattern with a repeated on/off pattern.",
+    description: "Estimate packaging adhesive use and batch material difference for a proposed intermittent bead duty cycle.",
+    unit: false,
+    currency: false,
+    fields: [["continuous","Continuous-pattern adhesive per pack","3.2","mass-g"],["onLength","Adhesive-on length","2","generic-unit"],["offLength","Adhesive-off length","1","generic-unit"],["packs","Packs in comparison run","10000","count"]],
+    formula: "Intermittent use = continuous use × adhesive-on length ÷ (on length + off length)",
+    example: "A 2-on/1-off pattern has a 66.67% duty cycle. Against 3.2 g continuous use, the estimate is 2.133 g per pack and 10.667 kg less material across 10,000 packs.",
+    interpretation: "Use the result to size a controlled physical trial; do not release a shorter pattern until closure strength and distribution performance are verified.",
+    assumptions: "The model assumes equal bead cross-section and repeatable switching. It does not prove bond strength, open time, substrate compatibility, or pattern placement.",
+    related: ["adhesive-bead-volume","packaging-trial-comparison"],
+    doc: "/guides/packaging-hot-melt-setup.html"
+  },
+  {
+    slug: "adhesive-melt-rate-capacity",
+    title: "Adhesive Melt Rate Capacity Checker",
+    reviewed: "August 27, 2026",
+    short: "Compare calculated hourly adhesive demand with a verified melt-rate input.",
+    description: "Check packaging adhesive demand, utilization, and headroom against a supplier- or trial-verified melt rate.",
+    unit: false,
+    currency: false,
+    fields: [["gramsPerPack","Adhesive per pack","2.4","mass-g"],["packsPerHour","Packing rate","600","count"],["allowance","Demand allowance","10","percent"],["meltRate","Verified melt rate","2.5","mass-rate"]],
+    formula: "Demand = grams per pack × packs per hour ÷ 1,000 × (1 + allowance %)",
+    example: "At 2.4 g per pack and 600 packs per hour, a 10% allowance produces 1.584 kg/h demand. A verified 2.5 kg/h melt rate leaves 0.916 kg/h of calculated headroom.",
+    interpretation: "A positive margin supports planning only; confirm adhesive-specific melt performance and transient demand with the equipment supplier and a run trial.",
+    assumptions: "The entered melt rate must apply to the actual adhesive and equipment condition. Warm-up, viscosity, hose/gun limits, cycling peaks, and maintenance state are excluded.",
+    related: ["adhesive-batch-requirement","adhesive-tank-refill"],
+    doc: "/reference/hot-melt-adhesive-planning-terms.html"
+  },
+  {
+    slug: "adhesive-tank-refill",
+    title: "Adhesive Tank Refill Planner",
+    reviewed: "August 27, 2026",
+    short: "Estimate time to a user-set reserve and refill events during a run.",
+    description: "Plan packaging adhesive tank refill timing from capacity, starting fill, reserve, observed usage, and run duration.",
+    unit: false,
+    currency: false,
+    fields: [["tankCapacity","Tank capacity","15","mass-kg"],["startFill","Starting fill","12","mass-kg"],["reserve","Minimum operating reserve","3","mass-kg"],["usage","Observed usage rate","1.5","mass-rate"],["runHours","Planned run time","8","hours"]],
+    formula: "Time to reserve = (starting fill − reserve) ÷ observed hourly use",
+    example: "Starting with 12 kg in a 15 kg tank, keeping 3 kg in reserve, and using 1.5 kg/h reaches reserve in six hours. One full refill event supports an eight-hour run.",
+    interpretation: "Use the interval to place an operator check or refill window without treating the calculated time as an automatic equipment control.",
+    assumptions: "All mass inputs must use kilograms. The calculation excludes level-sensor accuracy, bulk transfer delay, warm-up recovery, foaming, contamination, and safe refill procedure.",
+    related: ["adhesive-melt-rate-capacity","adhesive-output-calibration"],
+    doc: "/reference/hot-melt-adhesive-planning-terms.html"
+  },
+  {
+    slug: "adhesive-output-calibration",
+    title: "Adhesive Output Calibration Checker",
+    reviewed: "August 27, 2026",
+    short: "Convert a timed collection sample into flow per nozzle and compare it with a target.",
+    description: "Calculate observed packaging adhesive flow per nozzle and compare it with a user-entered target and tolerance.",
+    unit: false,
+    currency: false,
+    fields: [["mass","Collected adhesive mass","48","mass-g"],["seconds","Collection time","20","seconds"],["nozzles","Active nozzles","2","count"],["target","Target flow per nozzle","75","flow-rate"],["tolerance","Flow tolerance","5","percent"]],
+    formula: "Observed flow per nozzle = collected grams ÷ seconds × 60 ÷ active nozzles",
+    example: "Collecting 48 g in 20 seconds from two nozzles equals 72 g/min per nozzle, 4% below a 75 g/min target and within a user-entered 5% tolerance.",
+    interpretation: "A flag requests inspection and repeat measurement; it does not diagnose a heater, pump, hose, gun, nozzle, adhesive, or control fault.",
+    assumptions: "The sample must be collected under an approved safe procedure with the actual operating adhesive. The tool does not set temperature or pressure and does not replace equipment safeguards.",
+    related: ["adhesive-bead-volume","adhesive-melt-rate-capacity"],
+    doc: "/guides/packaging-hot-melt-setup.html"
+  }
+];
+tools.push(...adhesiveTools);
+
 const workflowTools = [
   {
     slug: "pack-instruction-readiness",
@@ -691,6 +791,57 @@ const toolContent = {
   )
 };
 
+Object.assign(toolContent, {
+  "adhesive-bead-volume": profile(
+    "Use Adhesive Bead Volume before a production trial to translate an intended round bead into nominal volume and mass. It is the geometry starting point; Adhesive Batch Requirement should use a weighed per-pack sample once one exists.",
+    "Measure the proposed bead diameter and total path length in one unit, count repeated paths, and enter density from current product data. Treat the allowance as a visible planning input, not a hidden universal waste factor.",
+    "A smaller bead or shorter path reduces calculated material, but the arithmetic says nothing about adequate contact, compression, open time, or bond performance. Confirm the applied pattern on representative cartons.",
+    ["Entering a flattened bonded width as the fresh round bead diameter.", "Mixing inches and centimeters between diameter and length.", "Using an assumed density when a current product value is available.", "Treating theoretical volume as proof of closure performance."],
+    "The bead is modeled as a perfect cylinder before contact. Start/stop tails, squeeze-out, stringing, purge, substrate absorption, bead collapse, and equipment variation remain outside the formula.",
+    ["Before: obtain the approved pattern intent and current adhesive density.", "After: weigh representative packs, verify the physical closure, and use measured grams per pack for run planning."]
+  ),
+  "adhesive-batch-requirement": profile(
+    "Use Adhesive Batch Requirement to stage material for a defined packaging run from measured grams per pack. It answers run quantity and whole-container staging, not bead geometry or equipment capacity.",
+    "Use a representative weighed consumption sample from the released or trial pattern, a clearly bounded pack count, an explicit setup/process allowance, and the net adhesive mass in one available container.",
+    "Whole-container count is a staging result, while the planned remainder shows why opening an additional container may create inventory or handling consequences. Keep recoverable remainder separate from consumed waste.",
+    ["Using theoretical volume after measured production use is available.", "Mixing grams per pack with kilograms per pack.", "Applying the allowance twice.", "Treating container remainder as automatic scrap."],
+    "The estimate excludes product shelf life, storage condition, material substitution, transfer loss not represented by the allowance, and availability of the selected container size.",
+    ["Before: confirm the pattern and weigh a representative run sample.", "After: compare hourly demand with melt rate and stage material under the supplier’s handling requirements."]
+  ),
+  "intermittent-bead-savings": profile(
+    "Use Intermittent Bead Savings to quantify the material implication of a repeated adhesive-on and adhesive-off pattern relative to a measured continuous baseline. It defines a trial hypothesis rather than recommending a pattern.",
+    "Enter continuous-pattern grams per pack from measurement, then describe one repeated cycle with on and off lengths in the same arbitrary unit. Use the comparison batch size that would actually be evaluated.",
+    "The duty cycle scales material only when bead cross-section and switching remain comparable. A large calculated reduction increases the importance of checking pattern placement, start/stop consistency, compression, and distribution performance.",
+    ["Changing bead diameter while attributing all savings to intermittency.", "Using mismatched units for on and off lengths.", "Ignoring start/stop tails and gun response.", "Releasing the estimate without a controlled physical trial."],
+    "The calculation does not model adhesive mechanics, substrate, bond area, temperature, pressure, open time, switching delay, or closure strength. It cannot identify a safe minimum pattern.",
+    ["Before: record the measured continuous baseline and proposed repeat geometry.", "After: run a controlled comparison and retain measured consumption, package condition, and field monitoring."]
+  ),
+  "adhesive-melt-rate-capacity": profile(
+    "Use Adhesive Melt Rate Capacity to compare calculated steady hourly demand with a melt rate verified for the actual adhesive and equipment. It is a capacity screen, not equipment selection or control logic.",
+    "Enter measured grams per pack, the planned sustained pack rate, a visible peak or process allowance, and an adhesive-specific melt rate from current supplier information or a qualified run observation.",
+    "Utilization above 100% is a clear review signal. Positive steady-state headroom still may not cover warm-up, cycling peaks, refill recovery, or restrictions elsewhere in the delivery system.",
+    ["Using tank volume as melt rate.", "Using a water-like density or generic equipment headline without confirmation.", "Averaging away short demand peaks.", "Reading positive headroom as proof of process capability."],
+    "The checker excludes warm-up, viscosity, temperature profile, pump, hose, manifold, gun, nozzle, controls, maintenance condition, ambient exposure, and safe operating procedure.",
+    ["Before: use measured consumption and an adhesive-specific verified melt rate.", "After: plan refill intervals and confirm the complete system through a monitored production trial."]
+  ),
+  "adhesive-tank-refill": profile(
+    "Use Adhesive Tank Refill to estimate time from a known starting fill to a user-set reserve and count full refill events for a planned run. It supports staffing and material staging only.",
+    "Keep capacity, starting fill, reserve, and observed usage in kilograms. Set the reserve through the responsible equipment procedure, not from this calculator, and describe the run duration on the same time basis as usage.",
+    "The first interval can differ from later intervals when starting fill is below full capacity. Schedule visual or instrument checks before the calculated reserve point and allow for real refill and recovery time.",
+    ["Entering nominal tank volume as adhesive mass.", "Setting reserve equal to or above starting fill.", "Using average consumption when the run has large peaks.", "Treating the calculated event count as an automated refill command."],
+    "The planner excludes sensor error, refill quantity variation, bulk transfer, warm-up recovery, foaming, contamination, operator access, burns, lockout, and the manufacturer’s safe fill method.",
+    ["Before: confirm usable mass limits and observe consumption under the intended run.", "After: place checks in the operating instruction and verify timing without bypassing equipment safeguards."]
+  ),
+  "adhesive-output-calibration": profile(
+    "Use Adhesive Output Calibration to convert one timed, weighed collection into observed grams per minute per active nozzle and compare it with a user-entered target. It is a measurement check, not a fault diagnosis.",
+    "Collect under the equipment manufacturer’s approved procedure, record total grams, exact seconds, and active nozzle count, and use the target and tolerance from a controlled setup record. Repeat samples when the procedure calls for them.",
+    "A within-tolerance result describes only the entered sample. An out-of-tolerance result calls for safe inspection and repeat measurement under the responsible process; it does not tell an operator which setting to change.",
+    ["Collecting adhesive without the approved guarding and burn controls.", "Dividing by nozzles that were not active for the full sample.", "Comparing with a target from another adhesive or setup.", "Changing temperature or pressure solely from the calculator flag."],
+    "The checker does not evaluate temperature, pressure, viscosity, pattern placement, nozzle balance over time, bond quality, calibration traceability, or equipment safety.",
+    ["Before: confirm the safe collection method, target, tolerance, and active configuration.", "After: retain the sample record, repeat as required, and escalate any variance through the equipment procedure."]
+  )
+});
+
 const toolOperations = {
   "dimensional-weight": { category: "Package size and fit", output: "DIM weight", useWhen: "A light package may rate by volume." },
   "length-girth": { category: "Package size and fit", output: "Length + girth", useWhen: "Checking a published package-size limit." },
@@ -730,6 +881,12 @@ Object.assign(toolOperations, {
   "packaging-failure-cost": { category: "Quality and damage control", output: "Direct failure cost", useWhen: "Valuing recorded packaging-related incidents." },
   "packaging-trial-comparison": { category: "Quality and damage control", output: "Two-trial comparison", useWhen: "Comparing pack variants on common criteria." },
   "package-weight-dimension-variance": { category: "Quality and damage control", output: "Measurement variance", useWhen: "Auditing a manifest against a finished pack." }
+  ,"adhesive-bead-volume": { category: "Adhesive application", output: "Bead volume", useWhen: "Translating a round bead pattern into material." }
+  ,"adhesive-batch-requirement": { category: "Adhesive application", output: "Run requirement", useWhen: "Staging adhesive from measured use per pack." }
+  ,"intermittent-bead-savings": { category: "Adhesive application", output: "Intermittent use", useWhen: "Sizing a controlled on/off pattern trial." }
+  ,"adhesive-melt-rate-capacity": { category: "Adhesive application", output: "Hourly demand", useWhen: "Comparing demand with a verified melt rate." }
+  ,"adhesive-tank-refill": { category: "Adhesive application", output: "Time to reserve", useWhen: "Planning checks and refill windows." }
+  ,"adhesive-output-calibration": { category: "Adhesive application", output: "Observed nozzle flow", useWhen: "Checking a timed collection against a target." }
 });
 
 const documentRelations = {
@@ -760,7 +917,9 @@ Object.assign(documentRelations, {
   "packaging-trial-and-damage-review": "Packaging Trial Comparison Tool",
   "packaging-quality-metrics": "Quality and damage-control tools",
   "writing-pack-instructions": "Pack Instruction Builder",
-  "pack-instruction-record-fields": "Pack instruction workflow tools"
+  "pack-instruction-record-fields": "Pack instruction workflow tools",
+  "packaging-hot-melt-setup": "Packaging adhesive application tools",
+  "hot-melt-adhesive-planning-terms": "Packaging adhesive application tools"
 });
 
 const guides = [
@@ -1017,6 +1176,33 @@ guideDepth["writing-pack-instructions"] = {
   reference: "/reference/pack-instruction-record-fields.html"
 };
 
+guides.push({
+  slug: "packaging-hot-melt-setup",
+  title: "How to Plan Packaging Hot-Melt Adhesive Use",
+  reviewed: "August 27, 2026",
+  modified: "2026-08-27",
+  description: "Move from a proposed adhesive bead to measured consumption, hourly capacity, refill timing, and a controlled output check.",
+  intro: "Adhesive arithmetic can prepare a trial and production record, but only the physical pack and the responsible equipment procedure can establish a usable closure method.",
+  sections: [
+    ["Start with the approved application intent", "Identify the actual packaging substrate, adhesive product, equipment configuration, closure path, bead count, and trial owner. Obtain density, melt-rate information, safe operating limits, and handling instructions from current supplier and equipment records rather than from generic presets."],
+    ["Translate the bead, then measure it", "Use the bead calculator for a theoretical round-cylinder starting point. Apply the proposed pattern to representative packs under the approved procedure, weigh adhesive consumption across several normal cycles, and preserve both the prediction and measured grams per pack."],
+    ["Connect use with the run and equipment", "Turn measured grams per pack into batch material and hourly demand. Compare demand with an adhesive-specific verified melt rate, keeping peak allowance visible. Use tank capacity, starting fill, reserve, and observed usage to schedule checks and refill windows."],
+    ["Verify output and the finished closure", "Use a timed collection only under the manufacturer-approved safe method. Compare observed flow with the controlled target and tolerance, then inspect the pattern and run the required physical packaging trial. A calculator result never authorizes temperature, pressure, safety-control, or adhesive changes."]
+  ],
+  checklist: ["Adhesive, substrate, equipment, and pattern identity are recorded.", "Measured grams per pack replace theory for production planning.", "Hourly demand is below a verified melt rate with explicit margin.", "Refill and output checks follow the approved safe procedure."],
+  related: "/adhesive.html"
+});
+
+guideDepth["packaging-hot-melt-setup"] = {
+  prepare: ["Gather the current adhesive data sheet, safety data, equipment manual, and controlled pack requirement.", "Record bead intent, path count, pack rate, tank mass limits, reserve, and output target without importing generic defaults.", "Choose representative cartons and a safe method for weighing consumption and, if authorized, timed output.", "Define the physical closure observations and responsible reviewer before changing the pattern."],
+  scenario: "A small corrugated packing line proposes two 24 in beads and initially estimates 10.42 mL per pack including allowance. A representative trial measures 2.4 g per pack, which becomes the production input. At 600 packs per hour plus 10% allowance, calculated demand is 1.584 kg/h against a verified 2.5 kg/h melt rate. The team schedules a tank check before its user-set reserve and records a safe timed-output sample, then reviews actual closure performance before release.",
+  decisions: [["Theory and weighed use differ", "Use the measured production sample for material and capacity planning, and investigate the documented reason."],["Demand exceeds entered melt rate", "Do not infer a setting change; review rate, pattern, equipment, and adhesive with the responsible supplier or technician."],["Refill falls inside the run", "Stage material and an approved check window without bypassing guarding or safe refill procedure."],["Output exceeds tolerance", "Stop or continue only under the responsible operating procedure, repeat the measurement safely, and retain the variance record."]],
+  mistakes: ["Copying a generic temperature, pressure, or bead recommendation into production.", "Using theoretical bead volume after representative weighed use exists.", "Treating steady-state melt rate as full system capacity.", "Calling a calculator result proof of bond strength or distribution performance."],
+  closeout: ["The released record identifies adhesive, substrate, equipment, and pattern revision.", "Material and capacity figures use representative measured consumption.", "Reserve, refill, and output checks use controlled sources and safe methods.", "Physical closure verification and post-release monitoring have named owners."],
+  relatedGuide: "/guides/packaging-trial-and-damage-review.html",
+  reference: "/reference/hot-melt-adhesive-planning-terms.html"
+};
+
 const references = [
   {
     slug: "package-measurement-terms",
@@ -1228,6 +1414,35 @@ referenceDepth["pack-instruction-record-fields"] = {
   differences: [["Instruction vs packing slip", "The instruction controls the pack method; a packing slip lists shipment contents for an order."],["Instruction vs traveler", "The instruction is reusable; the traveler is specific to a job or batch."],["Routing rule vs operator choice", "A routing rule uses a written observable condition; an unrecorded operator choice has no controlled basis."],["Verification vs approval", "A verification field records an observation; release authority remains with the responsible process and owner."]],
   use: ["Assign the reusable instruction ID and revision.", "Record materials, ordered steps, closure, label, verification, and exception handling.", "Define variant conditions, priority, and a default route.", "Issue a traveler for each controlled batch and retain exceptions at closeout."],
   cautions: ["Do not embed customer personal data in a reusable instruction.", "Do not use the generated record as certification or legal approval.", "Do not overwrite a revision to hide a deviation.", "Confirm product, material, carrier, marketplace, facility, and regulatory requirements in their current sources."]
+};
+
+references.push({
+  slug: "hot-melt-adhesive-planning-terms",
+  title: "Hot-Melt Adhesive Planning Terms",
+  reviewed: "August 27, 2026",
+  modified: "2026-08-27",
+  description: "Define bead geometry, measured consumption, duty cycle, melt rate, usable tank mass, and output-check terms for packaging adhesive planning.",
+  intro: "Keep material use, equipment capacity, refill timing, and physical closure performance as separate records so one calculated value is not mistaken for approval of another.",
+  rows: [
+    ["Fresh round bead", "The approximately cylindrical adhesive path before contact; bonded width after compression is not the same dimension."],
+    ["Nominal bead volume", "The mathematical cylinder volume from entered diameter, length, and path count before observed process losses."],
+    ["Measured grams per pack", "Average adhesive mass consumed across a representative, documented packaging sample under the intended pattern."],
+    ["Process allowance", "A visible user-entered addition for scoped setup and operating variation; it is not a universal percentage."],
+    ["Duty cycle", "Adhesive-on length divided by the full on-plus-off repeat length for an intermittent pattern."],
+    ["Hourly demand", "Measured or planned grams per pack multiplied by sustained packs per hour and any explicit allowance."],
+    ["Melt rate", "Adhesive-specific mass the entered system can melt per hour under stated conditions; it is not tank capacity."],
+    ["Melt-rate margin", "Entered melt rate minus calculated steady hourly demand; positive margin is not proof of total system capability."],
+    ["Operating reserve", "User-controlled mass intended to remain before refill action under the responsible equipment procedure."],
+    ["Timed output sample", "Collected mass over measured time for the active nozzle configuration, taken only under an approved safe procedure."]
+  ]
+});
+
+referenceDepth["hot-melt-adhesive-planning-terms"] = {
+  overview: "Packaging adhesive planning connects four distinct records: the intended bead geometry, representative measured consumption, steady material and equipment capacity, and safe process verification. Each value has a different source and decision boundary. None of them alone establishes substrate compatibility or closure performance.",
+  example: "A theoretical bead estimate can suggest 10.42 mL per pack while a production sample records 2.4 g per pack because applied geometry, squeeze-out, switching, and measurement basis differ. Use measured mass for batch and hourly demand. Compare that demand with an adhesive-specific melt rate, then keep the refill plan and timed-output sample as separate operating checks.",
+  differences: [["Bead volume vs bonded area", "Volume estimates fresh material quantity; bonded area and strength depend on the physical interface."],["Melt rate vs tank capacity", "Melt rate is mass per time; capacity is stored mass."],["Demand margin vs process capability", "Positive arithmetic headroom does not verify warm-up, peak cycling, delivery components, or bond performance."],["Output check vs diagnosis", "A timed sample can flag variance but cannot identify its equipment or material cause."]],
+  use: ["Identify current adhesive, substrate, equipment, and pattern records.", "Predict bead quantity only as a trial starting point, then measure representative consumption.", "Check batch material, hourly demand, melt-rate margin, and refill timing separately.", "Verify output and physical closure under the approved safe and quality procedures."],
+  cautions: ["Hot adhesive and pressurized equipment can cause serious injury; follow the manufacturer’s current safety instructions.", "Do not use these terms to select temperature, pressure, adhesive chemistry, or a minimum bond pattern.", "Density and melt rate are product- and condition-specific.", "Physical package trials and responsible approval remain required."]
 };
 
 const basicPages = [
@@ -1473,7 +1688,7 @@ function homepage() {
   <section class="content-section content-section-muted"><div class="page-shell">
     <div class="section-title"><span class="section-code">Featured operations / 12 routes</span><h2>Packaging operations register</h2><p>Start with a common decision, or open the complete register for all ${tools.length} calculators.</p></div>
     ${operationsTable(["box-size","void-fill","tape-usage","packaging-cost","packaging-supply-reorder-point","order-packing-time","kitting-cost","master-carton-dimensions","master-carton-weight","cases-per-pallet","pallet-height","pallet-utilization"].map((slug) => tools.find((tool) => tool.slug === slug)))}
-    <div class="button-row"><a class="button button-primary" href="/tools.html">View all ${tools.length} calculators</a><a class="button button-quiet" href="/pack-instructions.html">Open pack instruction workflow</a><a class="button button-quiet" href="/guides/master-carton-planning.html">Plan master cartons</a><a class="button button-quiet" href="/guides/pallet-planning-basics.html">Plan pallet loads</a></div>
+    <div class="button-row"><a class="button button-primary" href="/tools.html">View all ${tools.length} calculators</a><a class="button button-quiet" href="/adhesive.html">Plan adhesive application</a><a class="button button-quiet" href="/pack-instructions.html">Open pack instruction workflow</a><a class="button button-quiet" href="/guides/master-carton-planning.html">Plan master cartons</a><a class="button button-quiet" href="/guides/pallet-planning-basics.html">Plan pallet loads</a></div>
   </div></section>
   <section class="content-section"><div class="page-shell">
     <div class="section-title"><span class="section-code">Controlled documents</span><h2>Procedures and reference data</h2><p>Measurement procedures explain what to do. Reference sheets define the terms and assumptions used in calculations.</p></div>
@@ -1492,6 +1707,17 @@ function qualityHub() {
 <section class="content-section"><div class="page-shell"><div class="section-title"><span class="section-code">Quality review / 04 records</span><h2>Move from an observed issue to a controlled comparison.</h2><p>Define the review population first, preserve raw evidence, compare a change on common criteria, and monitor actual shipments after release.</p></div>${operationsTable(qualityTools)}</div></section>
 <section class="content-section content-section-muted"><div class="page-shell"><div class="document-index"><section class="document-group"><h3>Procedure</h3><ol class="document-register"><li><a href="/guides/packaging-trial-and-damage-review.html"><code>G13</code><span><strong>Packaging Trial and Shipping Damage Review</strong><small>Prepare comparable trials, record deviations, and monitor field performance.</small></span></a></li></ol></section><section class="document-group"><h3>Reference</h3><ol class="document-register"><li><a href="/reference/packaging-quality-metrics.html"><code>R11</code><span><strong>Packaging Quality and Damage Metrics</strong><small>Define rates, costs, percentage-point differences, variance, and evidence boundaries.</small></span></a></li></ol></section></div></div></section>
 <section class="operations-notice"><div class="page-shell operations-notice-grid"><div><h2>Record, compare, then verify.</h2><p>These tools organize user-entered observations. They do not provide AQL acceptance, ISTA certification, carrier liability, or protection guarantees.</p></div><ol class="verify-list"><li><b>01 / Define</b>Write the population, damage rule, units, and tolerance source.</li><li><b>02 / Compare</b>Keep counts, costs, measurements, and deviations on the same basis.</li><li><b>03 / Verify</b>Inspect the physical pack and use the responsible approval process.</li></ol></div></section></main>${footer()}`;
+}
+
+function adhesiveHub() {
+  const file = "adhesive.html";
+  const title = "Packaging Adhesive Application Tools";
+  const description = "Plan hot-melt bead volume, measured batch use, intermittent-pattern savings, melt-rate demand, tank refill timing, and output checks.";
+  return `${head({ file, title, description, schema: websiteSchema(file, title, description) })}${header("Tools")}
+<main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: "Adhesive application" }])}<p class="dispatch-meta"><span>Operations cluster</span><span>${adhesiveTools.length} browser-based calculators</span><span>No equipment control</span></p><h1>${title}</h1><p class="lede">Move from an intended round bead to measured material use, hourly capacity, refill timing, and a safe output-check record without inventing adhesive or equipment settings.</p></div></header>
+<section class="content-section"><div class="page-shell"><div class="section-title"><span class="section-code">Adhesive planning / 06 decisions</span><h2>Predict, measure, plan, then verify.</h2><p>Use bead geometry only to start a trial. Replace it with weighed consumption for batch and capacity work, then keep refill and timed-output checks under the responsible equipment procedure.</p></div>${operationsTable(adhesiveTools)}</div></section>
+<section class="content-section content-section-muted"><div class="page-shell"><div class="process-track"><div class="process-step"><b>01</b><h3>Predict</h3><p>Translate the intended round bead into nominal volume and mass.</p></div><div class="process-step"><b>02</b><h3>Measure</h3><p>Weigh representative use per pack and compare pattern options.</p></div><div class="process-step"><b>03</b><h3>Plan</h3><p>Stage run material, check melt-rate margin, and schedule refills.</p></div><div class="process-step"><b>04</b><h3>Verify</h3><p>Check output safely and validate the physical closure before release.</p></div></div><div class="document-index"><section class="document-group"><h3>Procedure</h3><ol class="document-register"><li><a href="/guides/packaging-hot-melt-setup.html"><code>G15</code><span><strong>How to Plan Packaging Hot-Melt Adhesive Use</strong><small>Connect bead intent, measured use, capacity, refill timing, and verification.</small></span></a></li></ol></section><section class="document-group"><h3>Reference</h3><ol class="document-register"><li><a href="/reference/hot-melt-adhesive-planning-terms.html"><code>R13</code><span><strong>Hot-Melt Adhesive Planning Terms</strong><small>Keep bead, demand, melt rate, reserve, and output meanings separate.</small></span></a></li></ol></section></div></div></section>
+<section class="operations-notice"><div class="page-shell operations-notice-grid"><div><h2>Calculate the plan, verify the pack.</h2><p>These tools do not select adhesive, temperature, pressure, nozzle, safety controls, or a minimum bond pattern.</p></div><ol class="verify-list"><li><b>01 / Source</b>Use current adhesive data, equipment instructions, and controlled targets.</li><li><b>02 / Observe</b>Measure consumption and output through approved procedures.</li><li><b>03 / Release</b>Verify the physical closure and monitor actual production.</li></ol></div></section></main>${footer()}`;
 }
 
 function packInstructionsHub() {
@@ -1527,7 +1753,12 @@ function suffix(type) {
     seconds: "sec",
     weight: "lb",
     "weight-any": "weight unit",
-    "generic-unit": "same unit"
+    "generic-unit": "same unit",
+    density: "g/mL",
+    "mass-g": "g",
+    "mass-kg": "kg",
+    "mass-rate": "kg/h",
+    "flow-rate": "g/min/nozzle"
   };
   return labels[type] || "";
 }
@@ -1546,6 +1777,11 @@ function fieldAdvice(tool, field) {
     weight: `Weigh ${label.toLowerCase()} on a suitable scale and use the same weight unit for every weight field.`,
     "weight-any": `Weigh ${label.toLowerCase()} on a suitable scale and use one weight unit for both trial variants.`,
     "generic-unit": `Measure ${label.toLowerCase()} with the same unit and package state as its recorded or observed counterpart.`,
+    density: `Use the current adhesive product density in grams per milliliter for ${label.toLowerCase()}; do not substitute water density.`,
+    "mass-g": `Measure ${label.toLowerCase()} in grams on a suitable scale and preserve the sample boundary.`,
+    "mass-kg": `Enter ${label.toLowerCase()} in kilograms from the equipment limit, level record, or container label named here.`,
+    "mass-rate": `Enter ${label.toLowerCase()} in kilograms per hour from a current product/equipment source or representative observation.`,
+    "flow-rate": `Use the controlled ${label.toLowerCase()} in grams per minute per active nozzle for this exact setup.`,
     "currency-hour": `Use the documented loaded or direct ${label.toLowerCase()} consistently; the calculator does not decide which accounting basis applies.`,
     divisor: `Obtain ${label.toLowerCase()} from the current official service, marketplace, or account method and match its unit system.`
   };
@@ -1582,7 +1818,9 @@ function calculatorPage(tool) {
   const calculationFlow = `<ol class="procedure-list"><li><strong>Validate the ${tool.title} manifest:</strong> confirm that ${tool.fields.slice(0, 3).map((field) => field[1].toLowerCase()).join(", ")} describe the same ${tool.title} pack, batch, or planning period.</li><li><strong>Calculate ${toolOperations[tool.slug].output.toLowerCase()}:</strong> apply <span class="inline-formula">${tool.formula}</span> without rounding intermediate values for ${tool.title}.</li><li><strong>Review the ${toolOperations[tool.slug].output.toLowerCase()} breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this ${tool.title} result.</li></ol>`;
   const workflowLinks = content.workflow.map((item) => `<li>${item}</li>`).join("");
   const nextAction = stripAfterPrefixTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1];
-  const calculatorAssetVersion = tool.slug === "pallet-utilization" ? "20260824-pallet-pattern" : "20260802-quality";
+  const calculatorAssetVersion = adhesiveTools.some(({ slug }) => slug === tool.slug)
+    ? "20260827-adhesive"
+    : tool.slug === "pallet-utilization" ? "20260824-pallet-pattern" : "20260802-quality";
   return `${head({ file, title, description: tool.description, schema })}${header("Tools")}
 <main id="main">
   <header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: title }])}<p class="dispatch-meta"><span>${toolOperations[tool.slug].category}</span><span>Calculation utility</span></p><h1>${title}</h1><p class="lede">${tool.description}</p></div></header>
@@ -1681,10 +1919,10 @@ function indexPage(kind, items) {
   const isTools = kind === "Tools";
   const file = `${kind.toLowerCase()}.html`;
   const title = isTools ? "Packaging Calculators & Workflow Tools" : kind === "Guides" ? "Packaging Guides" : "Packaging Reference";
-  const description = isTools ? `Browse ${tools.length} calculators and ${workflowTools.length} workflow tools for package fit, materials, cost, labor, load planning, quality records, and pack instructions.` : kind === "Guides" ? `Read ${guides.length} practical guides for repeatable packaging and dispatch work.` : `Use ${references.length} detailed reference records for packaging terms, units, materials, costs, cartons, and pallet loads.`;
+  const description = isTools ? `Browse ${tools.length} calculators and ${workflowTools.length} workflow tools for package fit, materials, cost, labor, load planning, adhesive application, quality records, and pack instructions.` : kind === "Guides" ? `Read ${guides.length} practical guides for repeatable packaging and dispatch work.` : `Use ${references.length} detailed reference records for packaging terms, units, materials, costs, cartons, and pallet loads.`;
   return `${head({ file, title, description, schema: websiteSchema(file, title, description) })}${header(kind)}
 <main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: kind }])}<p class="dispatch-meta"><span>${isTools ? "Operations register" : "Controlled documents"}</span><span>${items.length} active records</span></p><h1>${title}</h1><p class="lede">${description}</p></div></header>
-<section class="content-section"><div class="page-shell">${isTools ? `<div class="section-title"><span class="section-code">Calculators / ${tools.length}</span><h2>Calculation register</h2><p>Enter measured or documented values to calculate one defined packaging output.</p></div>${operationsTable(items)}<div class="section-title tools-subsection"><span class="section-code">Workflow tools / ${workflowTools.length}</span><h2>Record and release workflows</h2><p>Check, organize, and generate operating records without accounts or stored input.</p></div>${workflowOperationsTable()}<div class="button-row"><a class="button button-primary" href="/quality.html">Open quality &amp; damage control cluster</a><a class="button button-quiet" href="/pack-instructions.html">Open pack instruction cluster</a></div>` : documentTable(items, kind)}</div></section></main>${footer()}`;
+<section class="content-section"><div class="page-shell">${isTools ? `<div class="section-title"><span class="section-code">Calculators / ${tools.length}</span><h2>Calculation register</h2><p>Enter measured or documented values to calculate one defined packaging output.</p></div>${operationsTable(items)}<div class="section-title tools-subsection"><span class="section-code">Workflow tools / ${workflowTools.length}</span><h2>Record and release workflows</h2><p>Check, organize, and generate operating records without accounts or stored input.</p></div>${workflowOperationsTable()}<div class="button-row"><a class="button button-primary" href="/adhesive.html">Open adhesive application cluster</a><a class="button button-quiet" href="/quality.html">Open quality &amp; damage control cluster</a><a class="button button-quiet" href="/pack-instructions.html">Open pack instruction cluster</a></div>` : documentTable(items, kind)}</div></section></main>${footer()}`;
 }
 
 const guideReferences = {
@@ -1783,8 +2021,8 @@ function articlePage(item, kind) {
   const referenceDetail = kind === "Reference" ? referenceDepth[item.slug] : null;
   if (kind === "Reference" && !referenceDetail) throw new Error(`Missing reference depth for ${item.slug}`);
   const body = kind === "Guides"
-    ? `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#prepare">Prepare the record</a></li>${item.sections.map(([heading], index) => `<li><a href="#section-${index + 1}">${heading}</a></li>`).join("")}<li><a href="#scenario">Working scenario</a></li><li><a href="#decisions">Decision guide</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#closeout">Close-out</a></li><li><a href="#evidence">Evidence and review</a></li><li><a href="#checklist">Checklist</a></li></ul></nav><h2 id="prepare">Prepare the operating record</h2><ol class="procedure-list">${guideDetail.prepare.map((step) => `<li>${step}</li>`).join("")}</ol>${item.sections.map(([heading, text], index) => `<h2 id="section-${index + 1}">${heading}</h2><p>${text}</p><p>In ${item.title}, document the ${heading.toLowerCase()} choice, its measured basis, and any exception that changes the standard procedure.</p>`).join("")}<h2 id="scenario">Working scenario</h2><div class="example-block"><p>${guideDetail.scenario}</p></div><h2 id="decisions">Decision guide</h2><table class="content-table${item.slug === "packaging-trial-and-damage-review" ? " decision-guide-table" : item.slug === "writing-pack-instructions" ? " workflow-record-table" : ""}"><thead><tr><th>Observation</th><th>Operational response</th></tr></thead><tbody>${guideDetail.decisions.map(([signal, action]) => `<tr><th>${signal}</th><td>${action}</td></tr>`).join("")}</tbody></table><h2 id="mistakes">Common mistakes</h2><ul class="check-list">${guideDetail.mistakes.map((mistake) => `<li>${mistake}</li>`).join("")}</ul><h2 id="closeout">Complete and verify the work</h2><p>Close ${item.title} only after its physical result, controlled instruction, and recorded measurements agree with the decision criteria above.</p><ul class="check-list">${guideDetail.closeout.map((check) => `<li>${check}</li>`).join("")}</ul><h2 id="evidence">Evidence, ownership, and review triggers</h2><p>The ${item.title} record should connect the initial requirement—${guideDetail.prepare[0].replace(/\.$/, "").toLowerCase()}—to the released evidence that ${guideDetail.closeout[0].replace(/\.$/, "").toLowerCase()}. Keep the ${item.title} inputs, sample identification, material or equipment revision, date, operator or reviewer role, and exception decision together so a later result can be compared on the same basis.</p><p>Reopen ${item.title} when ${guideDetail.mistakes[0].replace(/\.$/, "").toLowerCase()} is observed, when the product or packaging specification changes, or when damage, rework, time, or consumption moves outside the accepted range. The ${item.title} owner should compare the new condition with the working scenario, repeat the relevant physical check, and issue a revised instruction rather than silently changing an input.</p><p>For periodic review, sample normal work as well as known exceptions. Confirm that the response to “${guideDetail.decisions[0][0]}” still follows the recorded action: ${guideDetail.decisions[0][1]} Retain the ${item.title} evidence long enough to explain inventory settings, cost changes, and any customer or carrier inquiry tied to the pack method.</p><h2 id="checklist">Dispatch checklist</h2><ul>${item.checklist.map((x) => `<li>${x}</li>`).join("")}</ul><div class="caution"><strong>${item.title} planning note:</strong> validate the ${item.title} method with the actual product, materials, handling path, and current shipping requirements.</div>`
-    : `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#overview">Operational meaning</a></li><li><a href="#definitions">Definitions</a></li><li><a href="#example">Applied example</a></li><li><a href="#differences">Key distinctions</a></li><li><a href="#use">How to use this reference</a></li><li><a href="#maintenance">Record and maintenance</a></li><li><a href="#verification">Verification cautions</a></li></ul></nav><h2 id="overview">Operational meaning</h2><p>${referenceDetail.overview}</p><h2 id="definitions">Definitions and operating notes</h2><dl class="reference-ledger">${item.rows.map(([term, text]) => `<div><dt>${term}</dt><dd>${text}</dd></div>`).join("")}</dl><h2 id="example">Applied example</h2><div class="example-block"><p>${referenceDetail.example}</p></div><h2 id="differences">Key distinctions</h2><table class="content-table${item.slug === "pack-instruction-record-fields" ? " workflow-record-table" : ""}"><thead><tr><th>Term or question</th><th>Operational distinction</th></tr></thead><tbody>${referenceDetail.differences.map(([term, text]) => `<tr><th>${term}</th><td>${text}</td></tr>`).join("")}</tbody></table><h2 id="use">How to use this reference</h2><ol class="procedure-list">${referenceDetail.use.map((step) => `<li>${step}</li>`).join("")}</ol><h2 id="maintenance">Record structure and maintenance</h2><p>A working ${item.title} record should identify the source document or measurement, unit and scope, effective date, reviewer role, and the calculator or pack instruction that consumes the value. Start by ${referenceDetail.use[0].replace(/\.$/, "").toLowerCase()}, then preserve the unrounded or source value before any operational rounding or simplification.</p><p>Do not treat the glossary entry “${item.rows[0][0]}” as self-approving data. Link the ${item.title} entry to the applicable drawing, supplier specification, official method, measured sample, or controlled procedure. When ${referenceDetail.cautions[0].replace(/\.$/, "").toLowerCase()} becomes relevant, mark the old record superseded, update linked calculations, and recheck downstream fit, cost, inventory, or handling decisions.</p><p>The ${item.title} applied example shows the minimum audit trail: original inputs, intermediate relationship, displayed result, and the action it supports. A periodic ${item.title} review should also verify that the distinction between “${referenceDetail.differences[0][0]}” and its paired operating meaning remains clear to people entering data.</p><h2 id="verification">Verification cautions</h2><ul class="check-list">${referenceDetail.cautions.map((note) => `<li>${note}</li>`).join("")}</ul><div class="caution"><strong>${item.title} reference note:</strong> recheck every changing ${item.title} value in the current supplier, carrier, marketplace, facility, or regulatory source before operational use.</div>`;
+    ? `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#prepare">Prepare the record</a></li>${item.sections.map(([heading], index) => `<li><a href="#section-${index + 1}">${heading}</a></li>`).join("")}<li><a href="#scenario">Working scenario</a></li><li><a href="#decisions">Decision guide</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#closeout">Close-out</a></li><li><a href="#evidence">Evidence and review</a></li><li><a href="#checklist">Checklist</a></li></ul></nav><h2 id="prepare">Prepare the operating record</h2><ol class="procedure-list">${guideDetail.prepare.map((step) => `<li>${step}</li>`).join("")}</ol>${item.sections.map(([heading, text], index) => `<h2 id="section-${index + 1}">${heading}</h2><p>${text}</p><p>In ${item.title}, document the ${heading.toLowerCase()} choice, its measured basis, and any exception that changes the standard procedure.</p>`).join("")}<h2 id="scenario">Working scenario</h2><div class="example-block"><p>${guideDetail.scenario}</p></div><h2 id="decisions">Decision guide</h2><table class="content-table${["packaging-trial-and-damage-review", "packaging-hot-melt-setup"].includes(item.slug) ? " decision-guide-table" : item.slug === "writing-pack-instructions" ? " workflow-record-table" : ""}"><thead><tr><th>Observation</th><th>Operational response</th></tr></thead><tbody>${guideDetail.decisions.map(([signal, action]) => `<tr><th>${signal}</th><td>${action}</td></tr>`).join("")}</tbody></table><h2 id="mistakes">Common mistakes</h2><ul class="check-list">${guideDetail.mistakes.map((mistake) => `<li>${mistake}</li>`).join("")}</ul><h2 id="closeout">Complete and verify the work</h2><p>Close ${item.title} only after its physical result, controlled instruction, and recorded measurements agree with the decision criteria above.</p><ul class="check-list">${guideDetail.closeout.map((check) => `<li>${check}</li>`).join("")}</ul><h2 id="evidence">Evidence, ownership, and review triggers</h2><p>The ${item.title} record should connect the initial requirement—${guideDetail.prepare[0].replace(/\.$/, "").toLowerCase()}—to the released evidence that ${guideDetail.closeout[0].replace(/\.$/, "").toLowerCase()}. Keep the ${item.title} inputs, sample identification, material or equipment revision, date, operator or reviewer role, and exception decision together so a later result can be compared on the same basis.</p><p>Reopen ${item.title} when ${guideDetail.mistakes[0].replace(/\.$/, "").toLowerCase()} is observed, when the product or packaging specification changes, or when damage, rework, time, or consumption moves outside the accepted range. The ${item.title} owner should compare the new condition with the working scenario, repeat the relevant physical check, and issue a revised instruction rather than silently changing an input.</p><p>For periodic review, sample normal work as well as known exceptions. Confirm that the response to “${guideDetail.decisions[0][0]}” still follows the recorded action: ${guideDetail.decisions[0][1]} Retain the ${item.title} evidence long enough to explain inventory settings, cost changes, and any customer or carrier inquiry tied to the pack method.</p><h2 id="checklist">Dispatch checklist</h2><ul>${item.checklist.map((x) => `<li>${x}</li>`).join("")}</ul><div class="caution"><strong>${item.title} planning note:</strong> validate the ${item.title} method with the actual product, materials, handling path, and current shipping requirements.</div>`
+    : `<p class="lede">${item.intro}</p><nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#overview">Operational meaning</a></li><li><a href="#definitions">Definitions</a></li><li><a href="#example">Applied example</a></li><li><a href="#differences">Key distinctions</a></li><li><a href="#use">How to use this reference</a></li><li><a href="#maintenance">Record and maintenance</a></li><li><a href="#verification">Verification cautions</a></li></ul></nav><h2 id="overview">Operational meaning</h2><p>${referenceDetail.overview}</p><h2 id="definitions">Definitions and operating notes</h2><dl class="reference-ledger">${item.rows.map(([term, text]) => `<div><dt>${term}</dt><dd>${text}</dd></div>`).join("")}</dl><h2 id="example">Applied example</h2><div class="example-block"><p>${referenceDetail.example}</p></div><h2 id="differences">Key distinctions</h2><table class="content-table${["pack-instruction-record-fields", "hot-melt-adhesive-planning-terms"].includes(item.slug) ? " workflow-record-table" : ""}"><thead><tr><th>Term or question</th><th>Operational distinction</th></tr></thead><tbody>${referenceDetail.differences.map(([term, text]) => `<tr><th>${term}</th><td>${text}</td></tr>`).join("")}</tbody></table><h2 id="use">How to use this reference</h2><ol class="procedure-list">${referenceDetail.use.map((step) => `<li>${step}</li>`).join("")}</ol><h2 id="maintenance">Record structure and maintenance</h2><p>A working ${item.title} record should identify the source document or measurement, unit and scope, effective date, reviewer role, and the calculator or pack instruction that consumes the value. Start by ${referenceDetail.use[0].replace(/\.$/, "").toLowerCase()}, then preserve the unrounded or source value before any operational rounding or simplification.</p><p>Do not treat the glossary entry “${item.rows[0][0]}” as self-approving data. Link the ${item.title} entry to the applicable drawing, supplier specification, official method, measured sample, or controlled procedure. When ${referenceDetail.cautions[0].replace(/\.$/, "").toLowerCase()} becomes relevant, mark the old record superseded, update linked calculations, and recheck downstream fit, cost, inventory, or handling decisions.</p><p>The ${item.title} applied example shows the minimum audit trail: original inputs, intermediate relationship, displayed result, and the action it supports. A periodic ${item.title} review should also verify that the distinction between “${referenceDetail.differences[0][0]}” and its paired operating meaning remains clear to people entering data.</p><h2 id="verification">Verification cautions</h2><ul class="check-list">${referenceDetail.cautions.map((note) => `<li>${note}</li>`).join("")}</ul><div class="caution"><strong>${item.title} reference note:</strong> recheck every changing ${item.title} value in the current supplier, carrier, marketplace, facility, or regulatory source before operational use.</div>`;
   const finalBody = applyArticleOverrides(body, item, kind, guideDetail, referenceDetail);
   const related = kind === "Guides" ? item.related : referenceTools[item.slug] || (item.slug.includes("dimensional") ? "/tools/dimensional-weight.html" : item.slug.includes("internal") ? "/tools/box-size.html" : "/tools.html");
   const crossDocument = kind === "Guides" ? (guideReferences[item.slug] || "/reference.html") : (referenceGuides[item.slug] || "/guides.html");
@@ -1853,7 +2091,7 @@ function favicon() {
 
 function indexableFiles() {
   return [
-    "index.html", "tools.html", "guides.html", "reference.html", "quality.html", "pack-instructions.html", "about.html", "contact.html", "privacy.html",
+    "index.html", "tools.html", "guides.html", "reference.html", "quality.html", "adhesive.html", "pack-instructions.html", "about.html", "contact.html", "privacy.html",
     ...tools.map((tool) => `tools/${tool.slug}.html`),
     ...workflowTools.map((tool) => `tools/${tool.slug}.html`),
     ...guides.map((guide) => `guides/${guide.slug}.html`),
@@ -1882,6 +2120,7 @@ function generate() {
   write("guides.html", indexPage("Guides", guides));
   write("reference.html", indexPage("Reference", references));
   write("quality.html", qualityHub());
+  write("adhesive.html", adhesiveHub());
   write("pack-instructions.html", packInstructionsHub());
   tools.slice(1).forEach((tool) => write(`tools/${tool.slug}.html`, calculatorPage(tool)));
   workflowTools.forEach((tool) => write(`tools/${tool.slug}.html`, workflowToolPage(tool)));

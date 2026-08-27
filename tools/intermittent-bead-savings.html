@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Intermittent Bead Savings Calculator | Pack Prep Tools</title>
+  <meta name="description" content="Estimate packaging adhesive use and batch material difference for a proposed intermittent bead duty cycle.">
+  
+  <link rel="canonical" href="https://packpreptools.com/tools/intermittent-bead-savings.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pack Prep Tools">
+  <meta property="og:title" content="Intermittent Bead Savings Calculator">
+  <meta property="og:description" content="Estimate packaging adhesive use and batch material difference for a proposed intermittent bead duty cycle.">
+  <meta property="og:url" content="https://packpreptools.com/tools/intermittent-bead-savings.html">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260802-quality">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260810-calculator-inputs">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XR7JWJ36CD');
+  </script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Intermittent Bead Savings Calculator","applicationCategory":"BusinessApplication","operatingSystem":"Any","url":"https://packpreptools.com/tools/intermittent-bead-savings.html","description":"Estimate packaging adhesive use and batch material difference for a proposed intermittent bead duty cycle.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://packpreptools.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://packpreptools.com/tools.html"},{"@type":"ListItem","position":3,"name":"Intermittent Bead Savings Calculator","item":"https://packpreptools.com/tools/intermittent-bead-savings.html"}]}]}</script>
+</head><body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="header-status"><div class="header-shell"><span>Shipping operations utilities</span><span class="system-state">Calculators online</span></div></div>
+  <div class="header-shell header-main">
+    <a class="brand" href="/" aria-label="Pack Prep Tools home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-button>Menu</button>
+    <nav class="site-nav" id="site-nav" aria-label="Primary" data-site-nav>
+      <a href="/">Home</a><a href="/tools.html" aria-current="page">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <header class="page-banner"><div class="page-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/tools.html">Tools</a> <span aria-hidden="true">/</span> <span>Intermittent Bead Savings Calculator</span></nav><p class="dispatch-meta"><span>Adhesive application</span><span>Calculation utility</span></p><h1>Intermittent Bead Savings Calculator</h1><p class="lede">Estimate packaging adhesive use and batch material difference for a proposed intermittent bead duty cycle.</p></div></header>
+  <section class="calculator-console"><div class="page-shell">
+    <div class="manifest-panel"><div class="manifest-header"><span>Shipment input manifest</span><span>Required fields / visible units</span></div>
+      <form class="calculator-form" data-calculator="intermittent-bead-savings" novalidate><div class="manifest-grid"><div class="field"><label for="continuous">Continuous-pattern adhesive per pack</label><div class="input-shell"><input id="continuous" name="continuous" type="number" inputmode="decimal" min="0" step="any" value="3.2" required aria-describedby="continuous-unit"><span class="suffix" id="continuous-unit">g</span></div></div><div class="field"><label for="onLength">Adhesive-on length</label><div class="input-shell"><input id="onLength" name="onLength" type="number" inputmode="decimal" min="0" step="any" value="2" required aria-describedby="onLength-unit"><span class="suffix" id="onLength-unit">same unit</span></div></div><div class="field"><label for="offLength">Adhesive-off length</label><div class="input-shell"><input id="offLength" name="offLength" type="number" inputmode="decimal" min="0" step="any" value="1" required aria-describedby="offLength-unit"><span class="suffix" id="offLength-unit">same unit</span></div></div><div class="field"><label for="packs">Packs in comparison run</label><div class="input-shell"><input id="packs" name="packs" type="number" inputmode="decimal" min="0" step="any" value="10000" required aria-describedby="packs-unit"><span class="suffix" id="packs-unit">count</span></div></div></div><div class="form-actions"><button class="button button-primary" type="submit">Calculate</button><button class="button button-quiet" type="reset">Reset</button></div><p class="form-error" data-error role="alert" aria-live="polite"></p></form>
+    </div>
+    <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
+  </div></section>
+  <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use Intermittent Bead Savings to quantify the material implication of a repeated adhesive-on and adhesive-off pattern relative to a measured continuous baseline. It defines a trial hypothesis rather than recommending a pattern.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Enter continuous-pattern grams per pack from measurement, then describe one repeated cycle with on and off lengths in the same arbitrary unit. Use the comparison batch size that would actually be evaluated.</p><table class="content-table calculator-input-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Continuous-pattern adhesive per pack</th><td>Measure continuous-pattern adhesive per pack in grams on a suitable scale and preserve the sample boundary.</td></tr><tr><th>Adhesive-on length</th><td>Measure adhesive-on length with the same unit and package state as its recorded or observed counterpart.</td></tr><tr><th>Adhesive-off length</th><td>Measure adhesive-off length with the same unit and package state as its recorded or observed counterpart.</td></tr><tr><th>Packs in comparison run</th><td>Count packs in comparison run in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Intermittent use = continuous use × adhesive-on length ÷ (on length + off length)</div><ol class="procedure-list"><li><strong>Validate the Intermittent Bead Savings Calculator manifest:</strong> confirm that continuous-pattern adhesive per pack, adhesive-on length, adhesive-off length describe the same Intermittent Bead Savings Calculator pack, batch, or planning period.</li><li><strong>Calculate intermittent use:</strong> apply <span class="inline-formula">Intermittent use = continuous use × adhesive-on length ÷ (on length + off length)</span> without rounding intermediate values for Intermittent Bead Savings Calculator.</li><li><strong>Review the intermittent use breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Intermittent Bead Savings Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>A 2-on/1-off pattern has a 66.67% duty cycle. Against 3.2 g continuous use, the estimate is 2.133 g per pack and 10.667 kg less material across 10,000 packs.</p><p><strong>Next action:</strong> After: run a controlled comparison and retain measured consumption, package condition, and field monitoring.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>The duty cycle scales material only when bead cross-section and switching remain comparable. A large calculated reduction increases the importance of checking pattern placement, start/stop consistency, compression, and distribution performance.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Changing bead diameter while attributing all savings to intermittency.</li><li>Using mismatched units for on and off lengths.</li><li>Ignoring start/stop tails and gun response.</li><li>Releasing the estimate without a controlled physical trial.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The calculation does not model adhesive mechanics, substrate, bond area, temperature, pressure, open time, switching delay, or closure strength. It cannot identify a safe minimum pattern.</p>
+    <div class="caution"><strong>Intermittent Bead Savings Calculator estimate only:</strong> verify the Intermittent Bead Savings Calculator intermittent use with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: record the measured continuous baseline and proposed repeat geometry.</li><li>After: run a controlled comparison and retain measured consumption, package condition, and field monitoring.</li></ol><ul class="related-register"><li><a href="/tools/adhesive-bead-volume.html">Adhesive Bead Volume Calculator</a></li><li><a href="/tools/packaging-trial-comparison.html">Packaging Trial Comparison Tool</a></li><li><a href="/guides/packaging-hot-melt-setup.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <p class="meta-line">Last reviewed: August 27, 2026</p>
+  </article></div></section>
+</main><script src="/assets/calculators.js?v=20260827-adhesive" defer></script><footer class="site-footer">
+  <div class="footer-shell footer-main">
+    <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="/tools.html">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a>
+    </nav>
+  </div>
+  <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
+</footer>
+
+<script src="/assets/site.js?v=20260802-quality" defer></script>
+</body>
+</html>

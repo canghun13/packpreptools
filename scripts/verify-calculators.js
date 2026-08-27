@@ -129,7 +129,43 @@ const phaseCases = {
   "cases-per-pallet": [[{palletLength:48,palletWidth:40,caseLength:16,caseWidth:12,layers:5,unit:"in"},45],[{palletLength:10,palletWidth:10,caseLength:5,caseWidth:5,layers:1,unit:"in"},4],[{palletLength:1,palletWidth:1,caseLength:1,caseWidth:1,layers:1,unit:"in"},1],{palletLength:1,palletWidth:1,caseLength:2,caseWidth:2,layers:1,unit:"in"}],
   "pallet-layer-count": [[{cases:86,casesPerLayer:10,maxLayers:10},9],[{cases:20,casesPerLayer:10,maxLayers:2},2],[{cases:1,casesPerLayer:10,maxLayers:1},1],{cases:100,casesPerLayer:10,maxLayers:5}],
   "pallet-height": [[{palletHeight:6,caseHeight:10,layers:6,topAllowance:2,maxHeight:72,unit:"in"},68],[{palletHeight:0,caseHeight:1,layers:1,topAllowance:0,maxHeight:1,unit:"in"},1],[{palletHeight:0,caseHeight:.01,layers:1,topAllowance:0,maxHeight:1,unit:"in"},.01],{palletHeight:1,caseHeight:10,layers:10,topAllowance:0,maxHeight:50,unit:"in"}],
-  "pallet-utilization": [[{palletLength:48,palletWidth:40,caseLength:16,caseWidth:12,casesPerLayer:10,unit:"in"},100],[{palletLength:10,palletWidth:10,caseLength:5,caseWidth:5,casesPerLayer:2,unit:"in"},50],[{palletLength:10,palletWidth:10,caseLength:1,caseWidth:1,casesPerLayer:1,unit:"in"},1],{palletLength:10,palletWidth:10,caseLength:6,caseWidth:6,casesPerLayer:3,unit:"in"}]
+  "pallet-utilization": [[{palletLength:48,palletWidth:40,caseLength:16,caseWidth:12,casesPerLayer:10,unit:"in"},100],[{palletLength:10,palletWidth:10,caseLength:5,caseWidth:5,casesPerLayer:2,unit:"in"},50],[{palletLength:10,palletWidth:10,caseLength:1,caseWidth:1,casesPerLayer:1,unit:"in"},1],{palletLength:10,palletWidth:10,caseLength:6,caseWidth:6,casesPerLayer:3,unit:"in"}],
+  "adhesive-bead-volume": [
+    [{diameter:.125,length:24,beads:2,density:.98,waste:8,unit:"in"},10.42],
+    [{diameter:.2,length:10,beads:1,density:1,waste:0,unit:"cm"},.31],
+    [{diameter:.01,length:.01,beads:1,density:1,waste:0,unit:"cm"},0],
+    {diameter:0,length:1,beads:1,density:1,waste:0,unit:"cm"}
+  ],
+  "adhesive-batch-requirement": [
+    [{packs:2400,gramsPerPack:2.4,waste:8,containerKg:15},6.221],
+    [{packs:100,gramsPerPack:10,waste:0,containerKg:1},1],
+    [{packs:1,gramsPerPack:.01,waste:0,containerKg:1},0],
+    {packs:0,gramsPerPack:1,waste:0,containerKg:1}
+  ],
+  "intermittent-bead-savings": [
+    [{continuous:3.2,onLength:2,offLength:1,packs:10000},2.133],
+    [{continuous:1,onLength:1,offLength:0,packs:1},1],
+    [{continuous:.01,onLength:.01,offLength:100,packs:1},0],
+    {continuous:1,onLength:0,offLength:1,packs:1}
+  ],
+  "adhesive-melt-rate-capacity": [
+    [{gramsPerPack:2.4,packsPerHour:600,allowance:10,meltRate:2.5},1.584],
+    [{gramsPerPack:1,packsPerHour:1000,allowance:0,meltRate:1},1],
+    [{gramsPerPack:.01,packsPerHour:1,allowance:0,meltRate:1},0],
+    {gramsPerPack:0,packsPerHour:1,allowance:0,meltRate:1}
+  ],
+  "adhesive-tank-refill": [
+    [{tankCapacity:15,startFill:12,reserve:3,usage:1.5,runHours:8},6],
+    [{tankCapacity:10,startFill:10,reserve:0,usage:2,runHours:5},5],
+    [{tankCapacity:1,startFill:.02,reserve:.01,usage:1,runHours:.01},.01],
+    {tankCapacity:10,startFill:5,reserve:5,usage:1,runHours:1}
+  ],
+  "adhesive-output-calibration": [
+    [{mass:48,seconds:20,nozzles:2,target:75,tolerance:5},72],
+    [{mass:60,seconds:60,nozzles:1,target:60,tolerance:0},60],
+    [{mass:.01,seconds:100,nozzles:100,target:1,tolerance:100},0],
+    {mass:0,seconds:1,nozzles:1,target:1,tolerance:1}
+  ]
 };
 
 for (const [id, cases] of Object.entries(phaseCases)) {
@@ -139,6 +175,11 @@ for (const [id, cases] of Object.entries(phaseCases)) {
   assert.strictEqual(calculators[id](cases[0][0]).primary, first, `${id}: deterministic after reset/re-entry`);
   checks += 1;
 }
+
+assert.strictEqual(calculators["adhesive-melt-rate-capacity"]({ gramsPerPack: 5, packsPerHour: 1000, allowance: 0, meltRate: 4 }).values["Planning signal"], "Calculated demand exceeds entered melt rate");
+checks += 1;
+assert.strictEqual(calculators["adhesive-output-calibration"]({ mass: 40, seconds: 20, nozzles: 2, target: 75, tolerance: 5 }).values["Tolerance comparison"], "Review output against entered tolerance");
+checks += 1;
 
 const palletPatternReview = calculators["pallet-utilization"]({ palletLength:48, palletWidth:40, caseLength:16, caseWidth:12, casesPerLayer:10, unit:"in" });
 assert.strictEqual(palletPatternReview.values["Simple-grid reference"], "9 cases/layer");
@@ -188,6 +229,6 @@ throws("package-weight-dimension-variance", { ...varianceExample, observedWeight
 assert.deepStrictEqual(calculators["package-weight-dimension-variance"](varianceExample), calculators["package-weight-dimension-variance"](varianceExample));
 checks += 1;
 
-assert.strictEqual(Object.keys(calculators).length, 36, "Expected 36 calculator implementations");
-assert.ok(checks >= 181, `Expected at least 181 independent checks; found ${checks}`);
+assert.strictEqual(Object.keys(calculators).length, 42, "Expected 42 calculator implementations");
+assert.ok(checks >= 213, `Expected at least 213 independent checks; found ${checks}`);
 console.log(`CALCULATION VERIFICATION PASS — ${Object.keys(calculators).length} calculators, ${checks} independent checks`);

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adhesive Bead Volume Calculator | Pack Prep Tools</title>
+  <meta name="description" content="Estimate packaging adhesive bead volume and mass from bead diameter, path length, path count, density, and a user-entered process allowance.">
+  
+  <link rel="canonical" href="https://packpreptools.com/tools/adhesive-bead-volume.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pack Prep Tools">
+  <meta property="og:title" content="Adhesive Bead Volume Calculator">
+  <meta property="og:description" content="Estimate packaging adhesive bead volume and mass from bead diameter, path length, path count, density, and a user-entered process allowance.">
+  <meta property="og:url" content="https://packpreptools.com/tools/adhesive-bead-volume.html">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260802-quality">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260810-calculator-inputs">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XR7JWJ36CD');
+  </script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Adhesive Bead Volume Calculator","applicationCategory":"BusinessApplication","operatingSystem":"Any","url":"https://packpreptools.com/tools/adhesive-bead-volume.html","description":"Estimate packaging adhesive bead volume and mass from bead diameter, path length, path count, density, and a user-entered process allowance.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://packpreptools.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://packpreptools.com/tools.html"},{"@type":"ListItem","position":3,"name":"Adhesive Bead Volume Calculator","item":"https://packpreptools.com/tools/adhesive-bead-volume.html"}]}]}</script>
+</head><body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="header-status"><div class="header-shell"><span>Shipping operations utilities</span><span class="system-state">Calculators online</span></div></div>
+  <div class="header-shell header-main">
+    <a class="brand" href="/" aria-label="Pack Prep Tools home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-button>Menu</button>
+    <nav class="site-nav" id="site-nav" aria-label="Primary" data-site-nav>
+      <a href="/">Home</a><a href="/tools.html" aria-current="page">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <header class="page-banner"><div class="page-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/tools.html">Tools</a> <span aria-hidden="true">/</span> <span>Adhesive Bead Volume Calculator</span></nav><p class="dispatch-meta"><span>Adhesive application</span><span>Calculation utility</span></p><h1>Adhesive Bead Volume Calculator</h1><p class="lede">Estimate packaging adhesive bead volume and mass from bead diameter, path length, path count, density, and a user-entered process allowance.</p></div></header>
+  <section class="calculator-console"><div class="page-shell">
+    <div class="manifest-panel"><div class="manifest-header"><span>Shipment input manifest</span><span>Required fields / visible units</span></div>
+      <form class="calculator-form" data-calculator="adhesive-bead-volume" novalidate><div class="manifest-grid"><div class="field"><label for="unit">Measurement unit</label><select id="unit" name="unit"><option value="in">Inches (in)</option><option value="cm">Centimeters (cm)</option></select></div><div class="field"><label for="diameter">Round bead diameter</label><div class="input-shell"><input id="diameter" name="diameter" type="number" inputmode="decimal" min="0" step="any" value="0.125" required aria-describedby="diameter-unit"><span class="suffix" id="diameter-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="length">Bead length per pack</label><div class="input-shell"><input id="length" name="length" type="number" inputmode="decimal" min="0" step="any" value="24" required aria-describedby="length-unit"><span class="suffix" id="length-unit"><span data-unit-suffix>in / cm</span></span></div></div><div class="field"><label for="beads">Bead paths per pack</label><div class="input-shell"><input id="beads" name="beads" type="number" inputmode="decimal" min="0" step="any" value="2" required aria-describedby="beads-unit"><span class="suffix" id="beads-unit">count</span></div></div><div class="field"><label for="density">Adhesive density</label><div class="input-shell"><input id="density" name="density" type="number" inputmode="decimal" min="0" step="any" value="0.98" required aria-describedby="density-unit"><span class="suffix" id="density-unit">g/mL</span></div></div><div class="field"><label for="waste">Setup and process allowance</label><div class="input-shell"><input id="waste" name="waste" type="number" inputmode="decimal" min="0" step="any" value="8" required aria-describedby="waste-unit"><span class="suffix" id="waste-unit">%</span></div></div></div><div class="form-actions"><button class="button button-primary" type="submit">Calculate</button><button class="button button-quiet" type="reset">Reset</button></div><p class="form-error" data-error role="alert" aria-live="polite"></p></form>
+    </div>
+    <section class="output-strip" data-result data-state="idle" tabindex="-1" aria-live="polite"><div class="output-header"><span>Dispatch summary</span><span>Planning estimate</span></div><div class="output-body"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Enter your package details to begin.</p></div><dl class="output-values" data-result-values></dl></div></section>
+  </div></section>
+  <section class="article-zone"><div class="page-shell article-shell"><article class="article-body">
+    <nav class="document-toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#solves">What it solves</a></li><li><a href="#inputs">Choose the inputs</a></li><li><a href="#method">Calculation method</a></li><li><a href="#example">Worked example</a></li><li><a href="#interpretation">Interpretation</a></li><li><a href="#mistakes">Common mistakes</a></li><li><a href="#limits">Assumptions and limitations</a></li><li><a href="#workflow">Related workflow</a></li></ul></nav>
+    <h2 id="solves">What this calculator solves</h2><p>Use Adhesive Bead Volume before a production trial to translate an intended round bead into nominal volume and mass. It is the geometry starting point; Adhesive Batch Requirement should use a weighed per-pack sample once one exists.</p>
+    <h2 id="inputs">How to choose the inputs</h2><p>Measure the proposed bead diameter and total path length in one unit, count repeated paths, and enter density from current product data. Treat the allowance as a visible planning input, not a hidden universal waste factor.</p><table class="content-table calculator-input-table"><thead><tr><th>Input</th><th>How to prepare it</th></tr></thead><tbody><tr><th>Round bead diameter</th><td>Measure round bead diameter on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Bead length per pack</th><td>Measure bead length per pack on the finished item or container surface named here; keep it in the selected unit and include normal production variation.</td></tr><tr><th>Bead paths per pack</th><td>Count bead paths per pack in the exact operating unit shown on the dispatch or inventory record; do not mix eaches, packs, cases, or layers.</td></tr><tr><th>Adhesive density</th><td>Use the current adhesive product density in grams per milliliter for adhesive density; do not substitute water density.</td></tr><tr><th>Setup and process allowance</th><td>Base setup and process allowance on measured comparable work, state what the percentage covers, and review it when the process changes.</td></tr></tbody></table>
+    <h2 id="method">How the calculation works</h2><div class="formula">Planned volume = π × (bead diameter ÷ 2)² × path length × path count × (1 + allowance %)</div><ol class="procedure-list"><li><strong>Validate the Adhesive Bead Volume Calculator manifest:</strong> confirm that round bead diameter, bead length per pack, bead paths per pack describe the same Adhesive Bead Volume Calculator pack, batch, or planning period.</li><li><strong>Calculate bead volume:</strong> apply <span class="inline-formula">Planned volume = π × (bead diameter ÷ 2)² × path length × path count × (1 + allowance %)</span> without rounding intermediate values for Adhesive Bead Volume Calculator.</li><li><strong>Review the bead volume breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this Adhesive Bead Volume Calculator result.</li></ol>
+    <h2 id="example">Worked example</h2><div class="example-block"><p>Two 24 in paths of 0.125 in round bead equal about 9.65 mL nominal volume. With an 8% allowance and density of 0.98 g/mL, plan about 10.42 mL or 10.22 g per pack.</p><p><strong>Next action:</strong> After: weigh representative packs, verify the physical closure, and use measured grams per pack for run planning.</p></div>
+    <h2 id="interpretation">How to interpret the result</h2><p>A smaller bead or shorter path reduces calculated material, but the arithmetic says nothing about adequate contact, compression, open time, or bond performance. Confirm the applied pattern on representative cartons.</p>
+    <h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Entering a flattened bonded width as the fresh round bead diameter.</li><li>Mixing inches and centimeters between diameter and length.</li><li>Using an assumed density when a current product value is available.</li><li>Treating theoretical volume as proof of closure performance.</li></ul>
+    <h2 id="limits">Assumptions and limitations</h2><p>The bead is modeled as a perfect cylinder before contact. Start/stop tails, squeeze-out, stringing, purge, substrate absorption, bead collapse, and equipment variation remain outside the formula.</p>
+    <div class="caution"><strong>Adhesive Bead Volume Calculator estimate only:</strong> verify the Adhesive Bead Volume Calculator bead volume with the physical pack or operating record and the current requirements governing this decision.</div>
+    <h2 id="workflow">Related workflow</h2><ol class="procedure-list"><li>Before: obtain the approved pattern intent and current adhesive density.</li><li>After: weigh representative packs, verify the physical closure, and use measured grams per pack for run planning.</li></ol><ul class="related-register"><li><a href="/tools/adhesive-batch-requirement.html">Adhesive Batch Requirement Calculator</a></li><li><a href="/tools/adhesive-output-calibration.html">Adhesive Output Calibration Checker</a></li><li><a href="/guides/packaging-hot-melt-setup.html">Related guide or reference</a></li><li><a href="/tools.html">All calculators</a></li></ul>
+    <p class="meta-line">Last reviewed: August 27, 2026</p>
+  </article></div></section>
+</main><script src="/assets/calculators.js?v=20260827-adhesive" defer></script><footer class="site-footer">
+  <div class="footer-shell footer-main">
+    <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="/tools.html">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a>
+    </nav>
+  </div>
+  <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
+</footer>
+
+<script src="/assets/site.js?v=20260802-quality" defer></script>
+</body>
+</html>

@@ -41,13 +41,13 @@ function pageUrlForQa(file) {
 
 const allFiles = walk(ROOT);
 const htmlFiles = allFiles.filter((file) => file.endsWith(".html"));
-if (htmlFiles.length !== 76) fail(`Expected exactly 76 public HTML files; found ${htmlFiles.length}.`);
+if (htmlFiles.length !== 85) fail(`Expected exactly 85 public HTML files; found ${htmlFiles.length}.`);
 const toolFiles = htmlFiles.filter((file) => rel(file).startsWith("tools/"));
 const guideFiles = htmlFiles.filter((file) => rel(file).startsWith("guides/"));
 const referenceFiles = htmlFiles.filter((file) => rel(file).startsWith("reference/"));
-if (toolFiles.length !== 40) fail(`Expected exactly 40 tool pages; found ${toolFiles.length}.`);
-if (guideFiles.length !== 14) fail(`Expected exactly 14 guides; found ${guideFiles.length}.`);
-if (referenceFiles.length !== 12) fail(`Expected exactly 12 reference pages; found ${referenceFiles.length}.`);
+if (toolFiles.length !== 46) fail(`Expected exactly 46 tool pages; found ${toolFiles.length}.`);
+if (guideFiles.length !== 15) fail(`Expected exactly 15 guides; found ${guideFiles.length}.`);
+if (referenceFiles.length !== 13) fail(`Expected exactly 13 reference pages; found ${referenceFiles.length}.`);
 
 const titles = new Map();
 const descriptions = new Map();
@@ -213,7 +213,7 @@ for (const file of htmlFiles) {
   }
 }
 
-if (calculatorPageCount !== 36) fail(`Expected exactly 36 calculator pages; found ${calculatorPageCount}.`);
+if (calculatorPageCount !== 42) fail(`Expected exactly 42 calculator pages; found ${calculatorPageCount}.`);
 if (workflowToolPageCount !== 4) fail(`Expected exactly 4 workflow tool pages; found ${workflowToolPageCount}.`);
 
 for (const [paragraph, owners] of paragraphOwners) {
@@ -251,7 +251,7 @@ if (!/\.workflow-document-index\s*{[^}]*margin-top:/i.test(stylesheet)) {
 
 const sitemap = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
 const sitemapUrls = matches(sitemap, /<loc>([^<]+)<\/loc>/g).map((match) => match[1]);
-if (sitemapUrls.length !== 75) fail(`sitemap.xml: expected exactly 75 URLs; found ${sitemapUrls.length}.`);
+if (sitemapUrls.length !== 84) fail(`sitemap.xml: expected exactly 84 URLs; found ${sitemapUrls.length}.`);
 if (new Set(sitemapUrls).size !== sitemapUrls.length) fail("sitemap.xml: duplicate URL.");
 if (sitemapUrls.includes(`${SITE}/404.html`)) fail("sitemap.xml: 404 must not be listed.");
 for (const url of indexableCanonicals) if (!sitemapUrls.includes(url)) fail(`sitemap.xml: missing ${url}.`);

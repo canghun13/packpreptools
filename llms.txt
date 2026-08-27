@@ -2,7 +2,7 @@
 
 Packaging calculations and operating references for repeatable shipment preparation.
 
-## Calculators (36)
+## Calculators (42)
 - [Dimensional Weight Calculator](https://packpreptools.com/tools/dimensional-weight.html): Calculate dimensional weight in pounds or kilograms from package dimensions and a carrier divisor.
 - [Length + Girth Calculator](https://packpreptools.com/tools/length-girth.html): Calculate package length plus girth in inches or centimeters for shipping size checks.
 - [Box Size Calculator](https://packpreptools.com/tools/box-size.html): Estimate minimum internal box dimensions from product size, cushioning thickness, and clearance.
@@ -39,6 +39,12 @@ Packaging calculations and operating references for repeatable shipment preparat
 - [Packaging Failure Cost Calculator](https://packpreptools.com/tools/packaging-failure-cost.html): Estimate direct packaging failure cost from incidents, replacement, reshipment, handling, support labor, and other entered costs.
 - [Packaging Trial Comparison Tool](https://packpreptools.com/tools/packaging-trial-comparison.html): Compare two packaging trial variants on the same observed damage, material cost, packing time, and package-weight criteria.
 - [Package Weight & Dimension Variance Checker](https://packpreptools.com/tools/package-weight-dimension-variance.html): Compare recorded and observed package dimensions and weight using absolute, percentage, and user-entered tolerance differences.
+- [Adhesive Bead Volume Calculator](https://packpreptools.com/tools/adhesive-bead-volume.html): Estimate packaging adhesive bead volume and mass from bead diameter, path length, path count, density, and a user-entered process allowance.
+- [Adhesive Batch Requirement Calculator](https://packpreptools.com/tools/adhesive-batch-requirement.html): Calculate packaging adhesive required for a production run from measured use per pack, allowance, and container mass.
+- [Intermittent Bead Savings Calculator](https://packpreptools.com/tools/intermittent-bead-savings.html): Estimate packaging adhesive use and batch material difference for a proposed intermittent bead duty cycle.
+- [Adhesive Melt Rate Capacity Checker](https://packpreptools.com/tools/adhesive-melt-rate-capacity.html): Check packaging adhesive demand, utilization, and headroom against a supplier- or trial-verified melt rate.
+- [Adhesive Tank Refill Planner](https://packpreptools.com/tools/adhesive-tank-refill.html): Plan packaging adhesive tank refill timing from capacity, starting fill, reserve, observed usage, and run duration.
+- [Adhesive Output Calibration Checker](https://packpreptools.com/tools/adhesive-output-calibration.html): Calculate observed packaging adhesive flow per nozzle and compare it with a user-entered target and tolerance.
 
 ## Workflow tools (4)
 - [Pack Instruction Readiness Checker](https://packpreptools.com/tools/pack-instruction-readiness.html): Check whether a pack instruction contains the minimum product, material, sequence, closure, label, verification, exception, and ownership fields needed for a controlled trial.
@@ -46,7 +52,7 @@ Packaging calculations and operating references for repeatable shipment preparat
 - [Pack Variant Routing Planner](https://packpreptools.com/tools/pack-variant-routing.html): Order user-defined pack-variant rules by priority, identify duplicate-condition conflicts, and create a printable routing sheet with a default instruction.
 - [Pack Job Traveler Generator](https://packpreptools.com/tools/pack-job-traveler.html): Create a batch-specific pack traveler with instruction revision, material identifiers, user-set checkpoint intervals, and closeout fields.
 
-## Guides (14)
+## Guides (15)
 - [How to Measure a Box Correctly](https://packpreptools.com/guides/how-to-measure-a-box.html): Measure package length, width, and height consistently and understand internal versus external dimensions.
 - [Dimensional Weight Explained for Small Sellers](https://packpreptools.com/guides/dimensional-weight-explained.html): Understand why dimensional weight matters, how divisors work, and what small sellers should verify.
 - [How Much Clearance Should Packaging Have?](https://packpreptools.com/guides/how-much-packaging-clearance.html): Plan product clearance for insertion, protective material, movement control, and a practical pack test.
@@ -61,8 +67,9 @@ Packaging calculations and operating references for repeatable shipment preparat
 - [Pallet Planning Basics for Small Shipments](https://packpreptools.com/guides/pallet-planning-basics.html): Estimate layers, height, footprint use, and load limits before physical pallet verification.
 - [Packaging Trial and Shipping Damage Review](https://packpreptools.com/guides/packaging-trial-and-damage-review.html): Plan comparable packaging trials, define damage observations, record deviations, and monitor field results without claiming certification.
 - [How to Write and Release Pack Instructions](https://packpreptools.com/guides/writing-pack-instructions.html): Create SKU-level pack instructions, route variants, issue batch travelers, and preserve physical verification evidence.
+- [How to Plan Packaging Hot-Melt Adhesive Use](https://packpreptools.com/guides/packaging-hot-melt-setup.html): Move from a proposed adhesive bead to measured consumption, hourly capacity, refill timing, and a controlled output check.
 
-## Reference (12)
+## Reference (13)
 - [Package Measurement Terms](https://packpreptools.com/reference/package-measurement-terms.html): A practical glossary of package dimensions, girth, volume, clearance, and billable weight.
 - [Common Packaging Materials and Uses](https://packpreptools.com/reference/common-packaging-materials.html): Compare common boxes, mailers, cushioning, paper, bubble wrap, and closure materials.
 - [Dimensional Weight Divisors](https://packpreptools.com/reference/dimensional-weight-divisors.html): Understand dimensional weight divisors, units, and why current carrier confirmation is essential.
@@ -75,5 +82,6 @@ Packaging calculations and operating references for repeatable shipment preparat
 - [Pallet and Unit Load Terms](https://packpreptools.com/reference/pallet-and-unit-load-terms.html): Define pallet footprint, layers, utilization, overhang, containment, and load limits.
 - [Packaging Quality and Damage Metrics](https://packpreptools.com/reference/packaging-quality-metrics.html): Define observed damage rate, failure cost, trial comparison, measurement variance, and evidence boundaries for packaging reviews.
 - [Pack Instruction and Job Record Fields](https://packpreptools.com/reference/pack-instruction-record-fields.html): Define the identifiers, materials, steps, routing rules, checkpoints, exceptions, and ownership fields used in pack instructions and job travelers.
+- [Hot-Melt Adhesive Planning Terms](https://packpreptools.com/reference/hot-melt-adhesive-planning-terms.html): Define bead geometry, measured consumption, duty cycle, melt rate, usable tank mass, and output-check terms for packaging adhesive planning.
 
 All calculator and workflow outputs are planning records. Verify physical packs and current supplier, marketplace, carrier, facility, and regulatory requirements.

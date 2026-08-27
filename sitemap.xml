@@ -5,6 +5,7 @@
   <url><loc>https://packpreptools.com/guides.html</loc></url>
   <url><loc>https://packpreptools.com/reference.html</loc></url>
   <url><loc>https://packpreptools.com/quality.html</loc></url>
+  <url><loc>https://packpreptools.com/adhesive.html</loc></url>
   <url><loc>https://packpreptools.com/pack-instructions.html</loc></url>
   <url><loc>https://packpreptools.com/about.html</loc></url>
   <url><loc>https://packpreptools.com/contact.html</loc></url>
@@ -45,6 +46,12 @@
   <url><loc>https://packpreptools.com/tools/packaging-failure-cost.html</loc></url>
   <url><loc>https://packpreptools.com/tools/packaging-trial-comparison.html</loc></url>
   <url><loc>https://packpreptools.com/tools/package-weight-dimension-variance.html</loc></url>
+  <url><loc>https://packpreptools.com/tools/adhesive-bead-volume.html</loc></url>
+  <url><loc>https://packpreptools.com/tools/adhesive-batch-requirement.html</loc></url>
+  <url><loc>https://packpreptools.com/tools/intermittent-bead-savings.html</loc></url>
+  <url><loc>https://packpreptools.com/tools/adhesive-melt-rate-capacity.html</loc></url>
+  <url><loc>https://packpreptools.com/tools/adhesive-tank-refill.html</loc></url>
+  <url><loc>https://packpreptools.com/tools/adhesive-output-calibration.html</loc></url>
   <url><loc>https://packpreptools.com/tools/pack-instruction-readiness.html</loc></url>
   <url><loc>https://packpreptools.com/tools/pack-instruction-builder.html</loc></url>
   <url><loc>https://packpreptools.com/tools/pack-variant-routing.html</loc></url>
@@ -63,6 +70,7 @@
   <url><loc>https://packpreptools.com/guides/pallet-planning-basics.html</loc></url>
   <url><loc>https://packpreptools.com/guides/packaging-trial-and-damage-review.html</loc></url>
   <url><loc>https://packpreptools.com/guides/writing-pack-instructions.html</loc></url>
+  <url><loc>https://packpreptools.com/guides/packaging-hot-melt-setup.html</loc></url>
   <url><loc>https://packpreptools.com/reference/package-measurement-terms.html</loc></url>
   <url><loc>https://packpreptools.com/reference/common-packaging-materials.html</loc></url>
   <url><loc>https://packpreptools.com/reference/dimensional-weight-divisors.html</loc></url>
@@ -75,4 +83,5 @@
   <url><loc>https://packpreptools.com/reference/pallet-and-unit-load-terms.html</loc></url>
   <url><loc>https://packpreptools.com/reference/packaging-quality-metrics.html</loc></url>
   <url><loc>https://packpreptools.com/reference/pack-instruction-record-fields.html</loc></url>
+  <url><loc>https://packpreptools.com/reference/hot-melt-adhesive-planning-terms.html</loc></url>
 </urlset>

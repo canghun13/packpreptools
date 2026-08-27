@@ -604,6 +604,125 @@
     };
   }
 
+  function adhesiveBeadVolume(input) {
+    const unit = input.unit === "cm" ? "cm" : "in";
+    const diameter = positive(input.diameter, "Bead diameter", { max: 1000 });
+    const length = positive(input.length, "Bead length per pack", { max: 1000000 });
+    const beads = whole(input.beads, "Bead paths per pack", { max: 100000 });
+    const density = positive(input.density, "Adhesive density", { max: 10 });
+    const waste = positive(input.waste, "Setup and process allowance", { allowZero: true, max: 500 }) / 100;
+    const diameterCm = unit === "cm" ? diameter : diameter * IN_TO_CM;
+    const lengthCm = unit === "cm" ? length : length * IN_TO_CM;
+    const nominalMl = Math.PI * (diameterCm / 2) ** 2 * lengthCm * beads;
+    const plannedMl = nominalMl * (1 + waste);
+    return {
+      primary: `${round(plannedMl, 2)} mL per pack`,
+      values: {
+        "Nominal bead volume": `${round(nominalMl, 2)} mL per pack`,
+        "Planned adhesive mass": `${round(plannedMl * density, 2)} g per pack`,
+        "Entered allowance": `${round(waste * 100, 2)}%`
+      }
+    };
+  }
+
+  function adhesiveBatchRequirement(input) {
+    const packs = whole(input.packs, "Packs in run", { max: 100000000 });
+    const gramsPerPack = positive(input.gramsPerPack, "Measured adhesive per pack", { max: 1000000 });
+    const waste = positive(input.waste, "Setup and process allowance", { allowZero: true, max: 500 }) / 100;
+    const containerKg = positive(input.containerKg, "Adhesive container mass", { max: 1000000 });
+    const nominalKg = packs * gramsPerPack / 1000;
+    const plannedKg = nominalKg * (1 + waste);
+    const containers = Math.ceil(plannedKg / containerKg);
+    return {
+      primary: `${round(plannedKg, 3)} kg for the run`,
+      values: {
+        "Nominal adhesive": `${round(nominalKg, 3)} kg`,
+        "Whole containers required": `${containers}`,
+        "Planned remainder after run": `${round(containers * containerKg - plannedKg, 3)} kg`
+      }
+    };
+  }
+
+  function intermittentBeadSavings(input) {
+    const continuous = positive(input.continuous, "Continuous-pattern adhesive per pack", { max: 1000000 });
+    const onLength = positive(input.onLength, "Adhesive-on length", { max: 1000000 });
+    const offLength = positive(input.offLength, "Adhesive-off length", { allowZero: true, max: 1000000 });
+    const packs = whole(input.packs, "Packs in comparison run", { max: 100000000 });
+    const cycle = onLength + offLength;
+    const duty = onLength / cycle;
+    const intermittent = continuous * duty;
+    const saved = (continuous - intermittent) * packs / 1000;
+    return {
+      primary: `${round(intermittent, 3)} g per pack`,
+      values: {
+        "Adhesive-on duty cycle": `${round(duty * 100, 2)}%`,
+        "Estimated reduction": `${round((1 - duty) * 100, 2)}%`,
+        "Run material difference": `${round(saved, 3)} kg less than continuous`
+      }
+    };
+  }
+
+  function adhesiveMeltRateCapacity(input) {
+    const gramsPerPack = positive(input.gramsPerPack, "Adhesive per pack", { max: 1000000 });
+    const packsPerHour = positive(input.packsPerHour, "Packing rate", { max: 10000000 });
+    const allowance = positive(input.allowance, "Demand allowance", { allowZero: true, max: 500 }) / 100;
+    const meltRate = positive(input.meltRate, "Verified melt rate", { max: 1000000 });
+    const demand = gramsPerPack * packsPerHour / 1000 * (1 + allowance);
+    const headroom = meltRate - demand;
+    return {
+      primary: `${round(demand, 3)} kg/h required`,
+      values: {
+        "Entered melt rate": `${round(meltRate, 3)} kg/h`,
+        "Capacity utilization": `${round(demand / meltRate * 100, 2)}%`,
+        "Melt-rate margin": `${round(headroom, 3)} kg/h`,
+        "Planning signal": headroom >= 0 ? "Entered melt rate covers calculated demand" : "Calculated demand exceeds entered melt rate"
+      }
+    };
+  }
+
+  function adhesiveTankRefill(input) {
+    const tankCapacity = positive(input.tankCapacity, "Tank capacity", { max: 1000000 });
+    const startFill = positive(input.startFill, "Starting fill", { max: 1000000 });
+    const reserve = positive(input.reserve, "Minimum operating reserve", { allowZero: true, max: 1000000 });
+    const usage = positive(input.usage, "Observed usage rate", { max: 1000000 });
+    const runHours = positive(input.runHours, "Planned run time", { max: 1000000 });
+    if (startFill > tankCapacity) throw new Error("Starting fill cannot exceed tank capacity.");
+    if (reserve >= startFill || reserve >= tankCapacity) throw new Error("Reserve must be below both starting fill and tank capacity.");
+    const available = startFill - reserve;
+    const interval = available / usage;
+    const refillQuantity = tankCapacity - reserve;
+    const additionalNeed = Math.max(0, usage * runHours - available);
+    const refills = Math.ceil(additionalNeed / refillQuantity);
+    return {
+      primary: `${round(interval, 2)} h to reserve`,
+      values: {
+        "Usable starting adhesive": `${round(available, 3)} kg`,
+        "Planned run requirement": `${round(usage * runHours, 3)} kg`,
+        "Full refill events during run": `${refills}`,
+        "Usable quantity per full refill": `${round(refillQuantity, 3)} kg`
+      }
+    };
+  }
+
+  function adhesiveOutputCalibration(input) {
+    const mass = positive(input.mass, "Collected adhesive mass", { max: 1000000 });
+    const seconds = positive(input.seconds, "Collection time", { max: 1000000 });
+    const nozzles = whole(input.nozzles, "Active nozzles", { max: 100000 });
+    const target = positive(input.target, "Target flow per nozzle", { max: 1000000 });
+    const tolerance = positive(input.tolerance, "Flow tolerance", { allowZero: true, max: 500 });
+    const actual = mass / seconds * 60 / nozzles;
+    const variance = (actual - target) / target * 100;
+    return {
+      primary: `${round(actual, 3)} g/min per nozzle`,
+      values: {
+        "Total observed flow": `${round(actual * nozzles, 3)} g/min`,
+        "Target flow per nozzle": `${round(target, 3)} g/min`,
+        "Flow variance": `${signed(variance, 2)}%`,
+        "Tolerance comparison": Math.abs(variance) <= tolerance + 1e-9 ? "Within entered tolerance" : "Review output against entered tolerance"
+      }
+    };
+  }
+
   return {
     constants: { IN_TO_CM, LB_TO_KG, CUIN_TO_L },
     helpers: { positive, round, lengthToIn, lengthFromIn, areaFromSqIn, volumeFromCuIn },
@@ -643,7 +762,13 @@
       "shipping-damage-rate": shippingDamageRate,
       "packaging-failure-cost": packagingFailureCost,
       "packaging-trial-comparison": packagingTrialComparison,
-      "package-weight-dimension-variance": packageWeightDimensionVariance
+      "package-weight-dimension-variance": packageWeightDimensionVariance,
+      "adhesive-bead-volume": adhesiveBeadVolume,
+      "adhesive-batch-requirement": adhesiveBatchRequirement,
+      "intermittent-bead-savings": intermittentBeadSavings,
+      "adhesive-melt-rate-capacity": adhesiveMeltRateCapacity,
+      "adhesive-tank-refill": adhesiveTankRefill,
+      "adhesive-output-calibration": adhesiveOutputCalibration
     }
   };
 });
