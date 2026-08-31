@@ -2458,3 +2458,15 @@ git status
 - 최종 생성 inventory: public HTML 85, sitemap URL 84, Tool page 46 = Calculator 42 + Workflow Tool 4, Guide 15, Reference 13, hub/other 11.
 - 현재까지 HIGH risk 없음. MEDIUM: exact keyword volume/GSC가 없어 demand 크기를 수치화하지 못함; theoretical round-bead model은 measured use로 교체해야 함; source가 설명하는 operating relationship을 generic calculator로 제한했으므로 equipment-specific transients는 제외됨. LOW: external SERP/vendor UI 변화, external homepage badge images의 localhost load failure.
 - 이 기록 시점에는 local implementation/QA가 완료됐고 Git commit/push/Pages/production verification은 아래 closing note에서 실제 hash와 run을 확정한다.
+
+### 2026-08-31 회사 PC 재개 — Git/Pages/production closing note
+
+- 재개 시 actual path `C:\Users\song\Documents\ChatGPT\packpreptools\repo`, branch `main`, working tree clean. local HEAD `411c6fd31e62ef6c82d0616cbddcf002e9ddba9b`, `origin/main` 및 `git ls-remote origin refs/heads/main`은 `7e0de008f8341f6e115e29e97ae7f8d1fb3e4df2`; ahead 1 / behind 0이었다. 즉 회사 PC에만 있던 유효한 GO 구현 commit이었고 remote에 별도 변경은 없었다. reset/stash/pull/rewrite 없이 그대로 보존했다.
+- implementation/research commit: `411c6fd31e62ef6c82d0616cbddcf002e9ddba9b` — `Add packaging adhesive application cluster`. `origin/main` push 성공 후 local HEAD = origin/main = actual remote main, ahead/behind 0/0을 확인했다.
+- GitHub Pages `pages build and deployment` run [33345385940](https://github.com/canghun13/packpreptools/actions/runs/33345385940)은 정확히 `411c6fd31e62ef6c82d0616cbddcf002e9ddba9b`를 사용해 **completed / success**였다.
+- production HTTP: Hub, Tool 6, Guide, Reference 총 9 URLs 모두 **200**. live `sitemap.xml`도 200, URL 84개, 신규 9개 누락 0.
+- production browser 1440/390 × 신규 9 pages = 18 combinations: distinct H1/canonical 정상, GA4 `G-XR7JWJ36CD` 유지, horizontal overflow 0, visible viewport escape 0, console error/warning 0.
+- production 390px actual Tool interaction 6/6 정상: `10.42 mL per pack`, `6.221 kg for the run`, `2.133 g per pack`, `1.584 kg/h required`, `6 h to reserve`, `72 g/min per nozzle`; ready state, form error 0. Output Calibration에서 time=0은 expected error를 표시했고 Reset은 20초/default placeholder/idle/error blank로 복구했다.
+- production Guide의 Decision Guide와 Reference의 Key Distinctions는 390px에서 각 row의 `th`/`td`가 block/full-content-width/same left edge로 쌓이고 overflow 0이다. mobile menu는 `aria-expanded false→true`, nav open true, console issue 0이다.
+- production homepage user-managed badge block은 footer 바로 다음에 5개를 보존했다. href/src/alt/order는 KittyLaunch → Sell With Boost → Twelve Tools → Findly.tools → BoostDomainRating이며, repository baseline과 동일하다. 외부 badge hosts의 image는 browser session에서 로드되지 않았지만 console issue는 0이고 site-owned HTML은 변경되지 않았다.
+- 남은 risk: HIGH 없음. MEDIUM — first-party keyword volume 부재와 theoretical bead→measured-use transition 필요. LOW — 외부 SERP/vendor 문서와 badge-host availability 변화. 이 closing note 이외 production code 변경은 없다.
