@@ -2470,3 +2470,59 @@ git status
 - production Guide의 Decision Guide와 Reference의 Key Distinctions는 390px에서 각 row의 `th`/`td`가 block/full-content-width/same left edge로 쌓이고 overflow 0이다. mobile menu는 `aria-expanded false→true`, nav open true, console issue 0이다.
 - production homepage user-managed badge block은 footer 바로 다음에 5개를 보존했다. href/src/alt/order는 KittyLaunch → Sell With Boost → Twelve Tools → Findly.tools → BoostDomainRating이며, repository baseline과 동일하다. 외부 badge hosts의 image는 browser session에서 로드되지 않았지만 console issue는 0이고 site-owned HTML은 변경되지 않았다.
 - 남은 risk: HIGH 없음. MEDIUM — first-party keyword volume 부재와 theoretical bead→measured-use transition 필요. LOW — 외부 SERP/vendor 문서와 badge-host availability 변화. 이 closing note 이외 production code 변경은 없다.
+
+## 2026-09-07 Google Crawl / Discovery / Indexation Path Audit
+
+### 시작 상태와 자료 범위
+
+- actual working path: `C:\Users\song\Documents\ChatGPT\packpreptools\repo`; branch `main`; 시작 working tree clean.
+- starting local HEAD = `origin/main` = `git ls-remote origin refs/heads/main` = `d1e7397bc2b81608f6afc3a11fd0b4ea00df6240`; ahead 0 / behind 0. `git fetch origin main` 후에도 동일했고 pull은 필요하지 않았다.
+- 시작 inventory를 현재 source/QA에서 다시 계산했다: public HTML **85**(indexable sitemap URL 84 + noindex 404 1), Tool **46**(Calculator 42 + Workflow Tool 4), Guide **15**, Reference **13**, indexable hub/other **10**, JavaScript **7**. 최근 cluster는 Packaging Adhesive Application, Pack Instruction & Job Release, Packaging Quality이며 generator authoritative source는 `scripts/generate-site.js`, 계산 logic은 `assets/calculators.js`와 `assets/workflow-tools.js`다.
+- 이 세션에 실제 URL-level GSC export 파일은 없었다. 사용 가능한 최신 자료는 사용자가 제공한 이번 주 요약값(정확한 export 날짜 미제공): Google Performance 약 **7 clicks / 1,145 impressions**(이전 7 / 1,120), `Discovered - currently not indexed` **36**, `Crawled - currently not indexed` **8**다. Discovered는 이전부터 남은 **27** + 최근 Adhesive **9**로 설명됐다.
+- exact old-27 URL identities, URL별 last crawl/export date, URL별 GSC impressions, Bing URL export는 제공되지 않았다. 따라서 이를 추측하거나 36개 표를 허위로 만들지 않았다. 대신 old 27을 모두 포함하는 superset인 **84개 전체 indexable URL**을 live HTTP 및 local graph로 전수 감사했다. `1970-01-01` 값은 이번 자료에서 직접 확인되지 않았으며, 향후 export에 있으면 actual crawl date가 아니라 missing crawl record signal로 해석한다.
+
+### URL grouping과 search-signal 해석
+
+| 그룹 | 확인 가능한 수 | 기술 audit 범위 | 결과 |
+|---|---:|---|---|
+| A. 오래된 existing Discovered | 27 | exact identities 미제공으로 84 indexable URL superset 전수 검사 | blocking defect 없음; URL별 GSC status 재매핑은 export 필요 |
+| B. 최근 Packaging Adhesive Application | 9 | Hub 1 + Tool 6 + Guide 1 + Reference 1 직접 graph/live 확인 | 모두 200/indexable/sitemap/self-canonical/non-orphan; recent — observe |
+| C. 기타 최근 생성 URL | 자료상 0 | 현재 inventory/history 교차 확인 | 별도 reported group 없음 |
+| Crawled—not indexed | 8 | exact identities 미제공; coverage label을 단독 truth로 사용하지 않음 | 일부 Performance impressions/clicks가 있다는 사용자 자료 때문에 reporting mismatch 가능성을 우선 |
+
+- 과거 handover의 URL-level Performance 예: Master Carton Dimensions 4 clicks / 102 impressions, Master Carton Weight 1 / 52, Carton Count 0 / 49, Master Carton Terms 0 / 30, Case Pack 0 / 14. Coverage가 crawled-not-indexed라고 표시한 URL에도 impressions/clicks가 있다는 제공 정보와 함께 보면 label lag/mismatch가 존재한다. 이 때문에 Master Carton title/H1/content/canonical은 변경하지 않았다.
+- Bing visibility는 technical accessibility의 보조 신호일 뿐 Google indexing 보장은 아니며, IndexNow 방식이나 비공식 Google ping을 추가하지 않았다. 84 URL 규모에 enterprise crawl-budget 설명도 적용하지 않았다.
+
+### Technical Crawl Path audit
+
+| 검사 | 전체 indexable URL 결과 | 판정 |
+|---|---|---|
+| HTTP / response | live sitemap 84개 전부 HTTP 200, redirect 0, content-type `text/html`; 최소 body 4,846 bytes; H1 정확히 1개 | empty/thin-response 또는 soft-404 proxy signal 없음 |
+| Canonical | 84/84 expected HTTPS `.html`/root URL과 exact self-canonical; sitemap과 일치 | mismatch, alternate canonical, trailing-slash conflict 없음 |
+| Robots/indexability | 84/84 page meta noindex 없음; non-empty `X-Robots-Tag` 0; `robots.txt` 200, `User-agent: *`, `Allow: /` | block 없음; 의도된 404 noindex만 sitemap 밖에 존재 |
+| Sitemap | `sitemap.xml` 200 / XML / 84 unique URLs; live URL과 정확히 대응; robots sitemap declaration 정상 | missing, duplicate, obsolete, noindex URL 없음; lastmod 인위 갱신 안 함 |
+| Structured/template proxy | 84/84 complete HTML, unique title/description/canonical, valid JSON-LD, one H1; duplicate long paragraph/sentence 0 | severe duplicate/malformed discovery signal 없음 |
+
+### Internal-link graph / architecture 비교
+
+- 84 indexable pages의 실제 HTML `<a href>` graph를 생성했다. zero-incoming **0**, incoming=1 near-orphan **0**, max homepage click depth **2**다. depth distribution은 0: 1 page, 1: 49 pages, 2: 34 pages다. Header/footer를 제거한 contextual graph에서도 모든 Tool/Guide/Reference가 서로 다른 page로부터 최소 **2**개의 incoming links를 가진다. 링크는 JS interaction 없이 HTML에 존재한다.
+- type별 incoming/contextual minimum과 max depth: Tools 46 = 2/2/depth 2, Guides 15 = 2/2/depth 1, References 13 = 2/2/depth 1, indexable hub/other 10 = incoming min 3/depth 2. 모든 Tool은 Tools hub, 모든 Guide/Reference는 각 index hub membership을 통과했다.
+- incoming=2인 낮은 쪽 16 pages의 예로 Carton Cube, Case Pack, Box Utilization, Bubble Wrap, Intermittent Bead, Pack Instruction Readiness/Job Traveler/Routing, Weight/Dimension Variance가 있으나 모두 contextual incoming 2와 depth <=2라 orphan/navigation defect가 아니다.
+- search visibility 비교: Carton Cube incoming 2/depth 2, Case Pack 2/2, Carton Count 3/2, Master Carton Weight 4/1, Master Carton Dimensions 8/1. Visibility가 있는 page도 architecture의 낮은 link-count 범위에 걸쳐 있어 단순 link count 차이를 원인으로 단정할 수 없다.
+- Adhesive 9 pages: Intermittent Bead 2/depth 2, Adhesive hub 3/depth 1, Tank Refill 3/depth 2, Batch Requirement 4/depth 2, Output Calibration 4/depth 2, Reference 5/depth 1, Bead Volume 5/depth 2, Melt Rate Capacity 5/depth 2, Guide 7/depth 1. sitemap/canonical/robots/HTTP/hub/related linkage 모두 정상이다.
+
+### Generator/registry와 QA
+
+- `scripts/generate-site.js`의 registry/category assignment, Tools/Guides/Reference hub generation, cluster hub/related links, canonical, sitemap, `llms.txt`, navigation source를 generated output과 교차 확인했다. registry omission, wrong hub assignment, sitemap omission, canonical source mismatch, JS-only link 또는 broken internal link는 발견되지 않았다.
+- crawl-specific checks 중 sitemap completeness, sitemap→public HTML, self-canonical, accidental noindex, hub/registry membership은 기존 `scripts/qa.js`가 이미 자동 검사한다. zero-incoming/depth는 이 감사에서 전체 graph로 별도 확인했지만 defect가 0이고 사이트가 작고 정적이어서 QA framework 변경의 재발 방지 이익보다 범위 확대가 컸다. 새 framework는 추가하지 않았다.
+- baseline QA: `scripts/qa.js` **PASS** — 85 HTML, 84 sitemap URLs, 7 JS; content QA **PASS** — 42 calculators, 4 workflow tools, 15 guides, 13 references, duplicate long paragraph/sentence 0; responsive tables 42/42 **PASS**. `scripts/verify-calculators.js` **PASS** — 42 calculators / 218 checks. `scripts/verify-workflow-tools.js` **PASS** — 46 checks. `git diff --check` PASS.
+- existing UX source는 변경하지 않았다: calculator responsive inputs, Decision Guide mobile cards, compact Last reviewed, Shipping Damage Rate defaults, Master Carton/Carton Count, Pack Instruction, Pallet Utilization Pattern check, Adhesive cluster 모두 starting commit과 동일하다.
+- live accessibility: `https://packpreptools.com/`, `/tools.html`, `/tools/master-carton-dimensions.html`, `/adhesive.html`, `robots.txt`, `sitemap.xml`을 확인했고 전체 sitemap 84 URLs의 direct HTTP sweep도 모두 200이었다. 현재 live `tools.html` source에는 Adhesive hub와 Adhesive tools가 존재한다. 별도 crawler의 4주 전 Tools snapshot과 최근 Adhesive/Master Carton snapshot이 서로 다른 freshness를 보였지만 이는 current live omission이 아니라 crawl/report timing 차이의 보조 신호다.
+- homepage user-managed badge area는 수정·재생성하지 않았다. `index.html`은 HEAD와 byte-for-byte 동일하고 footer 다음 badge block SHA-256은 `1205454b420a7a14b16f66a984bf5217af327b33f68fb9e30ebd48824198ed68`다. QA로 5개 HTML/href/image/order를 확인했다: KittyLaunch → Sell With Boost → Twelve Tools → Findly.tools → BoostDomainRating; 위치도 footer 다음으로 보존됐다.
+
+### 결론, 변경 범위, 재감사 조건
+
+- **Final decision: TECHNICALLY HEALTHY / OBSERVE.** 84개 전체를 old-27의 superset으로 검사했는데 HTTP, canonical, robots, sitemap, HTML links, click depth, hub membership, generator/registry 어디에도 Google crawl/discovery를 막는 실제 technical defect가 없었다.
+- technical defects: **0**. Production 변경 파일: **0**. 신규 cluster/content/title/H1/internal-link/footer/schema/URL/sitemap lastmod 수정: **0**. 따라서 Google scheduling/reporting 상태를 코드 변경으로 억지로 해결하지 않았다. 이번 commit 대상은 이 audit 기록인 `handover.md`뿐이다.
+- remaining uncertainty: exact URL-level GSC export 부재 때문에 old 27과 crawled 8을 개별 GSC label, last-crawl, impressions, Bing visibility에 join하지 못했다. 이는 site-wide technical audit 결과를 바꾸지는 않지만 다음 감사에서 reporting mismatch를 URL별로 정량화하는 데 필요하다.
+- 다음 재감사 조건: (1) validation start/end date와 export timestamp가 포함된 최신 URL-level Coverage export 및 같은 기간 Performance page export 확보, (2) old 27 중 동일 URL이 충분한 관찰 기간 뒤에도 지속, (3) URL이 200이 아니거나 redirect/soft-404/content-type 변동, (4) self-canonical/noindex/robots/sitemap 불일치 발생, (5) zero/one incoming 또는 homepage depth >2 발생, (6) hub/registry membership 회귀. 자료가 오면 old 27 / Adhesive 9 / crawled 8을 URL key로 join하고 impressions가 있는 coverage-labeled URL을 reporting mismatch로 명시한다.
