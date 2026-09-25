@@ -8,6 +8,16 @@ const ROOT = path.resolve(__dirname, "..");
 const SITE = "https://packpreptools.com";
 const EXPECTED_GA = "G-XR7JWJ36CD";
 const errors = [];
+const targetedCalculatorCopyRules = {
+  "tools/label-cost.html": {
+    forbidden: [/Validate the .* manifest/i, /Next action:<\/strong>\s*After:/i, /Count order count/i],
+    required: ["Calculate good-label demand", "Convert the planned label quantity into whole supplier rolls"]
+  },
+  "tools/bundle-packing-cost.html": {
+    forbidden: [/Validate the .* manifest/i, /Next action:<\/strong>\s*After:/i],
+    required: ["Calculate packing labor", "multiply the displayed per-bundle total and labor subtotal by the planned number of bundles"]
+  }
+};
 
 function fail(message) {
   errors.push(message);
@@ -194,6 +204,15 @@ for (const file of htmlFiles) {
       } else {
         calculatorInputTableCount += 1;
         if (/<td>[^<]*Calculator:\s/i.test(calculatorInputTables[0][0])) fail(`${name}: repeated calculator title found in input guidance.`);
+      }
+      const copyRules = targetedCalculatorCopyRules[name];
+      if (copyRules) {
+        copyRules.forbidden.forEach((pattern) => {
+          if (pattern.test(html)) fail(`${name}: targeted calculator boilerplate remains (${pattern}).`);
+        });
+        copyRules.required.forEach((phrase) => {
+          if (!html.includes(phrase)) fail(`${name}: targeted calculator guidance missing: ${phrase}.`);
+        });
       }
     }
     if (isWorkflowTool) {

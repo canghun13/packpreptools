@@ -2526,3 +2526,48 @@ git status
 - technical defects: **0**. Production 변경 파일: **0**. 신규 cluster/content/title/H1/internal-link/footer/schema/URL/sitemap lastmod 수정: **0**. 따라서 Google scheduling/reporting 상태를 코드 변경으로 억지로 해결하지 않았다. 이번 commit 대상은 이 audit 기록인 `handover.md`뿐이다.
 - remaining uncertainty: exact URL-level GSC export 부재 때문에 old 27과 crawled 8을 개별 GSC label, last-crawl, impressions, Bing visibility에 join하지 못했다. 이는 site-wide technical audit 결과를 바꾸지는 않지만 다음 감사에서 reporting mismatch를 URL별로 정량화하는 데 필요하다.
 - 다음 재감사 조건: (1) validation start/end date와 export timestamp가 포함된 최신 URL-level Coverage export 및 같은 기간 Performance page export 확보, (2) old 27 중 동일 URL이 충분한 관찰 기간 뒤에도 지속, (3) URL이 200이 아니거나 redirect/soft-404/content-type 변동, (4) self-canonical/noindex/robots/sitemap 불일치 발생, (5) zero/one incoming 또는 homepage depth >2 발생, (6) hub/registry membership 회귀. 자료가 오면 old 27 / Adhesive 9 / crawled 8을 URL key로 join하고 impressions가 있는 coverage-labeled URL을 reporting mismatch로 명시한다.
+
+## 2026-09-25 — 검색 신호 기반 Label Cost / Bundle Packing Cost 기존 페이지 품질 개선
+
+### 시작 상태와 범위
+
+- actual path: `C:\Users\cangh\OneDrive\문서\packpreptools`; branch `main`; origin `https://github.com/canghun13/packpreptools.git`.
+- starting local HEAD = `origin/main` = actual remote main = `8e180625ead151cb9667e1cfab3e1e8828b4ec47`; ahead/behind `0/0`; working tree clean. 이전 턴 뒤 local 또는 remote 변경이 없음을 다시 확인했다.
+- 시작 원장: public HTML **85**, sitemap URL **84**, Tool page **46** = Calculator **42** + Workflow Tool **4**, Guide **15**, Reference **13**, indexable hub/other **10** + noindex 404 **1**, JavaScript **7**.
+- 최근 Google crawl/indexation audit의 `TECHNICALLY HEALTHY / OBSERVE` 결론은 반복하지 않았다. 신규 cluster/page, Carton Count, Master Carton, Adhesive cluster도 이번 범위에서 제외했다.
+- 이번 주 별도 GSC/Coverage/Bing/GA4 export 파일은 checkout 또는 제공 attachment에서 확인되지 않았다. 사용자가 제공한 최신 Bing 신호만 방향 근거로 사용했다: Label Cost 약 9 impressions / 평균 위치 약 5.22 / label material·unit-cost 계산 intent; Bundle Packing Cost 약 4 impressions / 평균 위치 약 1.5 / hourly labor rate와 bundle packing cost intent. 작은 표본을 title/H1 변경 근거로 사용하지 않았다.
+
+### 실제 page/source audit와 query intent 비교
+
+- 두 URL 모두 title, H1, meta description, canonical, input set, formula, 결과 JavaScript는 intent와 일치했다. 따라서 해당 요소를 검색어에 맞춰 바꾸거나 exact query를 삽입하지 않았다.
+- Label Cost는 order count × labels/order에 waste를 더해 whole-label quantity를 만든 뒤 unit cost를 적용하며, 결과에 total cost, labels to plan, base labels, cost/order를 제공한다. 핵심 계산 intent는 충족했지만 input table의 `Count order count`, `Validate the Label Cost Calculator manifest`, 계산기명 반복, `Next action: After:`가 읽기를 방해했고, usable label unit cost와 supplier roll 전환 설명이 충분히 직접적이지 않았다.
+- Bundle Packing Cost는 items × handling cost + material + minutes/60 × hourly rate로 per-bundle cost와 handling/material/labor subtotals를 제공한다. 핵심 계산 intent는 충족했지만 generic method가 minutes→hourly labor relationship을 드러내지 않았고, batch/monthly bundle quantity에 per-bundle result를 어떻게 적용할지 설명이 약했다. `manifest`, 계산기명 반복, `Next action: After:`도 동일하게 존재했다.
+- 전체 영향 조사: 수정 전 `Validate the … manifest`는 Calculator **42/42**, `Next action: After:`는 **36/42**에 존재했다. 공통 template이지만 페이지별 formula/input/action 문맥이 다르고 이번 search signal 대상이 두 URL뿐이므로 global rewrite를 하지 않았다. 두 페이지에 scoped content override를 적용한 뒤 잔여 범위는 각각 **40**, **34**페이지다. 이는 별도 content-quality sweep 후보이지 이번 작업의 자동 수정 대상이 아니다.
+
+### authoritative 수정과 생성 결과
+
+- authoritative source `scripts/generate-site.js`의 profile에 optional scoped details(`fieldAdvice`, `methodSteps`, `nextAction`, `caution`)를 허용하고 두 slug에만 값을 제공했다. 기본 40 Calculator rendering은 이전과 동일하다.
+- `/tools/label-cost.html`: eligible orders, labels/order, usable unit cost, measured waste의 입력 취득을 직접 설명했다. method를 good-label demand → observed waste/whole-label rounding → total/cost-per-order review로 정리했다. next action을 usable on-hand stock, supplier rolls, replenishment trigger로 연결하고 related Tool을 Supply Reorder Point로 맞췄다.
+- `/tools/bundle-packing-cost.html`: finished items, incremental handling, bundle-only material, per-bundle observed minutes, direct/loaded labor-rate basis을 분리했다. method에서 labor = minutes ÷ 60 × hourly rate를 명시하고 per-bundle subtotal을 planned bundle quantity에 적용하는 다음 행동을 설명했다. Monthly Packaging Spend 연결을 추가했다.
+- `scripts/qa.js`에 두 target만 대상으로 `Validate the … manifest`, `Next action: After:`, `Count order count` 재발 금지 및 핵심 method/next-action 문구 존재 검사를 추가했다. QA framework 전체를 리팩터링하지 않았다.
+- generated output은 target HTML 2개만 변경됐다. title, H1, meta description, URL, canonical, visible formula 문자열, field ID/default, `assets/calculators.js`, validation/Reset logic, sitemap/llms와 다른 production page는 변경하지 않았다. 두 page의 Last reviewed는 `September 25, 2026`으로 갱신했다.
+
+### 계산·자동·브라우저 QA
+
+- syntax/generation: `node --check scripts/generate-site.js`, `node --check scripts/qa.js`, `node scripts/generate-site.js` PASS. 실제 content diff는 `scripts/generate-site.js`, `scripts/qa.js`, target HTML 2개뿐이다.
+- `scripts/qa.js`: **PASS — 85 HTML, 84 sitemap URLs, 7 JavaScript files**. content **PASS — 42 Calculator, 4 Workflow Tool, 15 Guide, 13 Reference; duplicate long paragraph/sentence 0**. responsive table **PASS — 42/42**.
+- `scripts/verify-calculators.js`: **PASS — 42 Calculator, 218 independent checks**. `scripts/verify-workflow-tools.js`: **PASS — 46 checks**. `git diff --check`: PASS.
+- independent target fixture: Label Cost 기본값 1000 orders × 2 labels × 3% waste × $0.04 = **2,060 labels / $82.40 total / $0.08 per order**. Bundle 기본값 4 × $0.18 + $0.55 + 3/60 × $18 = **$2.17 per bundle**, subtotals **$0.72 handling / $0.55 materials / $0.90 labor**.
+- Windows UI `computer-use`는 이전 턴에 browser URL safety check가 중단시켰으므로 재시도하거나 우회하지 않았다. 이미 설치된 Playwright와 system Edge의 headless browser만 사용해 local generated pages를 실제 렌더링했다.
+- browser QA: target 2 pages × 1440/1280/1024/768/390px = **10/10 PASS**. 각 조합 HTTP 200, horizontal overflow 0, visible viewport escape 0, clipping 0(390px 접근성용 visually-hidden table header 제외), console error 0, page error 0, revised long text wrap 정상, Calculate 기본 결과 정상, Reset default+idle 정상. 390px에서 0 입력 error state/message와 mobile menu expanded/open도 정상이다.
+- 최근 UX 회귀 보호: CSS, `assets/calculators.js`, workflow JS 및 비대상 generated HTML의 실제 diff가 0이다. 따라서 Calculator mobile input table, Decision Guide, compact Last reviewed, Shipping Damage Rate, Master Carton/Carton Count, Pack Instruction, Pallet Utilization, Adhesive Application은 기존 source/output을 유지한다.
+- homepage managed badge block은 generator 전후 footer 다음/site.js 앞 anchor **5개**, 순서와 HTML/href/image/position 유지. normalized SHA-256는 전후 모두 `1205454b420a7a14b16f66a984bf5217af327b33f68fb9e30ebd48824198ed68`이다.
+
+### 결정과 관찰 조건
+
+- **Final decision: EXISTING-PAGE QUALITY GO.** 계산 intent와 기능은 옳았고, 두 검색 신호 대상에 실제 사용자 방해 문구와 설명 공백이 있었으므로 scoped content/source/QA만 수정했다.
+- HIGH risk: 없음. formula/JS/title/H1/meta/URL/indexability는 변경하지 않았다.
+- MEDIUM: 공통 boilerplate가 아직 40/34 Calculator에 남아 있다. 일괄 교체는 별도 전수 문맥 검토와 diff gate가 있을 때만 한다. 이번 두 URL의 Bing impressions/query가 작은 표본이므로 순위·CTR 인과를 단정하지 않는다.
+- LOW: headless Edge로 layout/function을 검증했지만 실제 OS font/zoom 조합은 다를 수 있다. production 배포 뒤 target 2 URL의 HTTP, revised content, calculation, reset, 1440/390 overflow/console을 다시 확인한다.
+- 다음 관찰: 같은 기준의 다음 Bing page/query export에서 두 URL의 impressions, clicks/CTR, average position과 query wording을 비교한다. GSC/GA4 page-level engagement가 제공되면 함께 보되, 새 URL이나 title/H1 변경은 명확한 새 intent 또는 기능 gap 없이는 하지 않는다.
+- 이 기록 시점에는 implementation/QA가 완료됐고 commit/push/Pages/production 결과는 아래 closing note에서 실제 hash와 상태를 확정한다.

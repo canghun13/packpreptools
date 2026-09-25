@@ -224,7 +224,7 @@ const phaseTools = [
   ["multi-item-box-fit", "Multi-item Box Fit Calculator", "Estimate orthogonal grid capacity across six item orientations.", [["boxLength","Box internal length","16","length"],["boxWidth","Box internal width","12","length"],["boxHeight","Box internal height","10","length"],["itemLength","Item length","7","length"],["itemWidth","Item width","5","length"],["itemHeight","Item height","3","length"],["quantity","Required quantity","8","count"]], "Grid capacity = maximum of floor(box side ÷ rotated item side) products", "A 7 × 5 × 3 in item is checked in six orthogonal orientations inside a 16 × 12 × 10 in box.", ["box-utilization","master-carton-dimensions"], "/guides/master-carton-planning.html"],
   ["packaging-material-budget", "Packaging Material Budget Calculator", "Budget variable packaging materials with waste and contingency allowances.", [["orders","Planned orders","1000","count"],["materialCost","Material cost per order","1.35","currency"],["waste","Waste allowance","5","percent"],["contingency","Contingency reserve","3","percent"]], "Budget = orders × material cost × (1 + waste % + contingency %)", "One thousand orders at $1.35 each with 5% waste and 3% contingency require a $1,458 budget.", ["monthly-packaging-spend","packaging-cost"], "/reference/packaging-cost-components.html"],
   ["monthly-packaging-spend", "Monthly Packaging Spend Calculator", "Project monthly and planning-period packaging spend.", [["orders","Monthly orders","1500","count"],["costPerOrder","Variable cost per order","1.45","currency"],["fixedCost","Monthly fixed packaging cost","250","currency"],["months","Planning months","3","count"]], "Monthly spend = monthly orders × cost per order + fixed packaging cost", "At 1,500 orders, $1.45 variable cost, and $250 fixed cost, monthly spend is $2,425.", ["packaging-material-budget","packaging-cost"], "/guides/packaging-cost-reduction-checklist.html"],
-  ["label-cost", "Label Cost Calculator", "Estimate label quantity and cost with a changeable waste allowance.", [["orders","Order count","1000","count"],["labelsPerOrder","Labels per order","2","count"],["unitCost","Cost per label","0.04","currency"],["waste","Waste allowance","3","percent"]], "Label cost = round up [orders × labels per order × (1 + waste %)] × unit cost", "One thousand orders using two $0.04 labels with 3% waste require 2,060 labels costing $82.40.", ["insert-quantity","packaging-material-budget"], "/reference/packaging-cost-components.html"],
+  ["label-cost", "Label Cost Calculator", "Estimate label quantity and cost with a changeable waste allowance.", [["orders","Order count","1000","count"],["labelsPerOrder","Labels per order","2","count"],["unitCost","Cost per label","0.04","currency"],["waste","Waste allowance","3","percent"]], "Label cost = round up [orders × labels per order × (1 + waste %)] × unit cost", "One thousand orders using two $0.04 labels with 3% waste require 2,060 labels costing $82.40.", ["packaging-supply-reorder-point","packaging-material-budget"], "/reference/packaging-cost-components.html"],
   ["insert-quantity", "Insert Quantity Calculator", "Plan cards, leaflets, and instructions with a spoilage allowance.", [["orders","Order count","1200","count"],["insertsPerOrder","Inserts per order","1","count"],["spoilage","Spoilage allowance","4","percent"]], "Inserts = round up [orders × inserts per order × (1 + spoilage %)]", "For 1,200 orders and 4% spoilage, plan 1,248 single inserts.", ["label-cost","packaging-waste-allowance"], "/guides/packaging-inventory-basics.html"],
   ["packaging-waste-allowance", "Packaging Waste Allowance Calculator", "Add an adjustable waste percentage to a base supply requirement.", [["baseQuantity","Base material quantity","1000","count"],["waste","Waste allowance","7","percent"]], "Planned quantity = round up [base quantity × (1 + waste %)]", "A base requirement of 1,000 units with 7% waste becomes 1,070 units.", ["packaging-supply-reorder-point","insert-quantity"], "/reference/void-fill-yield-factors.html"],
   ["packaging-supply-reorder-point", "Packaging Supply Reorder Point Calculator", "Set a packaging supply reorder trigger from use, lead time, and safety stock.", [["dailyUse","Average daily use","80","count"],["leadDays","Supplier lead time","10","count"],["safetyStock","Safety stock","300","count"],["onHand","Current stock","950","count"]], "Reorder point = average daily use × lead days + safety stock", "Using 80 units daily, 10 lead days, and 300 safety units produces a 1,100-unit reorder point.", ["packaging-waste-allowance","monthly-packaging-spend"], "/guides/packaging-inventory-basics.html"],
@@ -232,7 +232,7 @@ const phaseTools = [
   ["labor-capacity-per-shift", "Labor Capacity per Shift Calculator", "Estimate completed orders from staffing, shift time, utilization, and pack time.", [["workers","Packing workers","3","count"],["shiftHours","Shift hours","8","hours"],["utilization","Productive utilization","80","percent"],["minutesPerOrder","Minutes per order","4","minutes"]], "Capacity = workers × shift hours × 60 × utilization % ÷ minutes per order", "Three workers on an eight-hour shift at 80% utilization and four minutes per order can plan 288 orders.", ["order-packing-time","prep-batch-time"], "/guides/packing-station-workflow.html"],
   ["prep-batch-time", "Prep Batch Time Calculator", "Combine setup, per-unit preparation, and quality-check time.", [["units","Batch units","250","count"],["secondsPerUnit","Seconds per unit","35","seconds"],["setupMinutes","Setup minutes","15","minutes"],["checkMinutes","Quality check minutes","20","minutes"]], "Batch time = setup + checks + units × seconds per unit ÷ 60", "Preparing 250 units at 35 seconds each plus 35 minutes of setup and checks takes about 180.8 minutes.", ["order-packing-time","kitting-cost"], "/guides/packing-station-workflow.html"],
   ["kitting-cost", "Kitting Cost Calculator", "Estimate component, packaging, waste, and assembly labor cost per kit.", [["componentCost","Average component cost","1.20","currency"],["components","Components per kit","3","count"],["packaging","Kit packaging cost","0.65","currency"],["minutes","Assembly minutes","4","minutes"],["hourly","Hourly labor rate","18","currency-hour"],["waste","Material waste allowance","2","percent"]], "Kit cost = (components × component cost + packaging) × (1 + waste %) + assembly labor", "Three $1.20 components, $0.65 packaging, 2% waste, and four minutes at $18/hour cost about $5.54 per kit.", ["bundle-packing-cost","prep-batch-time"], "/reference/packaging-cost-components.html"],
-  ["bundle-packing-cost", "Bundle Packing Cost Calculator", "Estimate item handling, bundle materials, and packing labor per bundle.", [["items","Items per bundle","4","count"],["handlingCost","Handling cost per item","0.18","currency"],["bundleMaterials","Bundle materials","0.55","currency"],["minutes","Packing minutes","3","minutes"],["hourly","Hourly labor rate","18","currency-hour"]], "Bundle packing cost = items × handling cost + materials + packing labor", "Four items at $0.18 handling, $0.55 materials, and three minutes at $18/hour cost $2.17 per bundle.", ["kitting-cost","packaging-cost"], "/guides/packaging-cost-reduction-checklist.html"],
+  ["bundle-packing-cost", "Bundle Packing Cost Calculator", "Estimate item handling, bundle materials, and packing labor per bundle.", [["items","Items per bundle","4","count"],["handlingCost","Handling cost per item","0.18","currency"],["bundleMaterials","Bundle materials","0.55","currency"],["minutes","Packing minutes","3","minutes"],["hourly","Hourly labor rate","18","currency-hour"]], "Bundle packing cost = items × handling cost + materials + packing labor", "Four items at $0.18 handling, $0.55 materials, and three minutes at $18/hour cost $2.17 per bundle.", ["kitting-cost","packaging-cost","monthly-packaging-spend"], "/guides/packaging-cost-reduction-checklist.html"],
   ["master-carton-dimensions", "Master Carton Dimensions Calculator", "Estimate minimum internal master carton dimensions from a row, column, and layer layout.", [["itemLength","Packed unit length","8","length"],["itemWidth","Packed unit width","5","length"],["itemHeight","Packed unit height","3","length"],["columns","Layout columns","3","count"],["rows","Layout rows","2","count"],["layers","Layout layers","2","count"],["clearance","Outer clearance per side","0.5","length"],["gap","Gap between units","0.25","length"]], "Master dimension = unit dimension × layout count + internal gaps + two outer clearances", "A 3 × 2 × 2 layout of 8 × 5 × 3 in units with 0.25 in gaps and 0.5 in clearance needs 25.5 × 11.25 × 7.25 in internally.", ["master-carton-weight","carton-cube","carton-count"], "/guides/master-carton-planning.html"],
   ["master-carton-weight", "Master Carton Weight Calculator", "Check estimated packed carton weight against a user-entered planning maximum.", [["units","Units per carton","12","count"],["unitWeight","Weight per unit","1.8","weight"],["tareWeight","Carton and packing weight","2.4","weight"],["maxWeight","Maximum planned weight","30","weight"]], "Packed carton weight = units × unit weight + carton and packing tare", "Twelve 1.8 lb units plus 2.4 lb tare produce a 24 lb master carton, leaving 6 lb to a 30 lb planning maximum.", ["master-carton-dimensions","cases-per-pallet"], "/reference/master-carton-terms.html"],
   ["carton-cube", "Carton Cube Calculator", "Calculate cube per carton and total shipment cube.", [["length","Carton external length","24","length"],["width","Carton external width","16","length"],["height","Carton external height","12","length"],["cartons","Carton count","20","count"]], "Total cube = length × width × height × carton count", "Twenty 24 × 16 × 12 in cartons total about 1.51 m³ or 53.33 ft³.", ["box-volume","cases-per-pallet"], "/reference/master-carton-terms.html"],
@@ -242,6 +242,7 @@ const phaseTools = [
   ["pallet-utilization", "Pallet Utilization Calculator", "Estimate pallet footprint utilization from case footprint and cases per layer.", [["palletLength","Pallet length","48","length"],["palletWidth","Pallet width","40","length"],["caseLength","Case length","16","length"],["caseWidth","Case width","12","length"],["casesPerLayer","Cases per layer","10","count"]], "Footprint utilization = case footprint × cases per layer ÷ pallet footprint × 100; simple-grid reference = the better of straight and 90° rotated single-orientation grids", "Ten 16 × 12 in case footprints use 100% of a 48 × 40 in pallet footprint by area, but exceed the nine-case single-orientation grid reference. That result requires a verified mixed-orientation or engineered layer pattern.", ["cases-per-pallet","pallet-height"], "/reference/pallet-and-unit-load-terms.html"]
 ].map(([slug,title,description,fields,formula,example,related,doc]) => ({
   slug, title, short: description, description, unit: fields.some((field) => field[3] === "length"), currency: fields.some((field) => field[3] === "currency"),
+  reviewed: ["label-cost", "bundle-packing-cost"].includes(slug) ? "September 25, 2026" : undefined,
   fields, formula, example,
   interpretation: "Use the result as an operating plan, compare it with the relevant capacity or budget, and record the assumptions used for the batch.",
   assumptions: slug === "multi-item-box-fit"
@@ -496,8 +497,8 @@ const workflowTools = [
   }
 ];
 
-function profile(solves, inputs, decision, mistakes, limits, workflow) {
-  return { solves, inputs, decision, mistakes, limits, workflow };
+function profile(solves, inputs, decision, mistakes, limits, workflow, details = {}) {
+  return { solves, inputs, decision, mistakes, limits, workflow, ...details };
 }
 
 const toolContent = {
@@ -630,12 +631,27 @@ const toolContent = {
     ["Before: establish a comparable per-order baseline and monthly forecast.", "After: compare actual spend monthly and investigate price, mix, waste, and volume variance."]
   ),
   "label-cost": profile(
-    "Use Label Cost to plan both label quantity and consumable cost for an order run. It accounts for multiple labels per order and an adjustable waste rate. Insert Quantity performs a similar count for documents but does not include a unit-cost output.",
+    "Plan both the usable label quantity and consumable cost for a defined order run. The calculation covers multiple labels per order and an adjustable waste allowance; it does not treat documents or other inserts as labels.",
     "Count every label intentionally applied to one order, including separate identification or handling labels when applicable. Use the landed consumable cost per label on a consistent roll, sheet, or individual basis. Set waste from misprints, setup, damaged stock, and unusable roll ends.",
-    "The quantity is rounded up before cost is calculated because fractional labels cannot be purchased or applied. Review labels per order before adjusting waste: duplicated labels may be a process issue. Convert required labels into whole supplier rolls separately and retain remaining stock.",
+    "Read the planned label quantity together with total cost and cost per order. The tool rounds planned labels up before applying unit cost because a fractional label cannot be issued. Compare planned quantity with usable stock and supplier roll size; keep the resulting roll remainder in the inventory record rather than treating it as waste.",
     ["Dividing roll price by nominal labels while ignoring unusable labels.", "Forgetting secondary labels used only on some orders.", "Applying waste to order count instead of label quantity.", "Treating printer ribbon, ink, or maintenance as included when not entered."],
     "The result excludes roll pack rounding, printer consumables, equipment, labor, freight, taxes, and label obsolescence. It does not determine label size, placement, content, adhesion, or regulatory suitability.",
-    ["Before: map labels by pack method and measure misprint loss.", "After: convert the requirement to rolls and set a supply reorder point."]
+    ["Before: map labels by pack method and measure misprint loss.", "After: convert the requirement to rolls and set a supply reorder point."],
+    {
+      fieldAdvice: {
+        orders: "Enter the number of orders that will use this label set; exclude orders following a different labeling method.",
+        labelsPerOrder: "Count every label applied to one eligible order, including separate identification or handling labels when they are always used.",
+        unitCost: "Divide the landed price of a roll, sheet, or pack by its usable label count, using the same currency selected above.",
+        waste: "Use an observed allowance for setup labels, misprints, damaged stock, and unusable roll ends; do not include supplier pack rounding here."
+      },
+      methodSteps: [
+        "<strong>Calculate good-label demand:</strong> multiply eligible orders by labels per order before adding any loss allowance.",
+        "<strong>Add observed label waste:</strong> multiply good-label demand by one plus the entered waste percentage, then round the quantity up to a whole label.",
+        "<strong>Calculate and review cost:</strong> multiply planned whole labels by cost per label, then compare total cost, cost per order, and labels to plan before converting the requirement into supplier rolls."
+      ],
+      nextAction: "Convert the planned label quantity into whole supplier rolls, account for usable stock already on hand, and use the replenishment trigger when the label is recurring.",
+      caution: "<strong>Planning estimate only:</strong> verify the usable-label count, unit-cost basis, waste allowance, and available stock before issuing or purchasing labels."
+    }
   ),
   "insert-quantity": profile(
     "Use Insert Quantity to order cards, leaflets, instructions, or promotional pieces for a defined order run. It multiplies inserts per order and adds spoilage. Unlike Label Cost, it reports count only and does not assign a monetary value.",
@@ -694,12 +710,28 @@ const toolContent = {
     ["Before: define bill of materials, kit packaging, and assembly boundary.", "After: compare batch time and add final shipment packaging cost separately."]
   ),
   "bundle-packing-cost": profile(
-    "Use Bundle Packing Cost to price the incremental work of grouping several finished items into one sellable or shippable bundle. It combines per-item handling, bundle-specific materials, and bundle packing labor. It does not include the underlying product cost unless entered as handling.",
+    "Price the incremental work of grouping finished items into one sellable or shippable bundle. The result combines per-item handling, bundle-specific materials, and packing labor on a per-bundle basis. It does not include the underlying product cost.",
     "Count items in the bundle, establish handling cost per item from the chosen cost method, enter only materials unique to bundling, and time the bundling action separately from final order packing. Use one currency basis throughout.",
-    "Review whether item handling, materials, or labor drives the total. If bundle count changes, rerun rather than applying a flat cost. Compare the bundled method with separate-item handling while also checking product protection, identification, and picking accuracy.",
+    "Use the three subtotals to see whether item handling, bundle materials, or packing labor drives the cost per bundle. Packing labor equals packing minutes divided by 60, multiplied by the hourly labor rate. For a batch budget, multiply the displayed per-bundle total and labor subtotal by the planned number of bundles outside this tool, then compare that total with the separate-item method.",
     ["Including the full product cost as handling cost by accident.", "Counting final shipment packaging in both bundle materials and order packaging.", "Using assembly time from a different bundle size.", "Ignoring extra labels, bands, or inserts unique to the bundle."],
     "The model assumes identical handling cost per item and a fixed bundle method. It excludes product cost, final shipping container, picking travel, inventory risk, equipment, errors, returns, and promotional pricing.",
-    ["Before: define bundle contents and where the bundling process ends.", "After: add order-level packaging and compare monthly volume impact."]
+    ["Before: define bundle contents and where the bundling process ends.", "After: add order-level packaging and compare monthly volume impact."],
+    {
+      fieldAdvice: {
+        items: "Enter the number of finished items grouped into one bundle; use the same bundle configuration as the timed work.",
+        handlingCost: "Enter the incremental handling cost for one item, excluding the product value and any handling already included in another cost line.",
+        bundleMaterials: "Enter the material cost used once per bundle, such as a band, bag, label, or insert; exclude final shipment packaging counted elsewhere.",
+        minutes: "Time the repeatable handling and packing work for one bundle, excluding one-time setup, breaks, exceptions, and final order packing unless those are intentionally included.",
+        hourly: "Use either a documented direct or loaded hourly labor rate consistently; the calculator converts this rate to labor cost for the entered minutes."
+      },
+      methodSteps: [
+        "<strong>Calculate item handling:</strong> multiply items per bundle by the handling cost for one item.",
+        "<strong>Calculate packing labor:</strong> divide packing minutes by 60 and multiply by the hourly labor rate.",
+        "<strong>Calculate cost per bundle:</strong> add item handling, bundle materials, and packing labor, then review those three subtotals before applying the per-bundle result to a planned batch quantity."
+      ],
+      nextAction: "Add final order-level packaging, multiply the per-bundle result by the planned bundle quantity for a batch or monthly budget, and compare it with the separate-item method.",
+      caution: "<strong>Planning estimate only:</strong> verify the observed packing time, labor-rate basis, bundle materials, and process boundary before using the result in a budget or pricing decision."
+    }
   ),
   "master-carton-dimensions": profile(
     "Use Master Carton Dimensions to design a minimum internal carton around an explicit columns-by-rows-by-layers arrangement. It includes user-entered gaps between units and outer clearance. Multi-item Box Fit screens an existing box; this tool builds dimensions from a chosen layout.",
@@ -1814,10 +1846,15 @@ function calculatorPage(tool) {
   }).join("");
   const content = toolContent[tool.slug];
   if (!content) throw new Error(`Missing content profile for ${tool.slug}`);
-  const inputRows = tool.fields.map((field) => `<tr><th>${field[1]}</th><td>${fieldAdvice(tool, field)}</td></tr>`).join("");
-  const calculationFlow = `<ol class="procedure-list"><li><strong>Validate the ${tool.title} manifest:</strong> confirm that ${tool.fields.slice(0, 3).map((field) => field[1].toLowerCase()).join(", ")} describe the same ${tool.title} pack, batch, or planning period.</li><li><strong>Calculate ${toolOperations[tool.slug].output.toLowerCase()}:</strong> apply <span class="inline-formula">${tool.formula}</span> without rounding intermediate values for ${tool.title}.</li><li><strong>Review the ${toolOperations[tool.slug].output.toLowerCase()} breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this ${tool.title} result.</li></ol>`;
+  const inputRows = tool.fields.map((field) => `<tr><th>${field[1]}</th><td>${content.fieldAdvice?.[field[0]] || fieldAdvice(tool, field)}</td></tr>`).join("");
+  const calculationSteps = content.methodSteps || [
+    `<strong>Validate the ${tool.title} manifest:</strong> confirm that ${tool.fields.slice(0, 3).map((field) => field[1].toLowerCase()).join(", ")} describe the same ${tool.title} pack, batch, or planning period.`,
+    `<strong>Calculate ${toolOperations[tool.slug].output.toLowerCase()}:</strong> apply <span class="inline-formula">${tool.formula}</span> without rounding intermediate values for ${tool.title}.`,
+    `<strong>Review the ${toolOperations[tool.slug].output.toLowerCase()} breakdown:</strong> use the primary result for the stated decision and the secondary values to identify the input or constraint driving this ${tool.title} result.`
+  ];
+  const calculationFlow = `<ol class="procedure-list">${calculationSteps.map((step) => `<li>${step}</li>`).join("")}</ol>`;
   const workflowLinks = content.workflow.map((item) => `<li>${item}</li>`).join("");
-  const nextAction = stripAfterPrefixTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1];
+  const nextAction = content.nextAction || (stripAfterPrefixTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1]);
   const calculatorAssetVersion = adhesiveTools.some(({ slug }) => slug === tool.slug)
     ? "20260827-adhesive"
     : tool.slug === "pallet-utilization" ? "20260824-pallet-pattern" : "20260802-quality";
@@ -1839,7 +1876,7 @@ function calculatorPage(tool) {
     <h2 id="interpretation">How to interpret the result</h2><p>${content.decision}</p>
     <h2 id="mistakes">Common mistakes</h2><ul class="check-list">${content.mistakes.map((mistake) => `<li>${mistake}</li>`).join("")}</ul>
     <h2 id="limits">Assumptions and limitations</h2><p>${content.limits}</p>
-    <div class="caution"><strong>${tool.title} estimate only:</strong> verify the ${tool.title} ${toolOperations[tool.slug].output.toLowerCase()} with the physical pack or operating record and the current requirements governing this decision.</div>
+    <div class="caution">${content.caution || `<strong>${tool.title} estimate only:</strong> verify the ${tool.title} ${toolOperations[tool.slug].output.toLowerCase()} with the physical pack or operating record and the current requirements governing this decision.`}</div>
     <h2 id="workflow">Related workflow</h2><ol class="procedure-list">${workflowLinks}</ol><ul class="related-register">${related}<li><a href="${tool.doc}">Related guide or reference</a></li>${qualityTools.some(({ slug }) => slug === tool.slug) ? '<li><a href="/quality.html">Quality &amp; damage control cluster</a></li>' : ""}<li><a href="/tools.html">All calculators</a></li></ul>
     <p class="meta-line">Last reviewed: ${tool.reviewed || REVIEWED}</p>
   </article></div></section>
