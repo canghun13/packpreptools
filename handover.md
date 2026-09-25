@@ -2571,3 +2571,12 @@ git status
 - LOW: headless Edge로 layout/function을 검증했지만 실제 OS font/zoom 조합은 다를 수 있다. production 배포 뒤 target 2 URL의 HTTP, revised content, calculation, reset, 1440/390 overflow/console을 다시 확인한다.
 - 다음 관찰: 같은 기준의 다음 Bing page/query export에서 두 URL의 impressions, clicks/CTR, average position과 query wording을 비교한다. GSC/GA4 page-level engagement가 제공되면 함께 보되, 새 URL이나 title/H1 변경은 명확한 새 intent 또는 기능 gap 없이는 하지 않는다.
 - 이 기록 시점에는 implementation/QA가 완료됐고 commit/push/Pages/production 결과는 아래 closing note에서 실제 hash와 상태를 확정한다.
+
+### 2026-09-25 Git / Pages / production closing note
+
+- implementation + research record commit: `c67c408518d12e63d187b710c4ebcbc13dbd4a17` — `Improve cost calculator guidance`; `origin/main` push 성공.
+- GitHub Pages `pages build and deployment` run [36097021177](https://github.com/canghun13/packpreptools/actions/runs/36097021177)은 정확히 `c67c408518d12e63d187b710c4ebcbc13dbd4a17`을 사용해 **completed / success**였다.
+- production target 2 pages × 1440/390px = **4/4 PASS**. 두 URL 모두 HTTP 200, exact self-canonical, 기존 title/meta/H1, revised target copy, horizontal overflow 0, viewport escape 0, clipping 0, console error 0, page error 0이었다.
+- production function: Label Cost 기본 Calculate는 `$82.40`, Bundle Packing Cost는 `$2.17`; 두 page 모두 Reset 후 default inputs + idle placeholder로 복구했다.
+- production verification 중 formula, field IDs, calculation JavaScript, validation, target URLs, canonical, GA4, sitemap과 managed badge block은 변경하지 않았다. 이 closing note는 production code를 추가 변경하지 않는다.
+- closing commit을 push한 뒤 local HEAD / `origin/main` / actual remote main, ahead/behind, branch, clean working tree를 최종 확인한다.
