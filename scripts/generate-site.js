@@ -255,6 +255,8 @@ const phaseTools = [
 tools.push(...phaseTools);
 
 phaseTools.find(({ slug }) => slug === "pallet-utilization").reviewed = "August 24, 2026";
+phaseTools.find(({ slug }) => slug === "master-carton-dimensions").reviewed = "October 1, 2026";
+phaseTools.find(({ slug }) => slug === "master-carton-dimensions").exampleNote = "Columns, rows, and layers must each be whole numbers from 1 to 10,000. Packed-unit dimensions, clearance, and gaps may use decimals.";
 
 const qualityTools = [
   {
@@ -739,7 +741,12 @@ const toolContent = {
     "Review the three calculated dimensions and the units-per-carton result together. Round each dimension up to a manufacturable internal size, then obtain or estimate external dimensions separately. If one axis becomes impractical, test a different row-column-layer arrangement rather than simply compressing clearance.",
     ["Entering bare product dimensions instead of the finished inner pack.", "Applying outer clearance once instead of to both sides.", "Forgetting gaps between multiple rows or layers.", "Treating calculated internal size as the external shipping size."],
     "The layout uses identical rectangular units in one orientation. It excludes mixed orientations, dividers with nonuniform thickness, carton board allowance, bulging, compression strength, stacking, loading sequence, and physical stability.",
-    ["Before: approve unit orientation, gaps, and per-carton count.", "After: build a full carton, measure external size, then check weight and cube."]
+    ["Before: approve unit orientation, gaps, and per-carton count.", "After: build a full carton, measure external size, then check weight and cube."],
+    { fieldAdvice: {
+      columns: "Enter a whole number of packed units along the carton length, from 1 to 10,000. A partial column is not a valid rectangular layout.",
+      rows: "Enter a whole number of rows along the carton width, from 1 to 10,000. Columns multiplied by rows gives the units in one layer.",
+      layers: "Enter a whole number of layers along the carton height, from 1 to 10,000. Columns multiplied by rows and layers gives the units per carton."
+    } }
   ),
   "master-carton-weight": profile(
     "Use Master Carton Weight to check product weight plus carton-and-packing tare against an internal planning maximum supplied by the user. It answers a weight question, not a dimensional capacity question. Master Carton Dimensions should establish the layout and unit count first.",
@@ -1837,7 +1844,11 @@ function calculatorPage(tool) {
       ] }
     ]
   };
-  const fields = tool.fields.map(([id, label, value, type]) => `<div class="field"><label for="${id}">${label}</label><div class="input-shell"><input id="${id}" name="${id}" type="number" inputmode="decimal" min="0" step="any" value="${value}" required aria-describedby="${id}-unit"><span class="suffix" id="${id}-unit">${suffix(type)}</span></div></div>`).join("");
+  const fields = tool.fields.map(([id, label, value, type]) => {
+    const layoutCount = tool.slug === "master-carton-dimensions" && ["columns", "rows", "layers"].includes(id);
+    const constraints = layoutCount ? 'inputmode="numeric" min="1" max="10000" step="1"' : 'inputmode="decimal" min="0" step="any"';
+    return `<div class="field"><label for="${id}">${label}</label><div class="input-shell"><input id="${id}" name="${id}" type="number" ${constraints} value="${value}" required aria-describedby="${id}-unit"><span class="suffix" id="${id}-unit">${suffix(type)}</span></div></div>`;
+  }).join("");
   const select = tool.select ? `<div class="field field-wide"><label for="${tool.select[0]}">${tool.select[1]}</label><select id="${tool.select[0]}" name="${tool.select[0]}">${tool.select[2].map(([value, label]) => `<option value="${value}">${label}</option>`).join("")}</select></div>` : "";
   const exampleNote = tool.exampleNote ? `<p class="manifest-note">${tool.exampleNote}</p>` : "";
   const related = tool.related.map((slug) => {
@@ -1857,7 +1868,8 @@ function calculatorPage(tool) {
   const nextAction = content.nextAction || (stripAfterPrefixTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1]);
   const calculatorAssetVersion = adhesiveTools.some(({ slug }) => slug === tool.slug)
     ? "20260827-adhesive"
-    : tool.slug === "pallet-utilization" ? "20260824-pallet-pattern" : "20260802-quality";
+    : tool.slug === "pallet-utilization" ? "20260824-pallet-pattern"
+    : tool.slug === "master-carton-dimensions" ? "20261001-whole-layout" : "20260802-quality";
   return `${head({ file, title, description: tool.description, schema })}${header("Tools")}
 <main id="main">
   <header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: title }])}<p class="dispatch-meta"><span>${toolOperations[tool.slug].category}</span><span>Calculation utility</span></p><h1>${title}</h1><p class="lede">${tool.description}</p></div></header>

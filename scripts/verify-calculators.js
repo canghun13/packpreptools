@@ -229,6 +229,26 @@ throws("package-weight-dimension-variance", { ...varianceExample, observedWeight
 assert.deepStrictEqual(calculators["package-weight-dimension-variance"](varianceExample), calculators["package-weight-dimension-variance"](varianceExample));
 checks += 1;
 
+const masterLayout = { itemLength: 8, itemWidth: 5, itemHeight: 3, columns: 3, rows: 2, layers: 2, clearance: 0.5, gap: 0.25, unit: "in" };
+for (const [field, label] of [["columns", "Columns"], ["rows", "Rows"], ["layers", "Layers"]]) {
+  assert.throws(() => calculators["master-carton-dimensions"]({ ...masterLayout, [field]: 2.5 }), new RegExp(`${label} must be a whole number`));
+  checks += 1;
+  for (const invalid of [0, -1, "", NaN, Infinity, 10001]) throws("master-carton-dimensions", { ...masterLayout, [field]: invalid });
+}
+const oneUnit = calculators["master-carton-dimensions"]({ ...masterLayout, itemLength: 1.25, itemWidth: 2.5, itemHeight: 0.75, columns: 1, rows: 1, layers: 1, clearance: 0.125, gap: 0.25 });
+assert.strictEqual(oneUnit.primary, "1.5 × 2.75 × 1 in");
+assert.strictEqual(oneUnit.values["Units per carton"], "1");
+checks += 2;
+const maxLayout = calculators["master-carton-dimensions"]({ ...masterLayout, itemLength: 1, itemWidth: 1, itemHeight: 1, columns: 10000, rows: 10000, layers: 10000, clearance: 0, gap: 0 });
+assert.strictEqual(maxLayout.primary, "10000 × 10000 × 10000 in");
+assert.strictEqual(maxLayout.values["Units per carton"], "1000000000000");
+checks += 2;
+assert.strictEqual(calculators["master-carton-dimensions"](masterLayout).primary, "25.5 × 11.25 × 7.25 in");
+const metricLayout = { ...masterLayout, unit: "cm", itemLength: 20.32, itemWidth: 12.7, itemHeight: 7.62, clearance: 1.27, gap: 0.635 };
+assert.strictEqual(calculators["master-carton-dimensions"](metricLayout).primary, "64.77 × 28.58 × 18.42 cm");
+assert.deepStrictEqual(calculators["master-carton-dimensions"](masterLayout), calculators["master-carton-dimensions"](masterLayout));
+checks += 3;
+
 assert.strictEqual(Object.keys(calculators).length, 42, "Expected 42 calculator implementations");
 assert.ok(checks >= 213, `Expected at least 213 independent checks; found ${checks}`);
 console.log(`CALCULATION VERIFICATION PASS — ${Object.keys(calculators).length} calculators, ${checks} independent checks`);

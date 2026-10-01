@@ -399,9 +399,9 @@
   function masterCartonDimensions(input) {
     const unit = input.unit === "cm" ? "cm" : "in";
     const item = ["itemLength", "itemWidth", "itemHeight"].map((key) => positive(input[key], key, { max: 10000 }));
-    const columns = positive(input.columns, "Columns", { max: 10000 });
-    const rows = positive(input.rows, "Rows", { max: 10000 });
-    const layers = positive(input.layers, "Layers", { max: 10000 });
+    const columns = whole(input.columns, "Columns", { max: 10000 });
+    const rows = whole(input.rows, "Rows", { max: 10000 });
+    const layers = whole(input.layers, "Layers", { max: 10000 });
     const clearance = positive(input.clearance, "Outer clearance", { allowZero: true, max: 1000 });
     const gap = positive(input.gap, "Item gap", { allowZero: true, max: 1000 });
     const dims = [item[0] * columns + gap * Math.max(0, columns - 1) + 2 * clearance, item[1] * rows + gap * Math.max(0, rows - 1) + 2 * clearance, item[2] * layers + gap * Math.max(0, layers - 1) + 2 * clearance];
