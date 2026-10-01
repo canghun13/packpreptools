@@ -102,7 +102,7 @@ Expansion was not entered. A reproducible hard calculation defect takes preceden
 
 ## Production and next state
 
-Implementation, Pages run, live verification and final remote hashes are recorded in the handover closing note after they occur. This document does not claim deployment before validation.
+Implementation commit `8b13ae294f7cf6a0cc5709dc923e7f6563b381d8` was pushed successfully. Pages run [36798528405](https://github.com/canghun13/packpreptools/actions/runs/36798528405) completed successfully for that hash. Live HTTPS target returned 200, correct self-canonical, revised advice and the new asset version. Production browser 1440/390 validated default calculation, fractional-column error and empty stale details, with overflow/escape/clipping 0. At 390, fractional rows/layers also errored, Reset restored counts 3/2/2 and idle state, re-run returned the correct result, menu opened, and console errors/warnings were 0. The handover closing note records the completed deployment and the final documentation commit is identified in the user report.
 
 Next week, at most three checks:
 

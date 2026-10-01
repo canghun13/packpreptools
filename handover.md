@@ -2600,3 +2600,11 @@ git status
 - HIGH 없음. MEDIUM: Google 새 click 정체, Coverage/Performance 시점차, Bing export period 미상, GA4 direct/QA 오염 가능성. LOW: 브라우저 Reset 비동기 동작은 화면 상태 확인 후 검증; 계산 결함은 별개로 수정 완료. initial attachment read 후 exact-reference 재독은 file-not-found였지만 읽어 확보한 자료로 분석했고 다른 report를 검색/대체하지 않았다.
 - 다음 상태 최대3: (1) 기간 일치 Bing Master Carton/Count/Cube 신호 비교, (2) Sep25 Label/Bundle 변화 관찰, (3) Coverage를 Performance와 교차하며 새로 재현되는 defect만 감사. 다른 discrete count validator는 별도 scoped functional audit 후보이며 이번 수정에 자동 확장하지 않았다.
 - 이 시점 implementation/local QA 완료; commit/push/Pages/production 검증은 아래 closing note에서 확정한다.
+
+### 2026-10-01 Git / Pages / production closing note
+
+- implementation + weekly research commit: `8b13ae294f7cf6a0cc5709dc923e7f6563b381d8` — `Require whole master carton layout counts`; origin/main push 성공. push 뒤 local HEAD = origin/main = actual remote main, main, ahead/behind 0/0, clean을 확인했다.
+- Pages run [36798528405](https://github.com/canghun13/packpreptools/actions/runs/36798528405)은 정확히 implementation hash를 사용했고 **completed / success**였다. live target HTTP200, HTTPS apex URL, self-canonical, `20261001-whole-layout` asset과 revised whole-count advice를 직접 확인했다.
+- actual production browser target **1440/390**: valid default `25.5 × 11.25 × 7.25 in`; `2.5` columns 입력은 `Columns must be a whole number.`, error state, stale result values empty. overflow/viewport escape/clipping 모두 **0**, canonical 정상.
+- production390에서 Rows/Layers 각각 `1.5`도 named whole-number error를 출력했다. Reset은 counts `[3,2,2]`와 idle placeholder로 복귀했고 re-run은 정상 결과로 복구했다. mobile menu expanded true, console error/warning **0**. Copy/Print는 이 calculator에 없는 기능으로 해당 없음이다.
+- production code는 이 closing note에서 추가 수정하지 않는다. 최종 기록 commit/push 후 세 hash, main, ahead/behind, clean은 최종 사용자 보고로 확정한다. 다음 세션 시작점은 이번 closing note commit이며 구현은 `8b13ae2`다.
