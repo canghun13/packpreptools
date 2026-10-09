@@ -101,7 +101,11 @@ Expansion considered: **No — hard defect takes priority.** The latest implemen
 
 ## Deployment and next state
 
-Implementation/local verification complete; push, Pages and production verification will be recorded below after completion. No claim of live repair is made before deployment.
+Implementation commit `b54a15d964dfad2ad988cbfc222970e368283438` (`Require whole unit counts for carton demand`) was pushed to origin/main successfully. Local HEAD, origin/main and actual remote main matched after push; main, ahead/behind 0/0, clean.
+
+Pages run [37889346290](https://github.com/canghun13/packpreptools/actions/runs/37889346290) used that implementation hash and completed successfully. Actual production target returned HTTPS apex 200, correct self-canonical, the new `20261009-whole-cartons` asset version and whole-count note. Normal and simulated Googlebot responses were identical 200.
+
+Production installed-Edge browser verification at all eight widths repeated normal/exact/max calculations, ten invalid-input cases per width, stale-detail clearing, Reset/defaults, rerun and mobile menu. All passed; console/page errors, overflow, viewport escapes, detected clipping, header overlap and input misalignment were 0. Production screenshots, including desktop/mobile result, error and input-table rendering, were inspected. Copy/Print are not applicable. This closing record changes documentation only; the final documentation commit and final three-way Git equality are reported at session close.
 
 Remaining risks: no new HIGH within this fix; MEDIUM: sparse new Google clicks, Coverage/Performance timing mismatch, absent Bing period metadata, shifted/QA-contaminated GA4 windows; other discrete-count fields using `positive()` merit a separate scoped functional audit, not an automatic global change. LOW: generic calculator boilerplate remains outside this narrow correctness fix.
 

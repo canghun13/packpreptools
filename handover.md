@@ -2628,3 +2628,10 @@ git status
 - Expansion branch **미진입**: hard defect 우선. 최신 boundary는 Adhesive/Instruction/Quality 및 최근 NO-GO를 보존한다. 전체 historical exclusion set 재작성/40-family discovery는 이번 분기에 수행하지 않았다. 최신 Existing Upgrade는 Sep25 Label/Bundle이며 반복하지 않았다; Count generic manifest/method 문구도 이번 correctness fix에 묶어 전역 수정하지 않았다.
 - HIGH: 이번 수정 범위 없음. MEDIUM: 새Google click 희소, Coverage timing mismatch, Bing period미상, GA4 window/self traffic, 기타 discrete-count validator 별도 scoped audit 필요. LOW: 남은 generic boilerplate는 별도 content task 후보.
 - 다음 최대3: (1) 기간표기 Bing으로 Count/Cube/Dimensions 및 Label/Bundle 비교, (2) 다른 discrete count validator 별도 한정 감사, (3) Coverage/Performance교차와 실제 새결함만 확인. 구현·localQA 완료이며 Git/Pages/production은 다음 closing note에서 확정한다.
+
+### 2026-10-09 Git / Pages / production closing note
+
+- implementation/research commit `b54a15d964dfad2ad988cbfc222970e368283438` — `Require whole unit counts for carton demand`; **7files** 변경(public HTML1, calculationJS1, generator1, QA1, fixture1, research1, handover1). origin/main push 성공; 직후 local HEAD=origin/main=actual remote main, main, ahead/behind0/0, clean 확인.
+- Pages [37889346290](https://github.com/canghun13/packpreptools/actions/runs/37889346290)은 해당 구현 hash로 **completed/success**. 실제 production target HTTPS apex200, self-canonical, newasset `20261009-whole-cartons`와 whole-count note 반영 확인; normal/Googlebot UA 모사 body동일200.
+- 실제 운영 브라우저 **1440/1280/1024/900/768/600/480/390** 전부 PASS. 정상125/24→6cartons/final5, exact48/24→2/final24, max100,000,000/1, 각폭10invalid(총80) 오류, stale detail empty, Reset/default/idle, rerun/menu 정상. console error/overflow/escape/detected clipping/header overlap/input alignment문제 **0**. production screenshot으로1440/390 result, error, input-table도 직접 확인했다. Copy/Print 해당없음.
+- 이 closing note는 docs만 변경한다. 최종 기록 commit/push와 마지막 Pages/세hash/main/ahead-behind/clean은 최종 사용자 보고로 확정한다. 다음 세션 시작점은 이 closing 기록의 final docs commit, production implementation은 `b54a15d`다.
