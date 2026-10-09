@@ -2650,3 +2650,12 @@ git status
 - managed homepage badge5 raw SHA256 `1205454b420a7a14b16f66a984bf5217af327b33f68fb9e30ebd48824198ed68`, 원문/순서/href/image/footer다음 위치 동일, index diff0. inventory **85public HTML/84indexable/42Calculator/4Workflow/15Guide/13Reference/11hub-other(404포함)/JS7** 그대로다.
 - HIGH: 이 수정 범위의 알려진 미해결 결함 없음. MEDIUM: Google click 희소·Bing export기간 미상·GA4 selftraffic 및 겹치는 기간은 기존 weekly 관찰사항, 소수 허용 continuous input의 별도 validation 정책은 이번 count 감사 범위 밖이다. LOW: 남은 generic boilerplate는 별도 editorial task이며 이 기능 감사에 합치지 않았다.
 - 다음: 기간을 맞춘 검색 성과 관찰, 실제 사용자 오류 재현 시 한정 검증 추가. 다음 권장 모델 Sol/추론 중간. implementation commit/push/Pages/운영 브라우저 결과는 아래 closing note에서 확정한다.
+
+### 2026-10-09 discrete-count audit — Git / Pages / production closing note
+
+- implementation `108849739bc3c1396e40e97ab710d7f52c1b9872` — `Validate discrete counts across packing calculators`, **33files**(27publicHTML + calculationJS/generator/QA/fixture/research/handover). origin/main push 성공. Pages [37892223942](https://github.com/canghun13/packpreptools/actions/runs/37892223942)은 정확한 implementation hash로 **completed/success**.
+- 실제 production Edge **27개×1440/1280/1024/900/768/600/480/390=216renders PASS**, **646invalid input PASS**. HTTP200/self-canonical/newasset `20261009-discrete-counts` 전 대상 확인. 정상 결과/allowed0/stale detail clear/Reset/default/idle/error clear/rerun/menu PASS; overflow/escape/detected clipping/header overlap/input alignment/console/pageerror **0**. 대표1440/390 정상 결과·표·오류 화면 확인; 긴 form 3개의 실제 settled viewport에서 skip-link top-80px/비focus/겹침없음도 별도 확인했다.
+- 기존 live 결함 reserve5.5/cases85.5는 각각 named whole-number error로 거부되고 stale values는 empty다. Label 기본$82.40/2060labels, Bundle$2.17 정상. 명시적0허용 5field는 정상이며 blank는 오류다.
+- live Homepage/Label/Bundle/sitemap/robots/llms/calculation asset HTTPS apex200; 계산JS는 줄바꿈 정규화 후 로컬 source와 동일. Case Pack normal/Googlebot UA 모사응답 동일200(실제 Googlebot crawl 확인은 아님).
+- live managed badge5 block도 trim+CRLF→LF 정규화 후 원문/순서/이미지/링크/footer다음 위치 동일; 해당 normalizedSHA256 `d8d3f76a3cf30bda883237d3e48bf55d767c8a41dc7a8741ddc3325190a8326f`. 위 local rawblock hash와는 정규화 방식이 다르며 각 비교에서 원본보존을 확인했다.
+- 이번 후속 기능 감사와 local/production QA는 완료다. 이 closing note는 research/handover만 변경한다. final docs commit/push 후 Pages와 local HEAD/origin/main/actual remote main/ahead-behind/main/clean을 최종 보고로 확정한다. 다음 세션 시작점은 final docs commit이며 실제 계산 구현은 `1088497`이다.
