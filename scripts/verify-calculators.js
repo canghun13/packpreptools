@@ -269,6 +269,62 @@ for (const [input, expected] of [
 assert.deepStrictEqual(calculators["carton-count"]({ units: "125", perCarton: "24" }), calculators["carton-count"](cartonDemand));
 checks += 1;
 
+const countInputs = Object.fromEntries(Object.entries(phaseCases).map(([slug, cases]) => [slug, cases[0][0]]));
+Object.assign(countInputs, {
+  "void-fill": {boxLength:14,boxWidth:10,boxHeight:8,productLength:8,productWidth:6,productHeight:5,quantity:1,factor:1,unit:"in"},
+  "tape-usage": {length:12,width:10,overhang:3,cartons:100,pattern:"center",unit:"in"},
+  "shipping-damage-rate": {shipments:1250,damaged:14},
+  "packaging-failure-cost": failureExample,
+  "packaging-trial-comparison": trialExample
+});
+function countBoundary(slug, base, id, value) {
+  const input = { ...base, [id]: value };
+  if (slug === "void-fill") for (const key of ["productLength","productWidth","productHeight"]) input[key] = 0.001;
+  if (slug === "box-utilization") for (const key of ["itemLength","itemWidth","itemHeight"]) input[key] = 0.001;
+  if (slug === "master-carton-weight") { input.unitWeight = 0.000001; input.maxWeight = 1000000; }
+  if (slug === "pallet-utilization") { input.caseLength = 0.001; input.caseWidth = 0.001; }
+  if (slug === "pallet-height") { input.caseHeight = 0.001; input.maxHeight = 100000; }
+  if (slug === "pallet-layer-count") {
+    input.cases = id === "cases" ? value : 1;
+    input.casesPerLayer = id === "casesPerLayer" ? value : 1000000;
+    input.maxLayers = id === "maxLayers" ? value : 100000;
+  }
+  if (slug === "shipping-damage-rate") { if (id === "shipments") input.damaged = 0; else input.shipments = 1000000000; }
+  if (slug === "packaging-failure-cost") { if (id === "shipments") input.failures = 0; else input.shipments = 1000000000; }
+  if (slug === "packaging-trial-comparison") {
+    if (id.startsWith("inspected")) input[id.endsWith("A") ? "damagedA" : "damagedB"] = 0;
+    else input[id.endsWith("A") ? "inspectedA" : "inspectedB"] = 100000000;
+  }
+  return input;
+}
+for (const [slug, fields] of Object.entries(api.wholeCountFields)) {
+  const base = countInputs[slug];
+  assert.ok(base, `Missing whole-count fixture: ${slug}`);
+  for (const [id, settings] of Object.entries(fields)) {
+    for (const invalid of [1.5, -1, "", " ", undefined, null, NaN, Infinity, settings.max + 1]) throws(slug, { ...base, [id]: invalid });
+    if (!settings.allowZero) throws(slug, { ...base, [id]: 0 });
+    for (const bound of [settings.allowZero ? 0 : 1, settings.max]) {
+      const input = countBoundary(slug, base, id, bound);
+      const output = calculators[slug](input);
+      assert.ok(!/NaN|Infinity/.test(JSON.stringify(output)), `${slug}/${id}: finite boundary result`);
+      assert.deepStrictEqual(calculators[slug]({ ...input, [id]: String(bound) }), output);
+      checks += 2;
+    }
+  }
+}
+assert.deepStrictEqual(calculators["case-pack"]({cases:1000000,unitsPerCase:1000000,reserve:100000000}), {primary:"1000100000000 units",values:{"Sealed case units":"1000000000000","Reserve units":"100000000","Case pack":"1000000 units/case"}});
+assert.deepStrictEqual(calculators["pallet-layer-count"]({cases:100000000,casesPerLayer:1000000,maxLayers:100000}), {primary:"100 layers",values:{"Full layers":"100","Cases on top layer":"1000000","Layer capacity":"100000000 cases"}});
+assert.strictEqual(calculators["label-cost"]({orders:100000000,labelsPerOrder:1000,unitCost:0.0001,waste:0}).primary, "$10000000.00");
+assert.strictEqual(calculators["case-pack"]({cases:12,unitsPerCase:24,reserve:0}).primary, "288 units");
+checks += 4;
+// Do not turn forecasts, measured consumption, rates or validated partial wrap into discrete counts.
+assert.strictEqual(calculators["packaging-material-budget"]({orders:10.5,materialCost:2,waste:0,contingency:0}).primary, "$21.00");
+assert.strictEqual(calculators["monthly-packaging-spend"]({orders:10.5,costPerOrder:2,fixedCost:0,months:1.5}).values["Planning-period spend"], "$31.50");
+assert.strictEqual(calculators["bubble-wrap"]({length:8,width:6,height:4,layers:1.5,overlap:10,unit:"in"}).primary, "343.2 in²");
+assert.strictEqual(calculators["packaging-supply-reorder-point"]({dailyUse:1.5,leadDays:2.5,safetyStock:0.5,onHand:5.5}).primary, "5 units reorder point");
+assert.strictEqual(calculators["packaging-waste-allowance"]({baseQuantity:10.5,waste:0}).primary, "11 units");
+checks += 5;
+
 assert.strictEqual(Object.keys(calculators).length, 42, "Expected 42 calculator implementations");
 assert.ok(checks >= 213, `Expected at least 213 independent checks; found ${checks}`);
 console.log(`CALCULATION VERIFICATION PASS — ${Object.keys(calculators).length} calculators, ${checks} independent checks`);

@@ -244,6 +244,16 @@ for (const [sentence, owners] of sentenceOwners) {
 
 const scriptFiles = allFiles.filter((file) => file.endsWith(".js"));
 const cartonCountPage = fs.readFileSync(path.join(ROOT, "tools", "carton-count.html"), "utf8");
+const { wholeCountFields } = require("../assets/calculators.js");
+for (const [slug, fields] of Object.entries(wholeCountFields)) {
+  const html = fs.readFileSync(path.join(ROOT, "tools", `${slug}.html`), "utf8");
+  for (const [id, settings] of Object.entries(fields)) {
+    const input = html.match(new RegExp(`<input id="${id}"[^>]*>`))?.[0] || "";
+    for (const attribute of ['inputmode="numeric"', `min="${settings.allowZero ? 0 : 1}"`, `max="${settings.max}"`, 'step="1"']) {
+      if (!input.includes(attribute)) fail(`tools/${slug}.html: ${id} discrete-count constraint missing: ${attribute}.`);
+    }
+  }
+}
 for (const [id, max] of [["units", 100000000], ["perCarton", 1000000]]) {
   const input = cartonCountPage.match(new RegExp(`<input id="${id}"[^>]*>`))?.[0] || "";
   for (const attribute of ['inputmode="numeric"', 'min="1"', `max="${max}"`, 'step="1"']) {

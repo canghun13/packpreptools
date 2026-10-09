@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const zlib = require("zlib");
+const { wholeCountFields } = require("../assets/calculators.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const SITE = "https://packpreptools.com";
@@ -1837,6 +1838,8 @@ function fieldAdvice(tool, field) {
 const stripAfterPrefixTools = new Set(["master-carton-dimensions", "master-carton-weight", "carton-count", "case-pack", "carton-cube", "pallet-utilization"]);
 
 function calculatorPage(tool) {
+  const countFields = wholeCountFields[tool.slug] || {};
+  if (Object.keys(countFields).length) tool.reviewed = "October 9, 2026";
   const file = `tools/${tool.slug}.html`;
   const title = tool.title;
   const schema = {
@@ -1851,15 +1854,15 @@ function calculatorPage(tool) {
     ]
   };
   const fields = tool.fields.map(([id, label, value, type]) => {
-    const layoutCount = tool.slug === "master-carton-dimensions" && ["columns", "rows", "layers"].includes(id);
-    const cartonCount = tool.slug === "carton-count";
-    const constraints = layoutCount ? 'inputmode="numeric" min="1" max="10000" step="1"'
-      : cartonCount ? `inputmode="numeric" min="1" max="${id === "units" ? 100000000 : 1000000}" step="1"`
+    const count = countFields[id];
+    const constraints = count ? `inputmode="numeric" min="${count.allowZero ? 0 : 1}" max="${count.max}" step="1"`
       : 'inputmode="decimal" min="0" step="any"';
     return `<div class="field"><label for="${id}">${label}</label><div class="input-shell"><input id="${id}" name="${id}" type="number" ${constraints} value="${value}" required aria-describedby="${id}-unit"><span class="suffix" id="${id}-unit">${suffix(type)}</span></div></div>`;
   }).join("");
   const select = tool.select ? `<div class="field field-wide"><label for="${tool.select[0]}">${tool.select[1]}</label><select id="${tool.select[0]}" name="${tool.select[0]}">${tool.select[2].map(([value, label]) => `<option value="${value}">${label}</option>`).join("")}</select></div>` : "";
-  const exampleNote = tool.exampleNote ? `<p class="manifest-note">${tool.exampleNote}</p>` : "";
+  const countNote = Object.keys(countFields).length
+    ? `Use whole counts for ${tool.fields.filter(([id]) => countFields[id]).map(([id, label]) => `${label.toLowerCase()} (${countFields[id].allowZero ? "0" : "1"}–${countFields[id].max.toLocaleString("en-US")})`).join(", ")}. Enter an explicit 0 where allowed; a blank is not a recorded count.` : "";
+  const exampleNote = tool.exampleNote || countNote ? `<p class="manifest-note">${tool.exampleNote || countNote}</p>` : "";
   const related = tool.related.map((slug) => {
     const match = tools.find((item) => item.slug === slug);
     return `<li><a href="/tools/${slug}.html">${match.title}</a></li>`;
@@ -1875,7 +1878,8 @@ function calculatorPage(tool) {
   const calculationFlow = `<ol class="procedure-list">${calculationSteps.map((step) => `<li>${step}</li>`).join("")}</ol>`;
   const workflowLinks = content.workflow.map((item) => `<li>${item}</li>`).join("");
   const nextAction = content.nextAction || (stripAfterPrefixTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1]);
-  const calculatorAssetVersion = adhesiveTools.some(({ slug }) => slug === tool.slug)
+  const calculatorAssetVersion = Object.keys(countFields).length ? "20261009-discrete-counts"
+    : adhesiveTools.some(({ slug }) => slug === tool.slug)
     ? "20260827-adhesive"
     : tool.slug === "pallet-utilization" ? "20260824-pallet-pattern"
     : tool.slug === "master-carton-dimensions" ? "20261001-whole-layout"

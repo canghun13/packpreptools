@@ -9,6 +9,37 @@
   const LB_TO_KG = 0.45359237;
   const CUIN_TO_L = 0.016387064;
 
+  // Discrete quantities only: forecasts, rates, durations and measured material remain decimal.
+  const wholeCountFields = {
+    "void-fill": {"quantity":{"max":100000}},
+    "tape-usage": {"cartons":{"max":1000000}},
+    "case-pack": {"cases":{"max":1000000},"unitsPerCase":{"max":1000000},"reserve":{"max":100000000,"allowZero":true}},
+    "box-utilization": {"quantity":{"max":1000000}},
+    "multi-item-box-fit": {"quantity":{"max":1000000}},
+    "label-cost": {"orders":{"max":100000000},"labelsPerOrder":{"max":1000}},
+    "insert-quantity": {"orders":{"max":100000000},"insertsPerOrder":{"max":1000}},
+    "order-packing-time": {"orders":{"max":10000000}},
+    "labor-capacity-per-shift": {"workers":{"max":100000}},
+    "prep-batch-time": {"units":{"max":10000000}},
+    "kitting-cost": {"components":{"max":100000}},
+    "bundle-packing-cost": {"items":{"max":100000}},
+    "master-carton-weight": {"units":{"max":1000000}},
+    "carton-cube": {"cartons":{"max":10000000}},
+    "cases-per-pallet": {"layers":{"max":10000}},
+    "pallet-layer-count": {"cases":{"max":100000000},"casesPerLayer":{"max":1000000},"maxLayers":{"max":100000}},
+    "pallet-height": {"layers":{"max":10000}},
+    "pallet-utilization": {"casesPerLayer":{"max":1000000}},
+    "carton-count": {"units":{"max":100000000},"perCarton":{"max":1000000}},
+    "master-carton-dimensions": {"columns":{"max":10000},"rows":{"max":10000},"layers":{"max":10000}},
+    "shipping-damage-rate": {"shipments":{"max":1000000000},"damaged":{"max":1000000000,"allowZero":true}},
+    "packaging-failure-cost": {"shipments":{"max":1000000000},"failures":{"max":1000000000,"allowZero":true}},
+    "packaging-trial-comparison": {"inspectedA":{"max":100000000},"damagedA":{"max":100000000,"allowZero":true},"inspectedB":{"max":100000000},"damagedB":{"max":100000000,"allowZero":true}},
+    "adhesive-bead-volume": {"beads":{"max":100000}},
+    "adhesive-batch-requirement": {"packs":{"max":100000000}},
+    "intermittent-bead-savings": {"packs":{"max":100000000}},
+    "adhesive-output-calibration": {"nozzles":{"max":100000}}
+  };
+
   function positive(value, label, options) {
     const settings = options || {};
     const number = Number(value);
@@ -122,7 +153,7 @@
     const product = ["productLength", "productWidth", "productHeight"].map((key) =>
       positive(input[key], key.replace(/([A-Z])/g, " $1"), { max: 10000 })
     );
-    const quantity = positive(input.quantity, "Product quantity", { max: 100000 });
+    const quantity = whole(input.quantity, "Product quantity", { max: 100000 });
     const factor = positive(input.factor, "Fill factor", { max: 5 });
     const boxVolumeValue = box[0] * box[1] * box[2];
     const productVolumeValue = product[0] * product[1] * product[2] * quantity;
@@ -193,7 +224,7 @@
     const length = positive(input.length, "Box length", { max: 10000 });
     const width = positive(input.width, "Box width", { max: 10000 });
     const overhang = positive(input.overhang, "Tape overhang", { allowZero: true, max: 1000 });
-    const cartons = positive(input.cartons, "Carton count", { max: 1000000 });
+    const cartons = whole(input.cartons, "Carton count", { max: 1000000 });
     const pattern = input.pattern === "h" ? "h" : "center";
     const centerSeams = 2 * (length + 2 * overhang);
     const crossSeams = pattern === "h" ? 4 * (width + 2 * overhang) : 0;
@@ -263,9 +294,9 @@
   }
 
   function casePack(input) {
-    const cases = positive(input.cases, "Case quantity", { max: 1000000 });
-    const units = positive(input.unitsPerCase, "Units per case", { max: 1000000 });
-    const reserve = positive(input.reserve, "Reserve units", { allowZero: true, max: 100000000 });
+    const cases = whole(input.cases, "Case quantity", { max: 1000000 });
+    const units = whole(input.unitsPerCase, "Units per case", { max: 1000000 });
+    const reserve = whole(input.reserve, "Reserve units", { allowZero: true, max: 100000000 });
     const total = cases * units + reserve;
     return { primary: `${total} units`, values: { "Sealed case units": `${cases * units}`, "Reserve units": `${reserve}`, "Case pack": `${units} units/case` } };
   }
@@ -273,7 +304,7 @@
   function boxUtilization(input) {
     const box = ["boxLength", "boxWidth", "boxHeight"].map((key) => positive(input[key], key, { max: 10000 }));
     const item = ["itemLength", "itemWidth", "itemHeight"].map((key) => positive(input[key], key, { max: 10000 }));
-    const quantity = positive(input.quantity, "Item quantity", { max: 1000000 });
+    const quantity = whole(input.quantity, "Item quantity", { max: 1000000 });
     const boxVolume = box.reduce((a, b) => a * b);
     const itemVolume = item.reduce((a, b) => a * b) * quantity;
     if (itemVolume > boxVolume) throw new Error("Total item volume exceeds box volume.");
@@ -284,7 +315,7 @@
   function multiItemBoxFit(input) {
     const box = ["boxLength", "boxWidth", "boxHeight"].map((key) => positive(input[key], key, { max: 10000 }));
     const item = ["itemLength", "itemWidth", "itemHeight"].map((key) => positive(input[key], key, { max: 10000 }));
-    const required = positive(input.quantity, "Required quantity", { max: 1000000 });
+    const required = whole(input.quantity, "Required quantity", { max: 1000000 });
     const rotations = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
     const options = rotations.map((r) => {
       const counts = box.map((side, i) => Math.floor(side / item[r[i]]));
@@ -315,8 +346,8 @@
   }
 
   function labelCost(input) {
-    const orders = positive(input.orders, "Order count", { max: 100000000 });
-    const labels = positive(input.labelsPerOrder, "Labels per order", { max: 1000 });
+    const orders = whole(input.orders, "Order count", { max: 100000000 });
+    const labels = whole(input.labelsPerOrder, "Labels per order", { max: 1000 });
     const unitCost = positive(input.unitCost, "Cost per label", { allowZero: true, max: 100000 });
     const waste = positive(input.waste, "Waste allowance", { allowZero: true, max: 1000 }) / 100;
     const required = Math.ceil(orders * labels * (1 + waste));
@@ -324,8 +355,8 @@
   }
 
   function insertQuantity(input) {
-    const orders = positive(input.orders, "Order count", { max: 100000000 });
-    const inserts = positive(input.insertsPerOrder, "Inserts per order", { max: 1000 });
+    const orders = whole(input.orders, "Order count", { max: 100000000 });
+    const inserts = whole(input.insertsPerOrder, "Inserts per order", { max: 1000 });
     const spoilage = positive(input.spoilage, "Spoilage allowance", { allowZero: true, max: 1000 }) / 100;
     const base = orders * inserts;
     const total = Math.ceil(base * (1 + spoilage));
@@ -349,7 +380,7 @@
   }
 
   function packingTime(input) {
-    const orders = positive(input.orders, "Order count", { max: 10000000 });
+    const orders = whole(input.orders, "Order count", { max: 10000000 });
     const minutes = positive(input.minutesPerOrder, "Minutes per order", { max: 100000 });
     const setup = positive(input.setupMinutes, "Setup minutes", { allowZero: true, max: 100000 });
     const total = setup + orders * minutes;
@@ -357,7 +388,7 @@
   }
 
   function laborCapacity(input) {
-    const workers = positive(input.workers, "Workers", { max: 100000 });
+    const workers = whole(input.workers, "Workers", { max: 100000 });
     const hours = positive(input.shiftHours, "Shift hours", { max: 24 });
     const utilization = positive(input.utilization, "Productive utilization", { max: 100 }) / 100;
     const minutes = positive(input.minutesPerOrder, "Minutes per order", { max: 100000 });
@@ -366,7 +397,7 @@
   }
 
   function prepBatchTime(input) {
-    const units = positive(input.units, "Batch units", { max: 10000000 });
+    const units = whole(input.units, "Batch units", { max: 10000000 });
     const seconds = positive(input.secondsPerUnit, "Seconds per unit", { max: 100000 });
     const setup = positive(input.setupMinutes, "Setup minutes", { allowZero: true, max: 100000 });
     const checks = positive(input.checkMinutes, "Quality check minutes", { allowZero: true, max: 100000 });
@@ -376,7 +407,7 @@
 
   function kittingCost(input) {
     const componentCost = positive(input.componentCost, "Component cost", { allowZero: true, max: 1000000 });
-    const components = positive(input.components, "Components per kit", { max: 100000 });
+    const components = whole(input.components, "Components per kit", { max: 100000 });
     const packaging = positive(input.packaging, "Packaging cost", { allowZero: true, max: 1000000 });
     const minutes = positive(input.minutes, "Assembly minutes", { allowZero: true, max: 100000 });
     const hourly = positive(input.hourly, "Hourly labor rate", { allowZero: true, max: 1000000 });
@@ -387,7 +418,7 @@
   }
 
   function bundlePackingCost(input) {
-    const items = positive(input.items, "Items per bundle", { max: 100000 });
+    const items = whole(input.items, "Items per bundle", { max: 100000 });
     const handling = positive(input.handlingCost, "Handling cost per item", { allowZero: true, max: 1000000 });
     const materials = positive(input.bundleMaterials, "Bundle materials", { allowZero: true, max: 1000000 });
     const minutes = positive(input.minutes, "Packing minutes", { allowZero: true, max: 100000 });
@@ -409,7 +440,7 @@
   }
 
   function masterCartonWeight(input) {
-    const units = positive(input.units, "Units per carton", { max: 1000000 });
+    const units = whole(input.units, "Units per carton", { max: 1000000 });
     const unitWeight = positive(input.unitWeight, "Unit weight", { max: 1000000 });
     const tare = positive(input.tareWeight, "Carton and packing weight", { allowZero: true, max: 1000000 });
     const max = positive(input.maxWeight, "Maximum planned weight", { max: 1000000 });
@@ -421,7 +452,7 @@
   function cartonCube(input) {
     const unit = input.unit === "cm" ? "cm" : "in";
     const dimensions = ["length", "width", "height"].map((key)=>positive(input[key], key, { max: 10000 }));
-    const cartons = positive(input.cartons, "Carton count", { max: 10000000 });
+    const cartons = whole(input.cartons, "Carton count", { max: 10000000 });
     const each = dimensions.reduce((a,b)=>a*b);
     const total = each * cartons;
     const cubicMeters = unit === "cm" ? total / 1000000 : total * 0.000016387064;
@@ -433,7 +464,7 @@
     const palletW = positive(input.palletWidth, "Pallet width", { max: 10000 });
     const caseL = positive(input.caseLength, "Case length", { max: 10000 });
     const caseW = positive(input.caseWidth, "Case width", { max: 10000 });
-    const layers = positive(input.layers, "Layer count", { max: 10000 });
+    const layers = whole(input.layers, "Layer count", { max: 10000 });
     const straight = Math.floor(palletL/caseL)*Math.floor(palletW/caseW);
     const rotated = Math.floor(palletL/caseW)*Math.floor(palletW/caseL);
     const perLayer = Math.max(straight, rotated);
@@ -442,9 +473,9 @@
   }
 
   function palletLayerCount(input) {
-    const cases = positive(input.cases, "Case quantity", { max: 100000000 });
-    const perLayer = positive(input.casesPerLayer, "Cases per layer", { max: 1000000 });
-    const maxLayers = positive(input.maxLayers, "Maximum layers", { max: 100000 });
+    const cases = whole(input.cases, "Case quantity", { max: 100000000 });
+    const perLayer = whole(input.casesPerLayer, "Cases per layer", { max: 1000000 });
+    const maxLayers = whole(input.maxLayers, "Maximum layers", { max: 100000 });
     const layers = Math.ceil(cases/perLayer);
     if (layers > maxLayers) throw new Error("Required layers exceed the entered maximum layer count.");
     return { primary: `${layers} layers`, values: { "Full layers": `${Math.floor(cases/perLayer)}`, "Cases on top layer": `${cases % perLayer || perLayer}`, "Layer capacity": `${layers * perLayer} cases` } };
@@ -453,7 +484,7 @@
   function palletHeight(input) {
     const base = positive(input.palletHeight, "Empty pallet height", { allowZero: true, max: 10000 });
     const caseHeight = positive(input.caseHeight, "Case height", { max: 10000 });
-    const layers = positive(input.layers, "Layer count", { max: 10000 });
+    const layers = whole(input.layers, "Layer count", { max: 10000 });
     const top = positive(input.topAllowance, "Top allowance", { allowZero: true, max: 10000 });
     const max = positive(input.maxHeight, "Maximum planned height", { max: 100000 });
     const total = base + caseHeight * layers + top;
@@ -466,7 +497,7 @@
     const palletW = positive(input.palletWidth, "Pallet width", { max: 10000 });
     const caseL = positive(input.caseLength, "Case length", { max: 10000 });
     const caseW = positive(input.caseWidth, "Case width", { max: 10000 });
-    const cases = positive(input.casesPerLayer, "Cases per layer", { max: 1000000 });
+    const cases = whole(input.casesPerLayer, "Cases per layer", { max: 1000000 });
     const rate = caseL * caseW * cases / (palletL*palletW) * 100;
     if (rate > 100) throw new Error("Entered case footprints exceed the pallet footprint.");
     const straight = Math.floor(palletL / caseL) * Math.floor(palletW / caseW);
@@ -490,6 +521,7 @@
   }
 
   function whole(value, label, options) {
+    if (value == null || String(value).trim() === "") throw new Error(`${label} is required.`);
     const number = positive(value, label, options);
     if (!Number.isInteger(number)) throw new Error(`${label} must be a whole number.`);
     return number;
@@ -724,6 +756,7 @@
   }
 
   return {
+    wholeCountFields,
     constants: { IN_TO_CM, LB_TO_KG, CUIN_TO_L },
     helpers: { positive, round, lengthToIn, lengthFromIn, areaFromSqIn, volumeFromCuIn },
     calculators: {
