@@ -249,6 +249,26 @@ assert.strictEqual(calculators["master-carton-dimensions"](metricLayout).primary
 assert.deepStrictEqual(calculators["master-carton-dimensions"](masterLayout), calculators["master-carton-dimensions"](masterLayout));
 checks += 3;
 
+const cartonDemand = { units: 125, perCarton: 24 };
+for (const [field, label, max] of [["units", "Units required", 100000000], ["perCarton", "Units per carton", 1000000]]) {
+  assert.throws(() => calculators["carton-count"]({ ...cartonDemand, [field]: 24.5 }), new RegExp(`${label} must be a whole number`));
+  checks += 1;
+  for (const invalid of [0, -1, "", undefined, NaN, Infinity, max + 1, 0.5]) throws("carton-count", { ...cartonDemand, [field]: invalid });
+}
+for (const [input, expected] of [
+  [cartonDemand, { primary: "6 cartons", values: { "Full cartons": "5", "Units in final carton": "5", "Total carton capacity": "144 units" } }],
+  [{ units: 48, perCarton: 24 }, { primary: "2 cartons", values: { "Full cartons": "2", "Units in final carton": "24", "Total carton capacity": "48 units" } }],
+  [{ units: 1, perCarton: 24 }, { primary: "1 cartons", values: { "Full cartons": "0", "Units in final carton": "1", "Total carton capacity": "24 units" } }],
+  [{ units: 1, perCarton: 1 }, { primary: "1 cartons", values: { "Full cartons": "1", "Units in final carton": "1", "Total carton capacity": "1 units" } }],
+  [{ units: 100000000, perCarton: 1000000 }, { primary: "100 cartons", values: { "Full cartons": "100", "Units in final carton": "1000000", "Total carton capacity": "100000000 units" } }],
+  [{ units: 100000000, perCarton: 1 }, { primary: "100000000 cartons", values: { "Full cartons": "100000000", "Units in final carton": "1", "Total carton capacity": "100000000 units" } }]
+]) {
+  assert.deepStrictEqual(calculators["carton-count"](input), expected);
+  checks += 1;
+}
+assert.deepStrictEqual(calculators["carton-count"]({ units: "125", perCarton: "24" }), calculators["carton-count"](cartonDemand));
+checks += 1;
+
 assert.strictEqual(Object.keys(calculators).length, 42, "Expected 42 calculator implementations");
 assert.ok(checks >= 213, `Expected at least 213 independent checks; found ${checks}`);
 console.log(`CALCULATION VERIFICATION PASS — ${Object.keys(calculators).length} calculators, ${checks} independent checks`);

@@ -243,6 +243,14 @@ for (const [sentence, owners] of sentenceOwners) {
 }
 
 const scriptFiles = allFiles.filter((file) => file.endsWith(".js"));
+const cartonCountPage = fs.readFileSync(path.join(ROOT, "tools", "carton-count.html"), "utf8");
+for (const [id, max] of [["units", 100000000], ["perCarton", 1000000]]) {
+  const input = cartonCountPage.match(new RegExp(`<input id="${id}"[^>]*>`))?.[0] || "";
+  for (const attribute of ['inputmode="numeric"', 'min="1"', `max="${max}"`, 'step="1"']) {
+    if (!input.includes(attribute)) fail(`tools/carton-count.html: ${id} whole-count constraint missing: ${attribute}.`);
+  }
+}
+if (!cartonCountPage.includes("Do not enter a fractional unit or an average case quantity.")) fail("tools/carton-count.html: whole-count input guidance missing.");
 for (const file of scriptFiles) {
   try {
     childProcess.execFileSync(process.execPath, ["--check", file], { stdio: "pipe" });

@@ -256,8 +256,8 @@
   }
 
   function cartonCount(input) {
-    const units = positive(input.units, "Units required", { max: 100000000 });
-    const perCarton = positive(input.perCarton, "Units per carton", { max: 1000000 });
+    const units = whole(input.units, "Units required", { max: 100000000 });
+    const perCarton = whole(input.perCarton, "Units per carton", { max: 1000000 });
     const cartons = Math.ceil(units / perCarton);
     return { primary: `${cartons} cartons`, values: { "Full cartons": `${Math.floor(units / perCarton)}`, "Units in final carton": `${units % perCarton || perCarton}`, "Total carton capacity": `${cartons * perCarton} units` } };
   }

@@ -257,6 +257,8 @@ tools.push(...phaseTools);
 phaseTools.find(({ slug }) => slug === "pallet-utilization").reviewed = "August 24, 2026";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").reviewed = "October 1, 2026";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").exampleNote = "Columns, rows, and layers must each be whole numbers from 1 to 10,000. Packed-unit dimensions, clearance, and gaps may use decimals.";
+phaseTools.find(({ slug }) => slug === "carton-count").reviewed = "October 9, 2026";
+phaseTools.find(({ slug }) => slug === "carton-count").exampleNote = "Enter whole counts: units required from 1 to 100,000,000 and units per carton from 1 to 1,000,000. Do not enter a fractional unit or an average case quantity.";
 
 const qualityTools = [
   {
@@ -586,11 +588,15 @@ const toolContent = {
   ),
   "carton-count": profile(
     "Use Carton Count when a unit demand must be translated into whole shipping or storage cartons at a fixed capacity. It answers how many cartons are needed and how full the final carton is. Case Pack works in the opposite direction by totaling units already represented by cases and loose reserve.",
-    "Enter the number of saleable or packed units required for the dispatch and the approved units per carton. Keep the unit definition consistent—each, pair, kit, or inner pack—and do not substitute a supplier’s outer-case quantity unless that is the actual packing plan.",
+    "Enter whole counts for the saleable or packed units required for the dispatch and the approved units per carton. Keep the unit definition consistent—each, pair, kit, or inner pack—and do not substitute a supplier’s outer-case quantity unless that is the actual packing plan. If cartons have different capacities, calculate each approved case pack separately rather than entering an average.",
     "The division is rounded upward because any remainder needs another carton. Use the final-carton quantity to plan a partial-carton label, filler, or consolidation decision. A large unused capacity may justify adjusting the dispatch quantity, but do not overfill beyond the approved case pack.",
     ["Mixing individual units with inner packs.", "Rounding down when a remainder exists.", "Assuming every carton may exceed the approved capacity.", "Ignoring a deliberately partial carton already open in inventory."],
     "The calculation assumes identical units and a fixed count capacity. It does not check physical fit, carton weight, orientation, separators, partial-carton policy, or inventory already packed.",
-    ["Before: confirm the approved case quantity and unit definition.", "After: check Master Carton Weight and label the partial final carton."]
+    ["Before: confirm the approved case quantity and unit definition.", "After: check Master Carton Weight and label the partial final carton."],
+    { fieldAdvice: {
+      units: "Count the whole units required for this dispatch, from 1 to 100,000,000. Use the same unit definition as the carton capacity; do not enter weight or a fractional kit.",
+      perCarton: "Enter the approved whole-unit capacity of one carton, from 1 to 1,000,000. Do not average different case packs or increase this count without verifying the physical pack."
+    } }
   ),
   "case-pack": profile(
     "Use Case Pack to translate a known number of sealed cases plus loose reserve into total available units. It supports pick planning, allocation, and reconciliation. It does not calculate how many cartons a new order requires; Carton Count handles that question.",
@@ -1846,7 +1852,10 @@ function calculatorPage(tool) {
   };
   const fields = tool.fields.map(([id, label, value, type]) => {
     const layoutCount = tool.slug === "master-carton-dimensions" && ["columns", "rows", "layers"].includes(id);
-    const constraints = layoutCount ? 'inputmode="numeric" min="1" max="10000" step="1"' : 'inputmode="decimal" min="0" step="any"';
+    const cartonCount = tool.slug === "carton-count";
+    const constraints = layoutCount ? 'inputmode="numeric" min="1" max="10000" step="1"'
+      : cartonCount ? `inputmode="numeric" min="1" max="${id === "units" ? 100000000 : 1000000}" step="1"`
+      : 'inputmode="decimal" min="0" step="any"';
     return `<div class="field"><label for="${id}">${label}</label><div class="input-shell"><input id="${id}" name="${id}" type="number" ${constraints} value="${value}" required aria-describedby="${id}-unit"><span class="suffix" id="${id}-unit">${suffix(type)}</span></div></div>`;
   }).join("");
   const select = tool.select ? `<div class="field field-wide"><label for="${tool.select[0]}">${tool.select[1]}</label><select id="${tool.select[0]}" name="${tool.select[0]}">${tool.select[2].map(([value, label]) => `<option value="${value}">${label}</option>`).join("")}</select></div>` : "";
@@ -1869,7 +1878,8 @@ function calculatorPage(tool) {
   const calculatorAssetVersion = adhesiveTools.some(({ slug }) => slug === tool.slug)
     ? "20260827-adhesive"
     : tool.slug === "pallet-utilization" ? "20260824-pallet-pattern"
-    : tool.slug === "master-carton-dimensions" ? "20261001-whole-layout" : "20260802-quality";
+    : tool.slug === "master-carton-dimensions" ? "20261001-whole-layout"
+    : tool.slug === "carton-count" ? "20261009-whole-cartons" : "20260802-quality";
   return `${head({ file, title, description: tool.description, schema })}${header("Tools")}
 <main id="main">
   <header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: "Tools", href: "/tools.html" }, { label: title }])}<p class="dispatch-meta"><span>${toolOperations[tool.slug].category}</span><span>Calculation utility</span></p><h1>${title}</h1><p class="lede">${tool.description}</p></div></header>
