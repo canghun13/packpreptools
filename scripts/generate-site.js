@@ -260,6 +260,8 @@ phaseTools.find(({ slug }) => slug === "master-carton-dimensions").reviewed = "O
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").exampleNote = "Columns, rows, and layers must each be whole numbers from 1 to 10,000. Packed-unit dimensions, clearance, and gaps may use decimals.";
 phaseTools.find(({ slug }) => slug === "carton-count").reviewed = "October 9, 2026";
 phaseTools.find(({ slug }) => slug === "carton-count").exampleNote = "Enter whole counts: units required from 1 to 100,000,000 and units per carton from 1 to 1,000,000. Do not enter a fractional unit or an average case quantity.";
+phaseTools.find(({ slug }) => slug === "carton-cube").reviewed = "October 15, 2026";
+phaseTools.find(({ slug }) => slug === "carton-cube").example = "One 24 × 16 × 12 in carton has 4,608 in³ of external cube: 4,608 ÷ 1,728 ≈ 2.666667 ft³, or about 0.075512 m³ (CBM). Twenty identical cartons total 53.333 ft³ and 1.510 m³. The totals use unrounded per-carton volumes.";
 
 const qualityTools = [
   {
@@ -764,12 +766,27 @@ const toolContent = {
     ["Before: finalize unit count and measure unit and tare samples.", "After: weigh a completed carton and use the result in pallet load planning."]
   ),
   "carton-cube": profile(
-    "Use Carton Cube to calculate the external space occupied by one or more identical cartons in cubic meters and cubic feet. It supports storage, staging, and transport planning. Box Volume can use internal dimensions for capacity; Carton Cube should normally use finished external dimensions.",
+    "Use Carton Cube to calculate the external space occupied by one or more identical cartons. CBM means cubic meters (m³); cubic feet are shown as ft³. The result gives both units per carton as well as shipment totals, so a carton specification and a batch space plan can use the same measurements. Box Volume can use internal dimensions for capacity; this tool uses finished external dimensions for occupied space.",
     "Measure the closed carton’s maximum external length, width, and height in one unit and enter the number of identical cartons. Split the calculation when carton sizes differ. Include normal bulge or protrusions when they affect occupied space.",
-    "Use cube per carton to compare pack designs and total cube to reserve staging or transport volume. The total is geometric and assumes cartons can occupy their full rectangular envelope. A lower cube can improve space use, but only if product protection and pallet pattern remain acceptable.",
+    "Use the per-carton m³ or ft³ value for one carton specification and the total for the entered carton count. For mixed-size shipments, calculate each size group separately and add the group totals in the same cubic unit; do not multiply average side lengths. Per-carton conversions display up to six decimal places and totals up to three, so multiplying rounded display values can differ slightly. These are geometric volumes, not a freight quote, billable weight, or a guarantee that the load fits a vehicle or pallet.",
     ["Using internal dimensions for external space planning.", "Combining different carton sizes under one average dimension.", "Ignoring bulge, straps, or protruding closures.", "Treating cubic volume as a weight or freight quote."],
     "The result excludes pallet gaps, aisle space, irregular stacking, orientation constraints, unusable vehicle volume, weight limits, and carrier pricing. It does not guarantee that the cartons tessellate in a given space.",
-    ["Before: measure finished external cartons by size group.", "After: use Cases per Pallet for a specific footprint and compare total shipment cube."]
+    ["Before: measure finished external cartons by size group.", "After: use Cases per Pallet for a specific footprint and compare total shipment cube."],
+    {
+      fieldAdvice: {
+        length: "Measure the longest external side of a closed, packed carton, including any bulge or protrusion that changes its occupied envelope. Select inches or centimeters for all three dimensions.",
+        width: "Measure the second external side of the same finished carton. Convert a millimeter or meter measurement to the selected unit before entering it.",
+        height: "Measure the remaining external side in the same unit. Do not substitute internal box height or the height of an unpacked product.",
+        cartons: "Count the whole, identical-size cartons in this group. Run different carton sizes separately; do not enter product units or an average carton dimension."
+      },
+      methodSteps: [
+        "<strong>Calculate one carton:</strong> multiply its external length × width × height. Inches give in³; centimeters give cm³.",
+        "<strong>Convert the volume:</strong> divide cm³ by 1,000,000 for m³ (CBM), or divide in³ by 1,728 for ft³. One ft³ equals exactly 0.028316846592 m³. These are volume conversions, not dimensional-weight divisors.",
+        "<strong>Calculate the shipment:</strong> multiply the unrounded per-carton volume by the whole carton count. Review both per-carton conversions and the total before combining separate size groups."
+      ],
+      nextAction: "Record each carton size and count separately, sum the group volumes in one cubic unit, then verify pallet layout and any carrier measurement or billing requirements.",
+      caution: "<strong>Geometric planning estimate:</strong> confirm finished external dimensions and counts on the physical shipment. Cube does not establish billable weight, freight cost, load stability, or usable vehicle capacity."
+    }
   ),
   "cases-per-pallet": profile(
     "Use Cases per Pallet to estimate a whole-case count from one straight-grid orientation per layer and a user-entered number of layers. It compares unrotated and 90-degree rotated footprints. Pallet Layer Count instead starts from required cases and known cases per layer.",
@@ -1839,7 +1856,7 @@ const stripAfterPrefixTools = new Set(["master-carton-dimensions", "master-carto
 
 function calculatorPage(tool) {
   const countFields = wholeCountFields[tool.slug] || {};
-  if (Object.keys(countFields).length) tool.reviewed = "October 9, 2026";
+  if (Object.keys(countFields).length && tool.slug !== "carton-cube") tool.reviewed = "October 9, 2026";
   const file = `tools/${tool.slug}.html`;
   const title = tool.title;
   const schema = {
@@ -1878,7 +1895,8 @@ function calculatorPage(tool) {
   const calculationFlow = `<ol class="procedure-list">${calculationSteps.map((step) => `<li>${step}</li>`).join("")}</ol>`;
   const workflowLinks = content.workflow.map((item) => `<li>${item}</li>`).join("");
   const nextAction = content.nextAction || (stripAfterPrefixTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1]);
-  const calculatorAssetVersion = Object.keys(countFields).length ? "20261009-discrete-counts"
+  const calculatorAssetVersion = tool.slug === "carton-cube" ? "20261015-carton-cube"
+    : Object.keys(countFields).length ? "20261009-discrete-counts"
     : adhesiveTools.some(({ slug }) => slug === tool.slug)
     ? "20260827-adhesive"
     : tool.slug === "pallet-utilization" ? "20260824-pallet-pattern"

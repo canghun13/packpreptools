@@ -325,6 +325,39 @@ assert.strictEqual(calculators["packaging-supply-reorder-point"]({dailyUse:1.5,l
 assert.strictEqual(calculators["packaging-waste-allowance"]({baseQuantity:10.5,waste:0}).primary, "11 units");
 checks += 5;
 
+const cubeExampleInput = { length: 24, width: 16, height: 12, cartons: 20, unit: "in" };
+const cubeExample = calculators["carton-cube"](cubeExampleInput);
+assert.strictEqual(cubeExample.primary, "1.51 m³ total");
+assert.strictEqual(cubeExample.values["Cube per carton"], "4608 in³");
+assert.strictEqual(cubeExample.values["Cubic meters per carton"], "0.075512 m³");
+assert.strictEqual(cubeExample.values["Cubic feet per carton"], "2.666667 ft³");
+assert.strictEqual(cubeExample.values["Total cubic feet"], "53.333 ft³");
+checks += 5;
+const cubeSingle = calculators["carton-cube"]({ ...cubeExampleInput, cartons: 1 });
+assert.strictEqual(cubeSingle.values["Cubic meters per carton"], cubeExample.values["Cubic meters per carton"]);
+assert.strictEqual(cubeSingle.values["Cubic feet per carton"], cubeExample.values["Cubic feet per carton"]);
+checks += 2;
+const cubeOneFoot = calculators["carton-cube"]({ length: 12, width: 12, height: 12, cartons: 1, unit: "in" });
+assert.strictEqual(cubeOneFoot.values["Cubic meters per carton"], "0.028317 m³");
+assert.strictEqual(cubeOneFoot.values["Cubic feet per carton"], "1 ft³");
+const cubeOneMeter = calculators["carton-cube"]({ length: 100, width: 100, height: 100, cartons: 1, unit: "cm" });
+assert.strictEqual(cubeOneMeter.values["Cubic meters per carton"], "1 m³");
+assert.strictEqual(cubeOneMeter.values["Cubic feet per carton"], "35.314667 ft³");
+assert.strictEqual(cubeOneMeter.values["Total cubic feet"], "35.315 ft³");
+checks += 5;
+const cubeMetric = calculators["carton-cube"]({ length: 60.96, width: 40.64, height: 30.48, cartons: 20, unit: "cm" });
+assert.strictEqual(cubeMetric.primary, cubeExample.primary);
+for (const key of ["Cubic meters per carton", "Cubic feet per carton", "Total cubic feet"]) {
+  assert.strictEqual(cubeMetric.values[key], cubeExample.values[key]);
+  checks += 1;
+}
+checks += 1;
+const cubeSmall = calculators["carton-cube"]({ length: 1, width: 1, height: 1, cartons: 2, unit: "cm" });
+assert.strictEqual(cubeSmall.values["Cubic meters per carton"], "0.000001 m³");
+assert.strictEqual(cubeSmall.values["Cubic feet per carton"], "0.000035 ft³");
+assert.deepStrictEqual(calculators["carton-cube"](cubeExampleInput), cubeExample);
+checks += 3;
+
 assert.strictEqual(Object.keys(calculators).length, 42, "Expected 42 calculator implementations");
 assert.ok(checks >= 213, `Expected at least 213 independent checks; found ${checks}`);
 console.log(`CALCULATION VERIFICATION PASS — ${Object.keys(calculators).length} calculators, ${checks} independent checks`);

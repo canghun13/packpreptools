@@ -9,6 +9,10 @@ const SITE = "https://packpreptools.com";
 const EXPECTED_GA = "G-XR7JWJ36CD";
 const errors = [];
 const targetedCalculatorCopyRules = {
+  "tools/carton-cube.html": {
+    forbidden: [/Validate the .* manifest/i, /Count carton count/i],
+    required: ["CBM means cubic meters", "divide cm³ by 1,000,000", "divide in³ by 1,728", "Twenty identical cartons total 53.333 ft³ and 1.510 m³", "calculate each size group separately"]
+  },
   "tools/label-cost.html": {
     forbidden: [/Validate the .* manifest/i, /Next action:<\/strong>\s*After:/i, /Count order count/i],
     required: ["Calculate good-label demand", "Convert the planned label quantity into whole supplier rolls"]

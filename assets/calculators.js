@@ -456,7 +456,9 @@
     const each = dimensions.reduce((a,b)=>a*b);
     const total = each * cartons;
     const cubicMeters = unit === "cm" ? total / 1000000 : total * 0.000016387064;
-    return { primary: `${round(cubicMeters,3)} m³ total`, values: { "Cube per carton": `${round(each,2)} ${unit}³`, "Carton count": `${cartons}`, "Total cubic feet": `${round(cubicMeters * 35.3146667,3)} ft³` } };
+    const eachMeters = unit === "cm" ? each / 1000000 : each * 0.000016387064;
+    const eachFeet = unit === "cm" ? each / 28316.846592 : each / 1728;
+    return { primary: `${round(cubicMeters,3)} m³ total`, values: { "Cube per carton": `${round(each,2)} ${unit}³`, "Cubic meters per carton": `${round(eachMeters,6)} m³`, "Cubic feet per carton": `${round(eachFeet,6)} ft³`, "Carton count": `${cartons}`, "Total cubic feet": `${round(eachFeet * cartons,3)} ft³` } };
   }
 
   function casesPerPallet(input) {
