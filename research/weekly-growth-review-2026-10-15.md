@@ -96,7 +96,9 @@ Singapore accounts for 11 active users and Council Bluffs one. Geography does no
 
 ## Production, risks and next state
 
-Implementation commit, Pages success and actual live verification will be recorded in the handover closing note after they occur. No deployment result is inferred from local QA.
+Implementation/research commit `2dfc76df4e228e8e8deaef227722ca58d3423202` (`Add per-carton cubic volume conversions`) was pushed successfully. Pages [38693607198](https://github.com/canghun13/packpreptools/actions/runs/38693607198) completed successfully for that exact hash. Live target returned HTTPS apex 200, exact self-canonical, `20261015-carton-cube` asset and October 15 review date.
+
+Actual production browser at 1440/390 confirmed default primary 1.51 m³, per-carton 0.075512 m³ / 2.666667 ft³, raw 4,608 in³ and total 53.333 ft³. Fractional carton count produced the named whole-number error and empty stale details. Switching to cm with a 100 × 100 × 100 cube and one carton yielded 1 m³ / 35.314667 ft³ per carton and 35.315 ft³ total. Reset restored inches, count 20 and idle placeholder; rerun returned the default result. Mobile menu opened; overflow, viewport escapes, detected clipping, console errors/warnings were 0. Actual mobile result screenshot was reviewed. Final documentation commit and final three-way Git equality are reported at session close; no further production code changes occur in the closing record.
 
 - HIGH: no known unresolved defect in the changed scope.
 - MEDIUM: new Google clicks remain sparse; Coverage/Performance periods differ; Bing export periods absent; GA4 windows overlap and include possible QA/self traffic. No ranking/CTR causality is claimed.

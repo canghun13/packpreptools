@@ -2679,3 +2679,11 @@ git status
 - regressions1440/390: Dimensions25.5×11.25×7.25in, Count6cartons, Label$82.40, Adhesive10.42mL; overflow/console0. Homepage390정상, DecisionGuide/AdhesiveReference390표는 block/sameleft11/width353px/overflow0. 기존 계산엔진변경없음과 fullfixtures로 countaudit회귀보호.
 - managed homepage badges5 HTML/href/image/count/order/footer다음위치 exact보존; rawtrimblockSHA256 전후 `1205454b420a7a14b16f66a984bf5217af327b33f68fb9e30ebd48824198ed68`; index Git contentdiff0/generatorguardPASS.
 - HIGH 알려진변경범위결함없음. MEDIUM sparseGoogleclick/Coverage시점/Bingperiod미상/GA4overlap-selftraffic. LOW displayedrounding차이는 target에서설명하고 내부는unrounded값사용. 다음최대3: 기간일치Cube성과확인, 기존Master/Count/Label/Bundle관찰, 실제새결함만감사. 구현/QA완료이며 commit/push/Pages/live결과는 아래closing note에서 확정한다.
+
+### 2026-10-15 Git / Pages / production closing note
+
+- implementation/research commit `2dfc76df4e228e8e8deaef227722ca58d3423202` — `Add per-carton cubic volume conversions`; 7files(publicHTML1/calculationJS/generator/QA/fixture/research/handover) 변경. origin/main push성공, 직후 local=origin/main=actual remote main, ahead/behind0/0/main/clean을 확인했다.
+- Pages [38693607198](https://github.com/canghun13/packpreptools/actions/runs/38693607198)은 해당 구현hash로 **completed/success**. live Cube HTTPSapex200/self-canonical/newasset `20261015-carton-cube`/reviewedOct15 반영을 확인했다.
+- actual production browser **1440/390**: default primary1.51m³, percarton0.075512m³/2.666667ft³, raw4608in³, total53.333ft³; fractioncartons2.5→namedwholeerror/staledetails empty. overflow/escape/detectedclipping **0**, consoleerror/warning0.
+- 두폭 모두 cm전환100×100×100/count1→primary1m³, percarton1m³/35.314667ft³, total35.315ft³. Reset→inch/defaultcount20/idleplaceholder, rerun→1.51m³, 390Menu expandedtrue 정상. 실제 mobile result screenshot을 확인했다. Copy/Print는 해당없음이다.
+- 이 closing note는 docs만 변경한다. finaldocs commit/push후 세hash/main/ahead-behind/clean/최종Pages상태는 최종 사용자보고에서 확정한다. 다음 세션 시작점은 이번 closingcommit, 실제Cube구현은 `2dfc76d`다.
