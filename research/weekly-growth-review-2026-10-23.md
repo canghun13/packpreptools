@@ -98,7 +98,9 @@ Singapore has 27 active users and Council Bluffs one. These locations do not est
 
 ## Deployment and remaining state
 
-Implementation and local QA complete. Commit/push/Pages and actual production verification will be recorded below after they succeed; they are not inferred from local results.
+Implementation/research commit **`c67add2178cf485edfa74662119186e919cae62b`** (`Clarify full and partial carton packing plans`) was pushed to origin/main. Local HEAD, origin/main and actual remote main matched immediately after push, ahead/behind0/0 and clean. GitHub Pages [39886504235](https://github.com/canghun13/packpreptools/actions/runs/39886504235) completed **success** for that exact hash.
+
+Production target returned HTTPS apex200, exact self-canonical, no accidental noindex, target asset `20261023-carton-count`, October23 review date and new specific method. Actual production browser at **1440/390** confirmed default125/24→6total/5full/1partial/final5/unused19/capacity144; exact48/24→2total/2full/0partial/final24/unused0. Fractional capacity24.5 gave the named whole-number error and empty stale details. Reset restored125/24/idle/placeholder, and rerun returned the default plan. Mobile menu expanded correctly. Overflow, detected escape/clipping, header/H1 overlap and console errors/warnings were0. Actual mobile result screenshot was reviewed and saved outside the repository. Production homepage still has5 badge anchors and the preserved block matches the local block after line-ending normalization. The closing documentation changes no production code; final documentation commit/three-way hash equality/clean state and its Pages result are verified at session close.
 
 - HIGH: no known unresolved defect in the changed scope.
 - MEDIUM: sparse Google clicks, mismatched Coverage/Performance cutoffs, absent Bing reporting periods, overlapping/self/QA-prone GA4 data. No ranking, CTR, conversion or growth causality claimed.
