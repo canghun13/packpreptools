@@ -258,7 +258,8 @@ tools.push(...phaseTools);
 phaseTools.find(({ slug }) => slug === "pallet-utilization").reviewed = "August 24, 2026";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").reviewed = "October 1, 2026";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").exampleNote = "Columns, rows, and layers must each be whole numbers from 1 to 10,000. Packed-unit dimensions, clearance, and gaps may use decimals.";
-phaseTools.find(({ slug }) => slug === "carton-count").reviewed = "October 9, 2026";
+phaseTools.find(({ slug }) => slug === "carton-count").reviewed = "October 23, 2026";
+phaseTools.find(({ slug }) => slug === "carton-count").example = "For 125 units at 24 units per carton, 5 full cartons hold 120 units and 1 partial carton holds the remaining 5. Plan 6 cartons in total, with 19 unused unit places in the final carton (144 total capacity minus 125 required). For an exact 48-unit run at the same case pack, plan 2 full cartons and 0 partial cartons: the final carton holds 24 units and has 0 unused capacity.";
 phaseTools.find(({ slug }) => slug === "carton-count").exampleNote = "Enter whole counts: units required from 1 to 100,000,000 and units per carton from 1 to 1,000,000. Do not enter a fractional unit or an average case quantity.";
 phaseTools.find(({ slug }) => slug === "carton-cube").reviewed = "October 15, 2026";
 phaseTools.find(({ slug }) => slug === "carton-cube").example = "One 24 × 16 × 12 in carton has 4,608 in³ of external cube: 4,608 ÷ 1,728 ≈ 2.666667 ft³, or about 0.075512 m³ (CBM). Twenty identical cartons total 53.333 ft³ and 1.510 m³. The totals use unrounded per-carton volumes.";
@@ -592,14 +593,20 @@ const toolContent = {
   "carton-count": profile(
     "Use Carton Count when a unit demand must be translated into whole shipping or storage cartons at a fixed capacity. It answers how many cartons are needed and how full the final carton is. Case Pack works in the opposite direction by totaling units already represented by cases and loose reserve.",
     "Enter whole counts for the saleable or packed units required for the dispatch and the approved units per carton. Keep the unit definition consistent—each, pair, kit, or inner pack—and do not substitute a supplier’s outer-case quantity unless that is the actual packing plan. If cartons have different capacities, calculate each approved case pack separately rather than entering an average.",
-    "The division is rounded upward because any remainder needs another carton. Use the final-carton quantity to plan a partial-carton label, filler, or consolidation decision. A large unused capacity may justify adjusting the dispatch quantity, but do not overfill beyond the approved case pack.",
+    "Full cartons plus Partial cartons equals the total cartons to stage. Partial cartons is either 0 or 1 for a single fixed case pack. When it is 0, the final carton is full and is already included in Full cartons; do not add another carton. Unused capacity in final carton counts unfilled unit places, not cubic void space or missing stock. Keep the dispatch quantity unchanged unless a separate order change is approved. For a partial carton, record its actual count and verify cushioning, closure, weight, and the operation’s partial-carton policy.",
     ["Mixing individual units with inner packs.", "Rounding down when a remainder exists.", "Assuming every carton may exceed the approved capacity.", "Ignoring a deliberately partial carton already open in inventory."],
     "The calculation assumes identical units and a fixed count capacity. It does not check physical fit, carton weight, orientation, separators, partial-carton policy, or inventory already packed.",
-    ["Before: confirm the approved case quantity and unit definition.", "After: check Master Carton Weight and label the partial final carton."],
+    ["Before: confirm the approved case quantity and unit definition.", "After: stage the reported total cartons, check the full-carton weight, and identify a partial carton only when Partial cartons is 1."],
     { fieldAdvice: {
       units: "Count the whole units required for this dispatch, from 1 to 100,000,000. Use the same unit definition as the carton capacity; do not enter weight or a fractional kit.",
       perCarton: "Enter the approved whole-unit capacity of one carton, from 1 to 1,000,000. Do not average different case packs or increase this count without verifying the physical pack."
-    } }
+    }, methodSteps: [
+      "<strong>Separate full cartons from the remainder:</strong> divide units required by the approved units per carton. The whole-number quotient is Full cartons; the remainder is the count left to pack.",
+      "<strong>Add a partial carton only when needed:</strong> a nonzero remainder requires 1 partial carton. A zero remainder requires none, and the final carton contains the full case quantity rather than zero units.",
+      "<strong>Reconcile the packing plan:</strong> full cartons × units per carton + remainder must equal units required. Total carton capacity minus units required is the unused capacity in the final carton. Confirm the total cartons and actual final count before staging."
+    ], nextAction: "Stage 5 full cartons and 1 partial carton for the 125-unit example. Mark the partial carton with its actual 5-unit count, then check the approved pack and weight before release.",
+    caution: "<strong>Count plan only:</strong> unused unit places are not a physical void-fill estimate. Verify the real pack and approved partial-carton handling before dispatch; this calculator does not authorize changing an order quantity."
+    }
   ),
   "case-pack": profile(
     "Use Case Pack to translate a known number of sealed cases plus loose reserve into total available units. It supports pick planning, allocation, and reconciliation. It does not calculate how many cartons a new order requires; Carton Count handles that question.",
@@ -1856,7 +1863,7 @@ const stripAfterPrefixTools = new Set(["master-carton-dimensions", "master-carto
 
 function calculatorPage(tool) {
   const countFields = wholeCountFields[tool.slug] || {};
-  if (Object.keys(countFields).length && tool.slug !== "carton-cube") tool.reviewed = "October 9, 2026";
+  if (Object.keys(countFields).length && !["carton-cube", "carton-count"].includes(tool.slug)) tool.reviewed = "October 9, 2026";
   const file = `tools/${tool.slug}.html`;
   const title = tool.title;
   const schema = {
@@ -1895,7 +1902,8 @@ function calculatorPage(tool) {
   const calculationFlow = `<ol class="procedure-list">${calculationSteps.map((step) => `<li>${step}</li>`).join("")}</ol>`;
   const workflowLinks = content.workflow.map((item) => `<li>${item}</li>`).join("");
   const nextAction = content.nextAction || (stripAfterPrefixTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1]);
-  const calculatorAssetVersion = tool.slug === "carton-cube" ? "20261015-carton-cube"
+  const calculatorAssetVersion = tool.slug === "carton-count" ? "20261023-carton-count"
+    : tool.slug === "carton-cube" ? "20261015-carton-cube"
     : Object.keys(countFields).length ? "20261009-discrete-counts"
     : adhesiveTools.some(({ slug }) => slug === tool.slug)
     ? "20260827-adhesive"

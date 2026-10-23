@@ -290,7 +290,10 @@
     const units = whole(input.units, "Units required", { max: 100000000 });
     const perCarton = whole(input.perCarton, "Units per carton", { max: 1000000 });
     const cartons = Math.ceil(units / perCarton);
-    return { primary: `${cartons} cartons`, values: { "Full cartons": `${Math.floor(units / perCarton)}`, "Units in final carton": `${units % perCarton || perCarton}`, "Total carton capacity": `${cartons * perCarton} units` } };
+    const remainder = units % perCarton;
+    const partialCartons = remainder > 0 ? 1 : 0;
+    const unusedCapacity = partialCartons ? perCarton - remainder : 0;
+    return { primary: `${cartons} cartons`, values: { "Full cartons": `${Math.floor(units / perCarton)}`, "Partial cartons": `${partialCartons}`, "Units in final carton": `${remainder || perCarton}`, "Unused capacity in final carton": `${unusedCapacity} units`, "Total carton capacity": `${cartons * perCarton} units` } };
   }
 
   function casePack(input) {

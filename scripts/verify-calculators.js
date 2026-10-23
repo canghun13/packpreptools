@@ -256,17 +256,44 @@ for (const [field, label, max] of [["units", "Units required", 100000000], ["per
   for (const invalid of [0, -1, "", undefined, NaN, Infinity, max + 1, 0.5]) throws("carton-count", { ...cartonDemand, [field]: invalid });
 }
 for (const [input, expected] of [
-  [cartonDemand, { primary: "6 cartons", values: { "Full cartons": "5", "Units in final carton": "5", "Total carton capacity": "144 units" } }],
-  [{ units: 48, perCarton: 24 }, { primary: "2 cartons", values: { "Full cartons": "2", "Units in final carton": "24", "Total carton capacity": "48 units" } }],
-  [{ units: 1, perCarton: 24 }, { primary: "1 cartons", values: { "Full cartons": "0", "Units in final carton": "1", "Total carton capacity": "24 units" } }],
-  [{ units: 1, perCarton: 1 }, { primary: "1 cartons", values: { "Full cartons": "1", "Units in final carton": "1", "Total carton capacity": "1 units" } }],
-  [{ units: 100000000, perCarton: 1000000 }, { primary: "100 cartons", values: { "Full cartons": "100", "Units in final carton": "1000000", "Total carton capacity": "100000000 units" } }],
-  [{ units: 100000000, perCarton: 1 }, { primary: "100000000 cartons", values: { "Full cartons": "100000000", "Units in final carton": "1", "Total carton capacity": "100000000 units" } }]
+  [cartonDemand, { primary: "6 cartons", values: { "Full cartons": "5", "Partial cartons": "1", "Units in final carton": "5", "Unused capacity in final carton": "19 units", "Total carton capacity": "144 units" } }],
+  [{ units: 48, perCarton: 24 }, { primary: "2 cartons", values: { "Full cartons": "2", "Partial cartons": "0", "Units in final carton": "24", "Unused capacity in final carton": "0 units", "Total carton capacity": "48 units" } }],
+  [{ units: 1, perCarton: 24 }, { primary: "1 cartons", values: { "Full cartons": "0", "Partial cartons": "1", "Units in final carton": "1", "Unused capacity in final carton": "23 units", "Total carton capacity": "24 units" } }],
+  [{ units: 1, perCarton: 1 }, { primary: "1 cartons", values: { "Full cartons": "1", "Partial cartons": "0", "Units in final carton": "1", "Unused capacity in final carton": "0 units", "Total carton capacity": "1 units" } }],
+  [{ units: 100000000, perCarton: 1000000 }, { primary: "100 cartons", values: { "Full cartons": "100", "Partial cartons": "0", "Units in final carton": "1000000", "Unused capacity in final carton": "0 units", "Total carton capacity": "100000000 units" } }],
+  [{ units: 100000000, perCarton: 1 }, { primary: "100000000 cartons", values: { "Full cartons": "100000000", "Partial cartons": "0", "Units in final carton": "1", "Unused capacity in final carton": "0 units", "Total carton capacity": "100000000 units" } }]
 ]) {
   assert.deepStrictEqual(calculators["carton-count"](input), expected);
   checks += 1;
 }
 assert.deepStrictEqual(calculators["carton-count"]({ units: "125", perCarton: "24" }), calculators["carton-count"](cartonDemand));
+checks += 1;
+
+// Independent packing plans around a full-carton boundary and the input maxima.
+for (const [units, perCarton, full, partial, finalUnits, unused] of [
+  [23, 24, 0, 1, 23, 1],
+  [24, 24, 1, 0, 24, 0],
+  [25, 24, 1, 1, 1, 23],
+  [47, 24, 1, 1, 23, 1],
+  [49, 24, 2, 1, 1, 23],
+  [1, 1000000, 0, 1, 1, 999999],
+  [100000000, 999999, 100, 1, 100, 999899]
+]) {
+  const result = calculators["carton-count"]({ units, perCarton });
+  assert.strictEqual(result.primary, `${full + partial} cartons`);
+  assert.deepStrictEqual(result.values, {
+    "Full cartons": `${full}`, "Partial cartons": `${partial}`,
+    "Units in final carton": `${finalUnits}`, "Unused capacity in final carton": `${unused} units`,
+    "Total carton capacity": `${units + unused} units`
+  });
+  const actualFull = Number(result.values["Full cartons"]);
+  const reconstructedUnits = Number(result.values["Partial cartons"])
+    ? actualFull * perCarton + Number(result.values["Units in final carton"])
+    : actualFull * perCarton;
+  assert.strictEqual(reconstructedUnits, units);
+  checks += 3;
+}
+assert.deepStrictEqual(calculators["carton-count"](cartonDemand), calculators["carton-count"](cartonDemand));
 checks += 1;
 
 const countInputs = Object.fromEntries(Object.entries(phaseCases).map(([slug, cases]) => [slug, cases[0][0]]));

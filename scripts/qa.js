@@ -9,6 +9,10 @@ const SITE = "https://packpreptools.com";
 const EXPECTED_GA = "G-XR7JWJ36CD";
 const errors = [];
 const targetedCalculatorCopyRules = {
+  "tools/carton-count.html": {
+    forbidden: [/Validate the .* manifest/i, /Next action:<\/strong>\s*After:/i],
+    required: ["Separate full cartons from the remainder", "Add a partial carton only when needed", "5 full cartons hold 120 units", "2 full cartons and 0 partial cartons", "already included in Full cartons", "not cubic void space or missing stock"]
+  },
   "tools/carton-cube.html": {
     forbidden: [/Validate the .* manifest/i, /Count carton count/i],
     required: ["CBM means cubic meters", "divide cm³ by 1,000,000", "divide in³ by 1,728", "Twenty identical cartons total 53.333 ft³ and 1.510 m³", "calculate each size group separately"]
