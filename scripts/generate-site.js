@@ -1903,7 +1903,7 @@ function calculatorPage(tool) {
   const calculationFlow = `<ol class="procedure-list">${calculationSteps.map((step) => `<li>${step}</li>`).join("")}</ol>`;
   const workflowLinks = content.workflow.map((item) => `<li>${item}</li>`).join("");
   const nextAction = content.nextAction || (stripAfterPrefixTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1]);
-  const calculatorAssetVersion = tool.slug === "master-carton-weight" ? "20261029-weight-ceiling"
+  const calculatorAssetVersion = tool.slug === "master-carton-weight" ? "20261029-weight-ceiling-2"
     : tool.slug === "carton-count" ? "20261023-carton-count"
     : tool.slug === "carton-cube" ? "20261015-carton-cube"
     : Object.keys(countFields).length ? "20261009-discrete-counts"

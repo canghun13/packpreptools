@@ -448,8 +448,8 @@
     const tare = positive(input.tareWeight, "Carton and packing weight", { allowZero: true, max: 1000000 });
     const max = positive(input.maxWeight, "Maximum planned weight", { max: 1000000 });
     const total = units * unitWeight + tare;
-    // Ignore only magnitude-scaled floating-point noise, not display rounding.
-    const arithmeticTolerance = Number.EPSILON * Math.max(total, max);
+    // Allow machine-scale noise across the product and sum, not display rounding.
+    const arithmeticTolerance = 2 * Number.EPSILON * Math.max(total, max);
     if (total - max > arithmeticTolerance) throw new Error("Estimated carton weight exceeds the entered maximum planned weight.");
     return { primary: `${round(total,2)} ${input.weightUnit || "lb"}`, values: { "Product weight": `${round(units * unitWeight,2)} ${input.weightUnit || "lb"}`, "Tare weight": `${round(tare,2)} ${input.weightUnit || "lb"}`, "Remaining allowance": `${round(Math.max(0, max-total),2)} ${input.weightUnit || "lb"}` } };
   }

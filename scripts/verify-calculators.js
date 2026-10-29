@@ -355,6 +355,7 @@ checks += 5;
 // Decimal arithmetic at the entered weight ceiling must not report false excess.
 const weightCeilingCases = [
   [{ units: 3, unitWeight: 0.1, tareWeight: 0, maxWeight: 0.3 }, "0.3 lb", "0.3 lb", "0 lb"],
+  [{ units: 3, unitWeight: 0.1, tareWeight: 0.17, maxWeight: 0.47 }, "0.47 lb", "0.3 lb", "0.17 lb"],
   [{ units: 1, unitWeight: 0.1, tareWeight: 0.2, maxWeight: 0.3 }, "0.3 lb", "0.1 lb", "0.2 lb"],
   [{ units: 3, unitWeight: 0.07, tareWeight: 0.09, maxWeight: 0.3 }, "0.3 lb", "0.21 lb", "0.09 lb"],
   [{ units: 7, unitWeight: 0.1, tareWeight: 0, maxWeight: 0.7 }, "0.7 lb", "0.7 lb", "0 lb"],
@@ -372,6 +373,7 @@ for (const [input, expectedPrimary, expectedProduct, expectedTare] of weightCeil
 for (const input of [
   { units: 3, unitWeight: 0.100001, tareWeight: 0, maxWeight: 0.3 },
   { units: 1, unitWeight: 0.300000000001, tareWeight: 0, maxWeight: 0.3 },
+  { units: 3, unitWeight: 0.1, tareWeight: 0.170000000001, maxWeight: 0.47 },
   { units: 3, unitWeight: 100000.1, tareWeight: 0.200001, maxWeight: 300000.5 }
 ]) {
   assert.throws(() => calculators["master-carton-weight"](input), /exceeds the entered maximum/);
@@ -383,6 +385,28 @@ assert.deepStrictEqual(calculators["master-carton-weight"](weightNormalInput), {
 });
 assert.deepStrictEqual(calculators["master-carton-weight"](weightCeilingCases[0][0]), calculators["master-carton-weight"](weightCeilingCases[0][0]));
 checks += 2;
+
+// Independent integer-scaled oracle: decimal equality at three magnitudes.
+// Keep the product and tare together: their accumulated rounding can exceed
+// one magnitude-scaled EPSILON even when the entered decimal total is exact.
+let weightGridChecks = 0;
+for (const [divisor, base] of [[100, 0], [1000000, 0], [100, 1000000]]) {
+  for (let units = 1; units <= 20; units += 1) {
+    for (let weightSteps = 1; weightSteps <= 50; weightSteps += 1) {
+      for (let tareSteps = 0; tareSteps <= 30; tareSteps += 1) {
+        const result = calculators["master-carton-weight"]({
+          units, unitWeight: (base + weightSteps) / divisor,
+          tareWeight: tareSteps / divisor,
+          maxWeight: (units * (base + weightSteps) + tareSteps) / divisor
+        });
+        assert.strictEqual(result.values["Remaining allowance"], "0 lb");
+        weightGridChecks += 1;
+      }
+    }
+  }
+}
+checks += weightGridChecks;
+console.log(`WEIGHT CEILING GRID PASS — ${weightGridChecks} independent integer-scaled decimal-equality cases`);
 
 const cubeExampleInput = { length: 24, width: 16, height: 12, cartons: 20, unit: "in" };
 const cubeExample = calculators["carton-cube"](cubeExampleInput);
