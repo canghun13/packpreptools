@@ -257,6 +257,7 @@ tools.push(...phaseTools);
 
 phaseTools.find(({ slug }) => slug === "pallet-utilization").reviewed = "August 24, 2026";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").reviewed = "October 1, 2026";
+phaseTools.find(({ slug }) => slug === "master-carton-weight").reviewed = "October 29, 2026";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").exampleNote = "Columns, rows, and layers must each be whole numbers from 1 to 10,000. Packed-unit dimensions, clearance, and gaps may use decimals.";
 phaseTools.find(({ slug }) => slug === "carton-count").reviewed = "October 23, 2026";
 phaseTools.find(({ slug }) => slug === "carton-count").example = "For 125 units at 24 units per carton, 5 full cartons hold 120 units and 1 partial carton holds the remaining 5. Plan 6 cartons in total, with 19 unused unit places in the final carton (144 total capacity minus 125 required). For an exact 48-unit run at the same case pack, plan 2 full cartons and 0 partial cartons: the final carton holds 24 units and has 0 unused capacity.";
@@ -1863,7 +1864,7 @@ const stripAfterPrefixTools = new Set(["master-carton-dimensions", "master-carto
 
 function calculatorPage(tool) {
   const countFields = wholeCountFields[tool.slug] || {};
-  if (Object.keys(countFields).length && !["carton-cube", "carton-count"].includes(tool.slug)) tool.reviewed = "October 9, 2026";
+  if (Object.keys(countFields).length && !["carton-cube", "carton-count", "master-carton-weight"].includes(tool.slug)) tool.reviewed = "October 9, 2026";
   const file = `tools/${tool.slug}.html`;
   const title = tool.title;
   const schema = {
@@ -1902,7 +1903,8 @@ function calculatorPage(tool) {
   const calculationFlow = `<ol class="procedure-list">${calculationSteps.map((step) => `<li>${step}</li>`).join("")}</ol>`;
   const workflowLinks = content.workflow.map((item) => `<li>${item}</li>`).join("");
   const nextAction = content.nextAction || (stripAfterPrefixTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1]);
-  const calculatorAssetVersion = tool.slug === "carton-count" ? "20261023-carton-count"
+  const calculatorAssetVersion = tool.slug === "master-carton-weight" ? "20261029-weight-ceiling"
+    : tool.slug === "carton-count" ? "20261023-carton-count"
     : tool.slug === "carton-cube" ? "20261015-carton-cube"
     : Object.keys(countFields).length ? "20261009-discrete-counts"
     : adhesiveTools.some(({ slug }) => slug === tool.slug)

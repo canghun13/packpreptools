@@ -352,6 +352,38 @@ assert.strictEqual(calculators["packaging-supply-reorder-point"]({dailyUse:1.5,l
 assert.strictEqual(calculators["packaging-waste-allowance"]({baseQuantity:10.5,waste:0}).primary, "11 units");
 checks += 5;
 
+// Decimal arithmetic at the entered weight ceiling must not report false excess.
+const weightCeilingCases = [
+  [{ units: 3, unitWeight: 0.1, tareWeight: 0, maxWeight: 0.3 }, "0.3 lb", "0.3 lb", "0 lb"],
+  [{ units: 1, unitWeight: 0.1, tareWeight: 0.2, maxWeight: 0.3 }, "0.3 lb", "0.1 lb", "0.2 lb"],
+  [{ units: 3, unitWeight: 0.07, tareWeight: 0.09, maxWeight: 0.3 }, "0.3 lb", "0.21 lb", "0.09 lb"],
+  [{ units: 7, unitWeight: 0.1, tareWeight: 0, maxWeight: 0.7 }, "0.7 lb", "0.7 lb", "0 lb"],
+  [{ units: 3, unitWeight: 0.001, tareWeight: 0.027, maxWeight: 0.03 }, "0.03 lb", "0 lb", "0.03 lb"],
+  [{ units: 3, unitWeight: 100000.1, tareWeight: 0.2, maxWeight: 300000.5 }, "300000.5 lb", "300000.3 lb", "0.2 lb"]
+];
+for (const [input, expectedPrimary, expectedProduct, expectedTare] of weightCeilingCases) {
+  const result = calculators["master-carton-weight"](input);
+  assert.deepStrictEqual(result, { primary: expectedPrimary, values: {
+    "Product weight": expectedProduct, "Tare weight": expectedTare, "Remaining allowance": "0 lb"
+  } });
+  checks += 1;
+}
+// Real excess is still an error, even when both displayed weights round alike.
+for (const input of [
+  { units: 3, unitWeight: 0.100001, tareWeight: 0, maxWeight: 0.3 },
+  { units: 1, unitWeight: 0.300000000001, tareWeight: 0, maxWeight: 0.3 },
+  { units: 3, unitWeight: 100000.1, tareWeight: 0.200001, maxWeight: 300000.5 }
+]) {
+  assert.throws(() => calculators["master-carton-weight"](input), /exceeds the entered maximum/);
+  checks += 1;
+}
+const weightNormalInput = { units: 12, unitWeight: 1.8, tareWeight: 2.4, maxWeight: 30 };
+assert.deepStrictEqual(calculators["master-carton-weight"](weightNormalInput), {
+  primary: "24 lb", values: { "Product weight": "21.6 lb", "Tare weight": "2.4 lb", "Remaining allowance": "6 lb" }
+});
+assert.deepStrictEqual(calculators["master-carton-weight"](weightCeilingCases[0][0]), calculators["master-carton-weight"](weightCeilingCases[0][0]));
+checks += 2;
+
 const cubeExampleInput = { length: 24, width: 16, height: 12, cartons: 20, unit: "in" };
 const cubeExample = calculators["carton-cube"](cubeExampleInput);
 assert.strictEqual(cubeExample.primary, "1.51 m³ total");
