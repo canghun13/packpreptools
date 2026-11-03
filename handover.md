@@ -2765,3 +2765,10 @@ git status
 - Expansion considered **No — higher-ROI Priority B**. 최신 cluster/경계기록 확인만; 전체exclusion재구축·40신규family탐색·새SERP score/NO-GO판정 없음. 기존82underlyingproblems+40explored/GOHOLDREJECTNO-GO 경계 보존. 저organic/staleCoverage로 future expansion 금지하지 않음.
 - HIGH 변경범위 알려진미해결결함없음. MEDIUM GSCPerformance참조부재/Bing기간미상/Coverage지연/겹친GA4와QA. LOW 단순internaldimension계획은fit/strength/stability/handling안전·certification보증 아님. 다음3: currentPerformance참조오면기간일치분석; Dimensions검색·입력질문관찰/최근결과보존; 높은ROIexisting없으면전체exclusion재구축후broad신규탐색.
 - 구현/local QA 완료. 새 commit/push/Pages/actual live 결과는 다음 closing note에서 확정한다.
+
+### 2026-11-03 — Dimensions Git / Pages / production closing note
+
+- implementation **`66b565e73dc381d866009a04723d977989ebbd3c`** — `Clarify master carton dimension inputs and axis calculations`;7files(공개HTML1/generator/QA/fixture/이번research/이전Weightclosingresearch/handover). Main push 성공 직후 local=origin/main=actualremote,0/0,clean 확인.
+- Pages [41597018220](https://github.com/canghun13/packpreptools/actions/runs/41597018220) **completed/success**, 구현hash일치. actual target HTTPSapex200/selfcanonical/noindex없음/reviewedNov3/새3축 method 반영.
+- actual production **1440/390** default25.5×11.25×7.25in/12units/2079.84in³, zero24×10×6, single9×6×4, cm41×31.5×5.5/6units/7103.25cm³, fractionalcolumns namederror·staledetails빈값, Reset-idle/rerun기본결과 모두 PASS. overflow/escape/clipping/headerH1overlap/consoleerror·warning0.390menu expandedtrue/overflow0 후닫음. desktop/mobile 새본문 screenshot 확인·외부저장. target Copy/Print기존전용기능없음.
+- liveHomepage200/managedanchors5·images5/normalized전체block localexact일치/footer직후순서유지. 이마감은docs만변경하며공개code추가변경없음. 최종문서commit/마지막Pages/세hash·clean은최종보고에서실측확정한다. 다음세션은이closingcommit부터시작, Dimensions 실제구현66b565e·Weight실제구현d78f5f8 기준. GSCPerformance추가참조는여전히전달되지않아이번Google수치를만들지않음.

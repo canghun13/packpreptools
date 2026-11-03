@@ -104,3 +104,11 @@ Next state, maximum three:
 1. Incorporate the current-session GSC Performance attachment when its reference becomes accessible; compare aligned periods without substituting last week's totals.
 2. Observe matched-period Dimensions query/organic-landing signals and input questions, not raw QA page views; preserve Count/Cube/Weight results.
 3. If no higher-ROI existing gap or real defect remains, rebuild the full exclusion universe and enter genuinely-new broad discovery without weak fourth-tool padding.
+
+## Git / Pages / actual production closing verification — Nov3
+
+- Implementation **`66b565e73dc381d866009a04723d977989ebbd3c`** — `Clarify master carton dimension inputs and axis calculations`;7 files including prior Weight closing evidence. Main push succeeded; immediately verified local HEAD = origin/main = actual remote main, ahead0/behind0 and clean.
+- Pages [41597018220](https://github.com/canghun13/packpreptools/actions/runs/41597018220) **completed/success** for that exact implementation hash. Actual `https://packpreptools.com/tools/master-carton-dimensions.html` returned200, final HTTPS apex/self-canonical/no accidental noindex, November3 reviewed date and new axis method.
+- Actual live **1440/390** repeated default, zero allowances, single-unit maximum-gap, asymmetric cm, fractional-column error/empty stale details, Reset-idle and default rerun; all match local results. Overflow/escape/detected clipping/header-H1 overlap/console errors-warnings0.390 menu expanded true with overflow0, then closed. Desktop/mobile new-method screenshots reviewed and saved outside the repository. Copy/Print N/A for this unchanged classic calculator interface.
+- Live homepage200, managed anchors5/images5; complete normalized badge block exactly matches local, directly after footer in original order. No managed HTML/href/image/position changes.
+- This closing update changes documentation only, not public code. Final documentation commit SHA, latest Pages run and three-way remote equality are confirmed in the final user report rather than embedding a self-referential commit hash here. Next session starts from the latest closing commit; actual Dimensions implementation is66b565e, Weight implementation remainsd78f5f8.
