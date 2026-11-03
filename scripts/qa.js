@@ -9,6 +9,10 @@ const SITE = "https://packpreptools.com";
 const EXPECTED_GA = "G-XR7JWJ36CD";
 const errors = [];
 const targetedCalculatorCopyRules = {
+  "tools/master-carton-dimensions.html": {
+    forbidden: [/Validate the .* manifest/i, /Next action:<\/strong>\s*After:/i],
+    required: ["Calculate internal length", "Calculate internal width", "Calculate internal height", "An axis with one unit has no between-unit gap", "8 × 3 + 0.25 × 2 + 2 × 0.5 = 25.5 in", "external shipping cube", "exclude board thickness"]
+  },
   "tools/carton-count.html": {
     forbidden: [/Validate the .* manifest/i, /Next action:<\/strong>\s*After:/i],
     required: ["Separate full cartons from the remainder", "Add a partial carton only when needed", "5 full cartons hold 120 units", "2 full cartons and 0 partial cartons", "already included in Full cartons", "not cubic void space or missing stock"]

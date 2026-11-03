@@ -109,3 +109,7 @@ Next state, maximum three:
 1. Retain decimal-ceiling regression cases and investigate only a newly reproduced numeric failure, not a repeated broad count audit.
 2. Compare aligned-period Count/Cube/Dimensions/CasePack query and organic-landing signals before choosing another existing upgrade.
 3. Keep the crawl baseline and expansion boundaries intact; enter broad genuinely-new discovery when no higher-priority defect or clear existing gap remains.
+
+## Carried-over deployment verification — 2026-11-03
+
+The prior session stopped after pushing final implementation **`d78f5f8ff9a90a631fb60672936b4204e3deb6f6`**. On Nov3, confirmed Pages [40819537848](https://github.com/canghun13/packpreptools/actions/runs/40819537848) completed/success for that exact hash; starting local/origin/actual remote equal,0/0,clean. Actual HTTPS target200/self-canonical/noindex absent/final asset `20261029-weight-ceiling-2`. Live1440/390: default24lb; `3 ×0.1+0.17`, ceiling0.47→ready0.47lb; tare0.170000000001→original excess error with empty stale details; Reset→idle; rerun→24lb. Overflow/escape/detected clipping/header-H1 overlap0, console errors/warnings0. These are Nov3 observations, not backdated Oct29 QA. No Weight code was reimplemented. Current-week report is separate at `research/weekly-growth-review-2026-11-03.md`.

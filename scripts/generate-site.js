@@ -256,7 +256,8 @@ const phaseTools = [
 tools.push(...phaseTools);
 
 phaseTools.find(({ slug }) => slug === "pallet-utilization").reviewed = "August 24, 2026";
-phaseTools.find(({ slug }) => slug === "master-carton-dimensions").reviewed = "October 1, 2026";
+phaseTools.find(({ slug }) => slug === "master-carton-dimensions").reviewed = "November 3, 2026";
+phaseTools.find(({ slug }) => slug === "master-carton-dimensions").example = "A 3 × 2 × 2 layout holds 12 finished 8 × 5 × 3 in packs. With 0.25 in between units and 0.5 in clearance at each wall: length = 8 × 3 + 0.25 × 2 + 2 × 0.5 = 25.5 in; width = 5 × 2 + 0.25 × 1 + 2 × 0.5 = 11.25 in; height = 3 × 2 + 0.25 × 1 + 2 × 0.5 = 7.25 in. These are minimum internal dimensions for the chosen layout, not external carton dimensions or a guarantee of physical fit.";
 phaseTools.find(({ slug }) => slug === "master-carton-weight").reviewed = "October 29, 2026";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").exampleNote = "Columns, rows, and layers must each be whole numbers from 1 to 10,000. Packed-unit dimensions, clearance, and gaps may use decimals.";
 phaseTools.find(({ slug }) => slug === "carton-count").reviewed = "October 23, 2026";
@@ -755,15 +756,29 @@ const toolContent = {
   "master-carton-dimensions": profile(
     "Use Master Carton Dimensions to design a minimum internal carton around an explicit columns-by-rows-by-layers arrangement. It includes user-entered gaps between units and outer clearance. Multi-item Box Fit screens an existing box; this tool builds dimensions from a chosen layout.",
     "Measure the finished inner or retail pack in its permitted orientation. Enter whole columns, rows, and layers, a gap for dividers or handling between units, and outer clearance between the layout and carton walls. Keep board thickness outside this internal-dimension calculation.",
-    "Review the three calculated dimensions and the units-per-carton result together. Round each dimension up to a manufacturable internal size, then obtain or estimate external dimensions separately. If one axis becomes impractical, test a different row-column-layer arrangement rather than simply compressing clearance.",
+    "Review the three calculated dimensions and the units-per-carton result together. Round each dimension up to a manufacturable internal size, then obtain or estimate external dimensions separately. Internal volume is the product of the calculated internal dimensions, not external shipping cube. Measure the finished carton externally before using Carton Cube or checking pallet fit. If one axis becomes impractical, test a different row-column-layer arrangement rather than simply compressing clearance.",
     ["Entering bare product dimensions instead of the finished inner pack.", "Applying outer clearance once instead of to both sides.", "Forgetting gaps between multiple rows or layers.", "Treating calculated internal size as the external shipping size."],
     "The layout uses identical rectangular units in one orientation. It excludes mixed orientations, dividers with nonuniform thickness, carton board allowance, bulging, compression strength, stacking, loading sequence, and physical stability.",
     ["Before: approve unit orientation, gaps, and per-carton count.", "After: build a full carton, measure external size, then check weight and cube."],
     { fieldAdvice: {
+      itemLength: "Measure one finished inner or retail pack along the chosen length axis, including its protective packaging and protrusions. Columns repeat this dimension; use the same unit as every other dimension and allowance.",
+      itemWidth: "Measure the same finished pack along its chosen width axis. Rows repeat this dimension; keep the permitted orientation rather than swapping axes only to obtain a smaller result.",
+      itemHeight: "Measure the finished pack in its planned vertical orientation. Layers repeat this dimension; do not use the bare product height when the packed unit is taller.",
       columns: "Enter a whole number of packed units along the carton length, from 1 to 10,000. A partial column is not a valid rectangular layout.",
       rows: "Enter a whole number of rows along the carton width, from 1 to 10,000. Columns multiplied by rows gives the units in one layer.",
-      layers: "Enter a whole number of layers along the carton height, from 1 to 10,000. Columns multiplied by rows and layers gives the units per carton."
-    } }
+      layers: "Enter a whole number of layers along the carton height, from 1 to 10,000. Columns multiplied by rows and layers gives the units per carton.",
+      clearance: "Enter the planned free space between the layout and each carton wall. This amount is added twice on every axis; exclude board thickness and the gaps between adjacent units.",
+      gap: "Enter the planned space between adjacent finished packs, including any uniform divider thickness represented by this model. An axis containing n units has n minus 1 gaps; keep outer wall clearance separate."
+    },
+    methodSteps: [
+      "<strong>Calculate internal length:</strong> length = packed length × columns + gap × (columns − 1) + 2 × outer clearance.",
+      "<strong>Calculate internal width:</strong> width = packed width × rows + gap × (rows − 1) + 2 × outer clearance.",
+      "<strong>Calculate internal height:</strong> height = packed height × layers + gap × (layers − 1) + 2 × outer clearance.",
+      "<strong>Check the case pack:</strong> columns × rows × layers gives units per carton. An axis with one unit has no between-unit gap, but still has clearance at both walls. Keep intermediate values unrounded and confirm the chosen arrangement with a physical pack."
+    ],
+    nextAction: "Build a sample carton to the selected layout, then measure its external dimensions and packed weight before checking shipping cube or pallet fit.",
+    caution: "<strong>Planning dimensions only:</strong> prototype the packed layout and verify insertion, closure, finished external size, and weight. This calculation does not establish carton strength, load stability, handling safety, or certification."
+    }
   ),
   "master-carton-weight": profile(
     "Use Master Carton Weight to check product weight plus carton-and-packing tare against an internal planning maximum supplied by the user. It answers a weight question, not a dimensional capacity question. Master Carton Dimensions should establish the layout and unit count first.",
@@ -1864,7 +1879,7 @@ const stripAfterPrefixTools = new Set(["master-carton-dimensions", "master-carto
 
 function calculatorPage(tool) {
   const countFields = wholeCountFields[tool.slug] || {};
-  if (Object.keys(countFields).length && !["carton-cube", "carton-count", "master-carton-weight"].includes(tool.slug)) tool.reviewed = "October 9, 2026";
+  if (Object.keys(countFields).length && !["carton-cube", "carton-count", "master-carton-weight", "master-carton-dimensions"].includes(tool.slug)) tool.reviewed = "October 9, 2026";
   const file = `tools/${tool.slug}.html`;
   const title = tool.title;
   const schema = {

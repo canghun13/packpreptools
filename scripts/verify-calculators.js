@@ -249,6 +249,19 @@ assert.strictEqual(calculators["master-carton-dimensions"](metricLayout).primary
 assert.deepStrictEqual(calculators["master-carton-dimensions"](masterLayout), calculators["master-carton-dimensions"](masterLayout));
 checks += 3;
 
+// Independently worked axis examples for the Dimensions input/method guidance.
+for (const [input, primary, units, volume, layout] of [
+  [masterLayout, "25.5 × 11.25 × 7.25 in", "12", "2079.84 in³", "3 columns × 2 rows × 2 layers"],
+  [{ ...masterLayout, clearance: 0, gap: 0 }, "24 × 10 × 6 in", "12", "1440 in³", "3 columns × 2 rows × 2 layers"],
+  [{ ...masterLayout, columns: 1, rows: 1, layers: 1, gap: 1000 }, "9 × 6 × 4 in", "1", "216 in³", "1 columns × 1 rows × 1 layers"],
+  [{ itemLength: 20, itemWidth: 10, itemHeight: 5, columns: 2, rows: 3, layers: 1, clearance: 0.25, gap: 0.5, unit: "cm" }, "41 × 31.5 × 5.5 cm", "6", "7103.25 cm³", "2 columns × 3 rows × 1 layers"]
+]) {
+  assert.deepStrictEqual(calculators["master-carton-dimensions"](input), {
+    primary, values: { "Units per carton": units, "Internal volume": volume, "Layout": layout }
+  });
+  checks += 1;
+}
+
 const cartonDemand = { units: 125, perCarton: 24 };
 for (const [field, label, max] of [["units", "Units required", 100000000], ["perCarton", "Units per carton", 1000000]]) {
   assert.throws(() => calculators["carton-count"]({ ...cartonDemand, [field]: 24.5 }), new RegExp(`${label} must be a whole number`));
