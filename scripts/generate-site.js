@@ -4,6 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const zlib = require("zlib");
 const { wholeCountFields } = require("../assets/calculators.js");
+const filmTests = require("./film-test-content.js");
+const filmTestPages = require("./film-test-pages.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const SITE = "https://packpreptools.com";
@@ -2025,10 +2027,10 @@ function indexPage(kind, items) {
   const isTools = kind === "Tools";
   const file = `${kind.toLowerCase()}.html`;
   const title = isTools ? "Packaging Calculators & Workflow Tools" : kind === "Guides" ? "Packaging Guides" : "Packaging Reference";
-  const description = isTools ? `Browse ${tools.length} calculators and ${workflowTools.length} workflow tools for package fit, materials, cost, labor, load planning, adhesive application, quality records, and pack instructions.` : kind === "Guides" ? `Read ${guides.length} practical guides for repeatable packaging and dispatch work.` : `Use ${references.length} detailed reference records for packaging terms, units, materials, costs, cartons, and pallet loads.`;
+  const description = isTools ? `Browse ${tools.length} calculators and ${workflowTools.length} workflow tools for package fit, materials, cost, labor, load planning, adhesive application, quality records, pack instructions, and four film-test worksheets.` : kind === "Guides" ? `Read ${guides.length} practical guides for repeatable packaging and dispatch work.` : `Use ${references.length} detailed reference records for packaging terms, units, materials, costs, cartons, and pallet loads.`;
   return `${head({ file, title, description, schema: websiteSchema(file, title, description) })}${header(kind)}
-<main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: kind }])}<p class="dispatch-meta"><span>${isTools ? "Operations register" : "Controlled documents"}</span><span>${items.length} active records</span></p><h1>${title}</h1><p class="lede">${description}</p></div></header>
-<section class="content-section"><div class="page-shell">${isTools ? `<div class="section-title"><span class="section-code">Calculators / ${tools.length}</span><h2>Calculation register</h2><p>Enter measured or documented values to calculate one defined packaging output.</p></div>${operationsTable(items)}<div class="section-title tools-subsection"><span class="section-code">Workflow tools / ${workflowTools.length}</span><h2>Record and release workflows</h2><p>Check, organize, and generate operating records without accounts or stored input.</p></div>${workflowOperationsTable()}<div class="button-row"><a class="button button-primary" href="/adhesive.html">Open adhesive application cluster</a><a class="button button-quiet" href="/quality.html">Open quality &amp; damage control cluster</a><a class="button button-quiet" href="/pack-instructions.html">Open pack instruction cluster</a></div>` : documentTable(items, kind)}</div></section></main>${footer()}`;
+<main id="main"><header class="page-banner"><div class="page-shell">${breadcrumbs([{ label: kind }])}<p class="dispatch-meta"><span>${isTools ? "Operations register" : "Controlled documents"}</span><span>${isTools ? items.length + workflowTools.length + filmTests.length : items.length} active records</span></p><h1>${title}</h1><p class="lede">${description}</p></div></header>
+<section class="content-section"><div class="page-shell">${isTools ? `<div class="section-title"><span class="section-code">Calculators / ${tools.length}</span><h2>Calculation register</h2><p>Enter measured or documented values to calculate one defined packaging output.</p></div>${operationsTable(items)}<div class="section-title tools-subsection"><span class="section-code">Workflow tools / ${workflowTools.length}</span><h2>Record and release workflows</h2><p>Check, organize, and generate operating records without accounts or stored input.</p></div>${workflowOperationsTable()}<div class="button-row"><a class="button button-primary" href="/adhesive.html">Open adhesive application cluster</a><a class="button button-quiet" href="/quality.html">Open quality &amp; damage control cluster</a><a class="button button-quiet" href="/pack-instructions.html">Open pack instruction cluster</a></div><div class="section-title tools-subsection"><span class="section-code">Film tests / ${filmTests.length}</span><h2>Film and seal test worksheets</h2><p>Review measured results in the <a href="/film-testing.html">film and seal test workflow</a>.</p></div>${filmTestUi().register()}` : documentTable(items, kind)}</div></section></main>${footer()}`;
 }
 
 const guideReferences = {
@@ -2200,6 +2202,8 @@ function indexableFiles() {
     "index.html", "tools.html", "guides.html", "reference.html", "quality.html", "adhesive.html", "pack-instructions.html", "about.html", "contact.html", "privacy.html",
     ...tools.map((tool) => `tools/${tool.slug}.html`),
     ...workflowTools.map((tool) => `tools/${tool.slug}.html`),
+    "film-testing.html",
+    ...filmTests.map((tool) => "tools/" + tool.slug + ".html"),
     ...guides.map((guide) => `guides/${guide.slug}.html`),
     ...references.map((reference) => `reference/${reference.slug}.html`)
   ];
@@ -2209,7 +2213,11 @@ function discoveryFiles() {
   const urls = indexableFiles().map((file) => pageUrl(file));
   write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}\n</urlset>\n`);
   write("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
-  write("llms.txt", `# Pack Prep Tools\n\nPackaging calculations and operating references for repeatable shipment preparation.\n\n## Calculators (${tools.length})\n${tools.map((tool) => `- [${tool.title}](${SITE}/tools/${tool.slug}.html): ${tool.description}`).join("\n")}\n\n## Workflow tools (${workflowTools.length})\n${workflowTools.map((tool) => `- [${tool.title}](${SITE}/tools/${tool.slug}.html): ${tool.description}`).join("\n")}\n\n## Guides (${guides.length})\n${guides.map((guide) => `- [${guide.title}](${SITE}/guides/${guide.slug}.html): ${guide.description}`).join("\n")}\n\n## Reference (${references.length})\n${references.map((reference) => `- [${reference.title}](${SITE}/reference/${reference.slug}.html): ${reference.description}`).join("\n")}\n\nAll calculator and workflow outputs are planning records. Verify physical packs and current supplier, marketplace, carrier, facility, and regulatory requirements.\n`);
+  write("llms.txt", `# Pack Prep Tools\n\nPackaging calculations and operating references for repeatable shipment preparation.\n\n## Calculators (${tools.length})\n${tools.map((tool) => `- [${tool.title}](${SITE}/tools/${tool.slug}.html): ${tool.description}`).join("\n")}\n\n## Workflow tools (${workflowTools.length})\n${workflowTools.map((tool) => `- [${tool.title}](${SITE}/tools/${tool.slug}.html): ${tool.description}`).join("\n")}\n\n## Film and seal tests\n- [Film and seal test tools](${SITE}/film-testing.html)\n${filmTests.map((tool) => `- [${tool.title}](${SITE}/tools/${tool.slug}.html): ${tool.description}`).join("\n")}\n\n## Guides (${guides.length})\n${guides.map((guide) => `- [${guide.title}](${SITE}/guides/${guide.slug}.html): ${guide.description}`).join("\n")}\n\n## Reference (${references.length})\n${references.map((reference) => `- [${reference.title}](${SITE}/reference/${reference.slug}.html): ${reference.description}`).join("\n")}\n\nAll calculator and workflow outputs are planning records. Verify physical packs and current supplier, marketplace, carrier, facility, and regulatory requirements.\n`);
+}
+
+function filmTestUi() {
+  return filmTestPages({ head, header, footer, breadcrumbs, esc, pageUrl, websiteSchema });
 }
 
 function generate() {
@@ -2228,6 +2236,9 @@ function generate() {
   write("quality.html", qualityHub());
   write("adhesive.html", adhesiveHub());
   write("pack-instructions.html", packInstructionsHub());
+  const film = filmTestUi();
+  write("film-testing.html", film.hub());
+  filmTests.forEach((tool) => write("tools/" + tool.slug + ".html", film.page(tool)));
   tools.slice(1).forEach((tool) => write(`tools/${tool.slug}.html`, calculatorPage(tool)));
   workflowTools.forEach((tool) => write(`tools/${tool.slug}.html`, workflowToolPage(tool)));
   guides.forEach((guide) => write(`guides/${guide.slug}.html`, articlePage(guide, "Guides")));

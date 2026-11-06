@@ -63,11 +63,11 @@ function pageUrlForQa(file) {
 
 const allFiles = walk(ROOT);
 const htmlFiles = allFiles.filter((file) => file.endsWith(".html"));
-if (htmlFiles.length !== 85) fail(`Expected exactly 85 public HTML files; found ${htmlFiles.length}.`);
+if (htmlFiles.length !== 90) fail(`Expected exactly 90 public HTML files; found ${htmlFiles.length}.`);
 const toolFiles = htmlFiles.filter((file) => rel(file).startsWith("tools/"));
 const guideFiles = htmlFiles.filter((file) => rel(file).startsWith("guides/"));
 const referenceFiles = htmlFiles.filter((file) => rel(file).startsWith("reference/"));
-if (toolFiles.length !== 46) fail(`Expected exactly 46 tool pages; found ${toolFiles.length}.`);
+if (toolFiles.length !== 50) fail(`Expected exactly 50 tool pages; found ${toolFiles.length}.`);
 if (guideFiles.length !== 15) fail(`Expected exactly 15 guides; found ${guideFiles.length}.`);
 if (referenceFiles.length !== 13) fail(`Expected exactly 13 reference pages; found ${referenceFiles.length}.`);
 
@@ -81,6 +81,7 @@ const sentenceOwners = new Map();
 let calculatorInputTableCount = 0;
 let calculatorPageCount = 0;
 let workflowToolPageCount = 0;
+let filmTestPageCount = 0;
 
 function plainText(html) {
   return html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&[a-z0-9#]+;/gi, " ").replace(/\s+/g, " ").trim();
@@ -169,7 +170,8 @@ for (const file of htmlFiles) {
   if (/(workbench|on the bench|bench sequence|packing bench calculators|field notes|start with the package decision in front of you|measure the pack\. plan the materials\.)/i.test(html)) {
     fail(`${name}: retired creator-lab or bench language found.`);
   }
-  if (/(hero-grid|specimen|section-heading|tool-link|document-link|calculator-layout|worksheet-head|result-sheet|section-ink|workflow-step)/i.test(html)) {
+  const retiredClasses = /(?:^|\s)(?:hero-grid|specimen|section-heading|tool-link|document-link|calculator-layout|worksheet-head|result-sheet|section-ink|workflow-step)(?:\s|$)/i;
+  if ([...html.matchAll(/\bclass="([^"]*)"/gi)].some((match) => retiredClasses.test(match[1]))) {
     fail(`${name}: retired layout class found.`);
   }
 
@@ -198,9 +200,16 @@ for (const file of htmlFiles) {
   if (name.startsWith("tools/")) {
     const isCalculator = /data-calculator="[^"]+"/.test(html);
     const isWorkflowTool = /data-workflow-tool="[^"]+"/.test(html);
-    if (isCalculator === isWorkflowTool) fail(`${name}: expected exactly one calculator or workflow-tool marker.`);
+    const isFilmTest = /data-film-test="[^"]+"/.test(html);
+    if ([isCalculator, isWorkflowTool, isFilmTest].filter(Boolean).length !== 1) fail(`${name}: expected exactly one tool marker.`);
     if (isCalculator) calculatorPageCount += 1;
     if (isWorkflowTool) workflowToolPageCount += 1;
+    if (isFilmTest) {
+      filmTestPageCount += 1;
+      if (!html.includes("data-film-result") || !html.includes("/assets/film-tests.js") || !html.includes('href="/film-testing.html"')) {
+        fail(`${name}: film-test engine, result region or cluster link missing.`);
+      }
+    }
     ["solves", "inputs", "method", "example", "interpretation", "mistakes", "limits", "workflow"].forEach((id) => {
       if (!html.includes(`id="${id}"`)) fail(`${name}: content section #${id} missing.`);
     });
@@ -246,6 +255,7 @@ for (const file of htmlFiles) {
 
 if (calculatorPageCount !== 42) fail(`Expected exactly 42 calculator pages; found ${calculatorPageCount}.`);
 if (workflowToolPageCount !== 4) fail(`Expected exactly 4 workflow tool pages; found ${workflowToolPageCount}.`);
+if (filmTestPageCount !== 4) fail(`Expected exactly 4 film test pages; found ${filmTestPageCount}.`);
 
 for (const [paragraph, owners] of paragraphOwners) {
   if (owners.length > 1) fail(`Repeated long body paragraph in ${[...new Set(owners)].join(", ")}: ${paragraph.slice(0, 90)}…`);
@@ -300,7 +310,7 @@ if (!/\.workflow-document-index\s*{[^}]*margin-top:/i.test(stylesheet)) {
 
 const sitemap = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
 const sitemapUrls = matches(sitemap, /<loc>([^<]+)<\/loc>/g).map((match) => match[1]);
-if (sitemapUrls.length !== 84) fail(`sitemap.xml: expected exactly 84 URLs; found ${sitemapUrls.length}.`);
+if (sitemapUrls.length !== 89) fail(`sitemap.xml: expected exactly 89 URLs; found ${sitemapUrls.length}.`);
 if (new Set(sitemapUrls).size !== sitemapUrls.length) fail("sitemap.xml: duplicate URL.");
 if (sitemapUrls.includes(`${SITE}/404.html`)) fail("sitemap.xml: 404 must not be listed.");
 for (const url of indexableCanonicals) if (!sitemapUrls.includes(url)) fail(`sitemap.xml: missing ${url}.`);
@@ -366,5 +376,5 @@ if (contentWarnings.length) {
   contentWarnings.forEach((warning) => console.warn(`- ${warning}`));
 }
 console.log(`AUTO QA PASS — ${htmlFiles.length} HTML, ${sitemapUrls.length} sitemap URLs, ${scriptFiles.length} JavaScript files`);
-console.log(`CONTENT QA PASS — ${calculatorPageCount} calculators, ${workflowToolPageCount} workflow tools, ${guideFiles.length} guides, ${referenceFiles.length} references; duplicate long paragraphs 0; duplicate long sentences 0`);
+console.log(`CONTENT QA PASS — ${calculatorPageCount} calculators, ${workflowToolPageCount} record tools, ${filmTestPageCount} film tests, ${guideFiles.length} guides, ${referenceFiles.length} references; duplicate long paragraphs 0; duplicate long sentences 0`);
 console.log(`RESPONSIVE TABLE QA PASS — ${calculatorInputTableCount} calculator input-definition tables use the scoped mobile override`);

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Film Dart Impact Staircase Calculator | Pack Prep Tools</title>
+  <meta name="description" content="Check the order of fixed-step film dart impact readings and estimate the 50% failure mass from a completed pass/fail staircase series.">
+
+  <link rel="canonical" href="https://packpreptools.com/tools/film-dart-impact.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pack Prep Tools">
+  <meta property="og:title" content="Film Dart Impact Staircase Calculator">
+  <meta property="og:description" content="Check the order of fixed-step film dart impact readings and estimate the 50% failure mass from a completed pass/fail staircase series.">
+  <meta property="og:url" content="https://packpreptools.com/tools/film-dart-impact.html">
+  <link rel="icon" type="image/png" href="/favicon.png?v=20260802-quality">
+  <link rel="stylesheet" href="/assets/styles.css?v=20260810-calculator-inputs">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XR7JWJ36CD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XR7JWJ36CD');
+  </script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Film Dart Impact Staircase Calculator","applicationCategory":"BusinessApplication","operatingSystem":"Any","url":"https://packpreptools.com/tools/film-dart-impact.html","description":"Check the order of fixed-step film dart impact readings and estimate the 50% failure mass from a completed pass/fail staircase series.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://packpreptools.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://packpreptools.com/tools.html"},{"@type":"ListItem","position":3,"name":"Film and seal tests","item":"https://packpreptools.com/film-testing.html"},{"@type":"ListItem","position":4,"name":"Film Dart Impact Staircase Calculator","item":"https://packpreptools.com/tools/film-dart-impact.html"}]}]}</script>
+</head><body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="header-status"><div class="header-shell"><span>Shipping operations utilities</span><span class="system-state">Calculators online</span></div></div>
+  <div class="header-shell header-main">
+    <a class="brand" href="/" aria-label="Pack Prep Tools home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-button>Menu</button>
+    <nav class="site-nav" id="site-nav" aria-label="Primary" data-site-nav>
+      <a href="/">Home</a><a href="/tools.html" aria-current="page">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a>
+    </nav>
+  </div>
+</header><main id="main"><header class="page-banner"><div class="page-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/tools.html">Tools</a> <span aria-hidden="true">/</span> <a href="/film-testing.html">Film and seal tests</a> <span aria-hidden="true">/</span> <span>Film Dart Impact Staircase Calculator</span></nav><p class="dispatch-meta"><span>Film and seal tests</span><span>Check impact series</span></p><h1>Film Dart Impact Staircase Calculator</h1><p class="lede">Check the order of fixed-step film dart impact readings and estimate the 50% failure mass from a completed pass/fail staircase series.</p></div></header><section class="calculator-console"><div class="page-shell"><div class="manifest-panel"><div class="manifest-header"><span>Lab readings</span><span>Input stays in this browser</span></div><form class="calculator-form workflow-form" data-film-test="film-dart-impact" novalidate><div class="manifest-grid"><div class="field"><label for="step">Fixed mass increment (g)</label><input type="text" inputmode="decimal" id="step" name="step" maxlength="32" value="10"></div><div class="field field-wide"><label for="readings">Total dart mass (g), pass or fail — in test order</label><textarea id="readings" name="readings" rows="5" maxlength="12000" spellcheck="false" aria-describedby="row-help">100,pass
+110,fail
+100,pass
+110,fail
+100,pass
+110,fail
+100,pass
+110,fail
+100,pass
+110,fail
+100,pass
+110,fail
+100,pass
+110,fail
+100,pass
+110,fail
+100,pass
+110,fail
+100,pass
+110,fail</textarea><small id="row-help">Replace the example with one reading per line. Use commas or tabs between values, decimal points, and no header row.</small></div></div><div class="form-actions"><button type="submit" class="button button-primary" disabled data-film-submit>Analyze readings</button><button type="reset" class="button button-quiet">Reset</button></div><p class="form-error" data-error role="alert"></p></form></div><noscript><p>Enable JavaScript to analyze readings locally. The method and example are available below.</p></noscript><section class="output-strip" data-film-result data-state="idle" aria-label="Test summary"><div class="output-header"><span>Test summary</span><span>Review only</span></div><div class="output-body" aria-live="polite"><div><p class="output-kicker">Primary output</p><p class="output-primary" data-result-primary>Review the example or enter your own readings.</p></div><dl class="output-values" data-result-values></dl></div><div class="workflow-output"><p data-film-note></p><details data-film-sample-panel hidden><summary>Show individual results or mass levels</summary><dl class="output-values" data-film-samples></dl></details></div></section></div></section><section class="article-zone"><div class="page-shell article-shell"><article class="article-body"><h2 id="solves">What this tool solves</h2><p>A falling-dart staircase produces a sequence of masses and specimen outcomes, not a single breaking weight. This worksheet checks the recorded step directions and summarizes one completed series with a Dixon–Mood point estimate and a tally at each observed mass.</p><h2 id="inputs">How to choose the inputs</h2><p>Enter one test series in chronological order after applying the lab’s own series selection. Use total dart mass, including the carrier and added weights, and enter the same increment used throughout. Use a separate run for a different fixture, method, material, thickness, or drop height. The worksheet requires at least ten of each outcome.</p><h2 id="method">How the calculation works</h2><p>Check that each recorded mass is one step higher after a pass or one step lower after a failure. If failures are no more frequent than passes, estimate the center as the mean failure mass minus half a step; otherwise use the mean pass mass plus half a step. This is an exploratory up-and-down estimator, not a standard-specific reduction rule.</p><h2 id="example">Worked example</h2><p>The synthetic sequence alternates 100 g passes and 110 g failures ten times at a 10 g increment. Failures and passes are tied, so the worksheet uses 110 − 5 = 105 g. This is a point estimate, not an observed failure at 105 g.</p><h2 id="interpretation">How to interpret the output</h2><p>Use the mass-level counts to inspect how much evidence supports the estimate. A narrow observed mass range does not give a confidence interval. A film dart mass is not a complete package drop height, puncture guarantee, or transport rating.</p><h2 id="mistakes">Common mistakes</h2><ul class="check-list"><li>Do not paste the table sorted by mass; the sequence is required.</li><li>Use total dart mass rather than the mass of the removable weights alone.</li><li>Do not pool different methods or use fixed-mass grouped trials in this staircase worksheet.</li></ul><h2 id="limits">Assumptions and limitations</h2><p>This tool does not select valid rows, assess the shape of the failure distribution, estimate confidence bounds, or implement all ASTM D1709 or ISO 7765 reporting and test rules. Use the instrument and approved analysis for a specification result.</p><h2 id="workflow">Related workflow and sources</h2><p>Check the method context for check impact series before you compare measurements.</p><p><a href="https://www.intertek.com/polymers-plastics/testlopedia/drop-dart-method-astm-d1709/">Intertek: film falling-dart test overview</a> · <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/hb/nbshandbook91.pdf">NBS Handbook 91: up-and-down designs</a></p><ul class="related-register"><li><a href="/film-testing.html">Film and seal test tools</a></li><li><a href="/tools/film-tensile-strength.html">Film Tensile Strength &amp; Elongation Calculator</a></li><li><a href="/tools/flexible-package-seal-strength.html">Flexible Package Seal Strength Calculator</a></li><li><a href="/tools.html">All tools</a></li></ul><p class="meta-line">Last reviewed: November 6, 2026</p></article></div></section><script src="/assets/film-tests.js?v=20261106-film-tests" defer></script></main><footer class="site-footer">
+  <div class="footer-shell footer-main">
+    <div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-copy">Pack Prep Tools<small>Dispatch planning</small></span></a><p class="footer-copy">Packaging calculations and operating references for repeatable shipment preparation.</p></div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="/tools.html">Tools</a><a href="/guides.html">Guides</a><a href="/reference.html">Reference</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a>
+    </nav>
+  </div>
+  <div class="footer-shell footer-bottom"><span>© 2026 Pack Prep Tools</span><span>Estimate → verify → dispatch</span><span>No calculator inputs are stored</span></div>
+</footer>
+
+<script src="/assets/site.js?v=20260802-quality" defer></script>
+</body>
+</html>

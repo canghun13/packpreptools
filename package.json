@@ -8,6 +8,7 @@
     "qa": "node scripts/qa.js",
     "test:calculators": "node scripts/verify-calculators.js",
     "test:workflows": "node scripts/verify-workflow-tools.js",
-    "test": "npm run qa && npm run test:calculators && npm run test:workflows"
+    "test:film": "node scripts/verify-film-tests.js",
+    "test": "npm run qa && npm run test:calculators && npm run test:workflows && npm run test:film"
   }
 }
