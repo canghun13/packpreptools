@@ -84,3 +84,8 @@ Long-tail branches are static/kinetic COF and film surfaces; film strip thicknes
 - Independent checks in `scripts/verify-film-tests.js`: mixed newlines/tab paste, unit conversions, per-strip normalization, threshold equality and true below-threshold, invalid bounds/rows and both dart estimator branches. Existing static/content/responsive QA and calculator/record checks are retained.
 - Local Chromium at 1440 and 390: each new tool's default calculation, individual rows/mass tallies, invalid-input error, stale-output clearing, Reset and rerun passed. Geometry check found zero horizontal overflow, escaped elements, detected clipping and header/H1 overlap. Browser logs returned no error or warning for the four-tool pass.
 - Revisit after two comparable Search Console windows with nonzero impressions, or credible user feedback. Segment each URL and measured query; use actual clicks/impressions and indexing evidence rather than adding pages for nearby test names.
+
+### Production verification
+
+- Implementation `77041afaa8281440d31139aabd6824a3a10f86dd`; [GitHub Pages 42184959490](https://github.com/canghun13/packpreptools/actions/runs/42184959490) completed/success for that SHA. All five URLs returned HTTPS 200 with a self-canonical and no noindex. All were in the live 89-URL sitemap.
+- Actual 390px and 1440px Chromium reproduced all four worked examples, per-specimen results, input invalidation, named errors, Reset and rerun, with no detected overflow, clipping, overlap or console warnings/errors. Live mobile homepage, Tools, hub, Dimensions calculator, Trial guide and Hot-Melt reference also passed the representative checks. The five live post-footer badges matched the original normalized HTML exactly.

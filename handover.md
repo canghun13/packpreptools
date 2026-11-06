@@ -2782,3 +2782,10 @@ git status
 - Build/QA PASS: 90 HTML/89 sitemap/11 JS, 42 계산기·4 기록 Tool·4 Film Tool·15 Guide·13 Reference, 중복 문장/문단 0, scoped responsive table 42/42, 기존 계산 93,907·기록 46·새 Film 30 checks. 실제 로컬 390/1440: 신규 네 Tool 예제·개별 결과·입력 변경에 따른 이전 결과 제거·오류·Reset/재실행 PASS; horizontal overflow/escape/감지된 clipping/header–H1 겹침/console error·warning 0. 기본 예제 COF 0.3059/0.2039, tensile 40 MPa/40%, dart 105 g, seal 6 N/15 mm 및 1/3 검토 기준 미만.
 - 390/1440 회귀 확인: 홈페이지, Tools, 새 hub(직접 Tool 링크 4개), Master Carton Dimensions 기본 25.5 × 11.25 × 7.25 in, Trial Decision guide(390 카드/1440 2열), Hot-Melt Reference 모두 정상. 사용자 관리 배지 5개 HTML/href/image/개수/순서/footer 직후 위치 그대로. 로컬 post-footer normalized SHA-256 `d8d3f76a3cf30bda883237d3e48bf55d767c8a41dc7a8741ddc3325190a8326f`; 시작 Git 내용과 exact 일치.
 - 다음 운영 체크: 각 신규 URL의 발견·색인 여부와 노출을 확인하고, 비교 가능한 기간과 실제 검색 쿼리가 쌓이면 도구별 성과를 판단한다. 근접 시험 이름만으로 페이지를 더 만들지 않는다.
+
+### 2026-11-06 — Film & Seal Git / Pages / production closing note
+
+- 구현 `77041afaa8281440d31139aabd6824a3a10f86dd` — `Launch flexible packaging film and seal test tools` (17 files). Push 성공 직후 local HEAD = `origin/main` = actual remote main, ahead/behind 0/0, `main` clean 확인.
+- GitHub Pages [42184959490](https://github.com/canghun13/packpreptools/actions/runs/42184959490) 해당 구현 SHA로 completed/success; build/deploy/report-build-status 전부 success. 운영 신규 5개 URL HTTPS 200, self-canonical, noindex 없음, 실제 sitemap 89 URLs에 모두 포함.
+- 운영 브라우저 390/1440 모두 COF 0.3059/0.2039, tensile 40 MPa, dart 105 g, seal 6 N/15 mm. 개별 결과, 입력 변경, 오류, Reset, 재계산 통과. 가로 넘침/escape/감지된 clipping/header–H1 겹침/콘솔 오류·경고 0. 390에서 대표 기존 페이지도 회귀 확인. 사용자 관리 배지 5개 운영 post-footer HTML이 로컬 원본과 줄바꿈 정규화 후 exact 일치.
+- 이 마감은 문서만 갱신한다. 다음 세션은 최신 main부터 이어가되, 실제 클러스터 구현은 위 SHA를 기준으로 한다.
