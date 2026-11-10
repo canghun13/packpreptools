@@ -495,8 +495,11 @@
     const top = positive(input.topAllowance, "Top allowance", { allowZero: true, max: 10000 });
     const max = positive(input.maxHeight, "Maximum planned height", { max: 100000 });
     const total = base + caseHeight * layers + top;
-    if (total > max) throw new Error("Estimated pallet height exceeds the entered maximum planned height.");
-    return { primary: `${round(total,2)} ${input.unit || "in"}`, values: { "Load height": `${round(caseHeight*layers,2)} ${input.unit || "in"}`, "Base and top allowance": `${round(base+top,2)} ${input.unit || "in"}`, "Remaining height": `${round(max-total,2)} ${input.unit || "in"}` } };
+    // Bound representation noise across one product and two positive sums.
+    // This is not an operating clearance allowance or display-rounding rule.
+    const comparisonNoise = 3 * Number.EPSILON * Math.max(total, max);
+    if (total - max > comparisonNoise) throw new Error("Estimated pallet height exceeds the entered maximum planned height.");
+    return { primary: `${round(total,2)} ${input.unit || "in"}`, values: { "Load height": `${round(caseHeight*layers,2)} ${input.unit || "in"}`, "Base and top allowance": `${round(base+top,2)} ${input.unit || "in"}`, "Remaining height": `${round(Math.max(0,max-total),2)} ${input.unit || "in"}` } };
   }
 
   function palletUtilization(input) {

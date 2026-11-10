@@ -454,6 +454,63 @@ assert.strictEqual(cubeSmall.values["Cubic feet per carton"], "0.000035 ft³");
 assert.deepStrictEqual(calculators["carton-cube"](cubeExampleInput), cubeExample);
 checks += 3;
 
+// Pallet-height decimal equality: independently specified decimal totals.
+const heightEngine = calculators["pallet-height"];
+const heightCeilingCases = [
+  [{ palletHeight: 5, caseHeight: 10.1, layers: 7, topAllowance: 1.4, maxHeight: 77.1, unit: "in" }, "77.1 in"],
+  [{ palletHeight: 0, caseHeight: 0.1, layers: 3, topAllowance: 0, maxHeight: 0.3, unit: "cm" }, "0.3 cm"],
+  [{ palletHeight: 0.17, caseHeight: 0.1, layers: 3, topAllowance: 0, maxHeight: 0.47, unit: "cm" }, "0.47 cm"],
+  [{ palletHeight: 0.1, caseHeight: 0.1, layers: 1, topAllowance: 0.1, maxHeight: 0.3, unit: "in" }, "0.3 in"],
+  [{ palletHeight: 0, caseHeight: 0.000001, layers: 3, topAllowance: 0.000001, maxHeight: 0.000004, unit: "cm" }, "0 cm"],
+  [{ palletHeight: 0, caseHeight: 10, layers: 10000, topAllowance: 0, maxHeight: 100000, unit: "cm" }, "100000 cm"]
+];
+for (const [input, expected] of heightCeilingCases) {
+  const result = heightEngine(input);
+  assert.strictEqual(result.primary, expected);
+  assert.strictEqual(result.values["Remaining height"], "0 " + input.unit);
+  assert.deepStrictEqual(heightEngine(Object.fromEntries(Object.entries(input).map(([k, v]) => [k, String(v)]))), result);
+  checks += 3;
+}
+const heightDefaults = { palletHeight: 6, caseHeight: 10, layers: 6, topAllowance: 2, maxHeight: 72, unit: "in" };
+assert.deepStrictEqual(heightEngine(heightDefaults), { primary: "68 in", values: {
+  "Load height": "60 in", "Base and top allowance": "8 in", "Remaining height": "4 in"
+} });
+checks += 1;
+for (const input of [
+  { ...heightCeilingCases[0][0], topAllowance: 1.400000000001 },
+  { ...heightCeilingCases[1][0], topAllowance: 0.000000000001 },
+  { ...heightCeilingCases[2][0], palletHeight: 0.170000000001 },
+  { ...heightDefaults, layers: 8 }
+]) {
+  assert.throws(() => heightEngine(input), /exceeds the entered maximum/);
+  checks += 1;
+}
+// Integer arithmetic constructs exact-decimal equality, clearance and true excess.
+// Each triple exercises the comparison without copying its floating-point rule.
+let heightGridChecks = 0;
+for (const [divisor, offset, layersList] of [
+  [100, 0, [1, 2, 3, 7, 10, 10000]],
+  [1000000, 0, [1, 2, 3, 7, 10, 10000]],
+  [100, 900000, [1, 2, 3, 7, 10]]
+]) {
+  for (const layers of layersList) {
+    for (let h = 1; h <= 20; h++) {
+      for (let b = 0; b < 8; b++) {
+        for (let t = 0; t < 8; t++) {
+          const totalSteps = b + (offset + h) * layers + t;
+          const input = { palletHeight: b / divisor, caseHeight: (offset + h) / divisor, layers, topAllowance: t / divisor, maxHeight: totalSteps / divisor };
+          assert.strictEqual(heightEngine(input).values["Remaining height"], "0 in");
+          assert.doesNotThrow(() => heightEngine({ ...input, maxHeight: (totalSteps + 0.5) / divisor }));
+          assert.throws(() => heightEngine({ ...input, maxHeight: (totalSteps - 0.5) / divisor }), /exceeds the entered maximum/);
+          heightGridChecks += 3;
+        }
+      }
+    }
+  }
+}
+checks += heightGridChecks;
+console.log("PALLET HEIGHT CEILING GRID PASS — " + heightGridChecks + " integer-oracle equality, clearance and genuine-excess checks");
+
 assert.strictEqual(Object.keys(calculators).length, 42, "Expected 42 calculator implementations");
 assert.ok(checks >= 213, `Expected at least 213 independent checks; found ${checks}`);
 console.log(`CALCULATION VERIFICATION PASS — ${Object.keys(calculators).length} calculators, ${checks} independent checks`);

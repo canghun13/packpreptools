@@ -259,6 +259,7 @@ tools.push(...phaseTools);
 
 phaseTools.find(({ slug }) => slug === "pallet-utilization").reviewed = "August 24, 2026";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").reviewed = "November 3, 2026";
+phaseTools.find(({ slug }) => slug === "pallet-height").reviewed = "November 10, 2026";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").example = "A 3 × 2 × 2 layout holds 12 finished 8 × 5 × 3 in packs. With 0.25 in between units and 0.5 in clearance at each wall: length = 8 × 3 + 0.25 × 2 + 2 × 0.5 = 25.5 in; width = 5 × 2 + 0.25 × 1 + 2 × 0.5 = 11.25 in; height = 3 × 2 + 0.25 × 1 + 2 × 0.5 = 7.25 in. These are minimum internal dimensions for the chosen layout, not external carton dimensions or a guarantee of physical fit.";
 phaseTools.find(({ slug }) => slug === "master-carton-weight").reviewed = "October 29, 2026";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").exampleNote = "Columns, rows, and layers must each be whole numbers from 1 to 10,000. Packed-unit dimensions, clearance, and gaps may use decimals.";
@@ -1881,7 +1882,7 @@ const stripAfterPrefixTools = new Set(["master-carton-dimensions", "master-carto
 
 function calculatorPage(tool) {
   const countFields = wholeCountFields[tool.slug] || {};
-  if (Object.keys(countFields).length && !["carton-cube", "carton-count", "master-carton-weight", "master-carton-dimensions"].includes(tool.slug)) tool.reviewed = "October 9, 2026";
+  if (Object.keys(countFields).length && !["carton-cube", "carton-count", "master-carton-weight", "master-carton-dimensions", "pallet-height"].includes(tool.slug)) tool.reviewed = "October 9, 2026";
   const file = `tools/${tool.slug}.html`;
   const title = tool.title;
   const schema = {
@@ -1921,6 +1922,7 @@ function calculatorPage(tool) {
   const workflowLinks = content.workflow.map((item) => `<li>${item}</li>`).join("");
   const nextAction = content.nextAction || (stripAfterPrefixTools.has(tool.slug) ? content.workflow[1].replace(/^After:\s*/, "") : content.workflow[1]);
   const calculatorAssetVersion = tool.slug === "master-carton-weight" ? "20261029-weight-ceiling-2"
+    : tool.slug === "pallet-height" ? "20261110-height-ceiling"
     : tool.slug === "carton-count" ? "20261023-carton-count"
     : tool.slug === "carton-cube" ? "20261015-carton-cube"
     : Object.keys(countFields).length ? "20261009-discrete-counts"
