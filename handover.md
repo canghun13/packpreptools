@@ -2807,3 +2807,10 @@ git status
 - 회귀1440/390 기존7Calculator Calculate/Reset,4Film analyze,Home/Tools/Traveler/Guide/Reference정상. TrialGuide390block/left11/width353,1440two-column그대로. usermanagedbadge5 exactgeneratorguardPASS/homeGitdiff0; 배포후원문비교는closing에기록.
 - Expansion considered **No — Priority A**. Nov6 44family와기존경계보존, 이번에전체exclusion재작성/40신규탐색/새SERP점수/신규NO-GO판정안함. 저organic만으로futureexpansion금지하지않음.
 - 다음최대3: decimalheight회귀/실물높이검증, 기간일치기존carton검색관찰, Nov6Film발견·노출관찰(QA조회제외). 구현commit/Pages/live검증은관측후closing에기록한다.
+
+### 2026-11-10 — Pallet Height Git / Pages / production closing
+
+- 구현 **`ec7be55ae1137e81c7e01dc6fd26c7f2414f0ace`** — `Fix decimal equality at the pallet height ceiling`,6files. Main push성공, 직후 local=origin/main=actualremote/ahead-behind0/0/main/clean확인.
+- Pages [42732353822](https://github.com/canghun13/packpreptools/actions/runs/42732353822) completed/success/hash일치. 운영target/newscript200/selfcanonical/reviewNov10/`20261110-height-ceiling`/actual3EPScomparison확인. 최초브라우저는옛HTML을재사용했으나 normalreload로새asset·날짜확인후재검증; code재수정·보안/캐시설정변경없음.
+- actualproduction1440/390 default68in/4, 동률77.1in/0,metric0.47cm/0,실제1e-12초과오류/staledetails삭제,소수layer오류,Reset-idle/기본값/재실행PASS. 실제screenshot확인·모바일외부저장,390menuopen-close정상. overflow/escape/clipping/headerH1overlap/consoleerror-warning0.
+- 운영390기존7계산·4Film·Home/Tools/Traveler/Guide/Reference회귀PASS. managedbadge5원문/링크/이미지/순서/footer직후위치exact보존(normalizedSHA256 `d8d3f76a3cf30bda883237d3e48bf55d767c8a41dc7a8741ddc3325190a8326f`). preview서버/tab종료. 이closing은docs만변경; 다음세션은최신main부터,실제구현위SHA기준.

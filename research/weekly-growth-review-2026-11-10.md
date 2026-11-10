@@ -91,3 +91,12 @@ The Google total reconciles independently to country and device totals of0/163. 
 - LOW: arithmetic equality is not physical clearance, stack stability, compression, handling or customer/carrier acceptance.
 
 Next checks (maximum3): retain decimal-height regression and verify a built load; observe matched search periods for the existing carton assets; observe discovery/impressions for the Nov6 Film URLs before inferring demand from pageviews.
+
+## Git / Pages / actual production closing verification
+
+- Implementation **`ec7be55ae1137e81c7e01dc6fd26c7f2414f0ace`**, six files; push succeeded with local=origin/main=actual remote main and ahead/behind0/0, clean immediately after push.
+- [Pages42732353822](https://github.com/canghun13/packpreptools/actions/runs/42732353822) completed/success for that exact SHA. Target and new-version script returned200; self-canonical/reviewNov10/cache`20261110-height-ceiling` and actual comparison code matched.
+- Initial browser navigation reused the pre-deployment HTML (old review date/asset URL) despite fresh HTTP content. A normal reload displayed the new script/review date, without implementation changes, cache/security settings or workaround URLs. Only the subsequent new-version verification is counted as final.
+- Actual production1440/390: default68in/4remaining; equal77.1in/0remaining; combined0.47cm/0remaining; genuine top1.400000000001 remains an error with old details removed; fractional layers rejected; Reset-idle/default and rerun passed. Screenshots reviewed, mobile screenshot saved outside the repository. Menu open/close passed at390. Overflow/escape/clipping/header-H1 overlap and console errors/warnings0.
+- Live390 representative regression repeated seven existing calculations/Reset, four Film analyses, Home/Tools/Traveler and Guide/Reference layouts, all normal. Live managed post-footer five badges matched the starting block exactly after newline normalization; SHA256 `d8d3f76a3cf30bda883237d3e48bf55d767c8a41dc7a8741ddc3325190a8326f`. Temporary preview server and browser tab closed.
+- This closing note changes documentation only. Final documentation commit/main refs/clean and final Pages status are confirmed in the user report, not prefilled here.
