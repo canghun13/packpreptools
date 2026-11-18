@@ -261,7 +261,8 @@ phaseTools.find(({ slug }) => slug === "pallet-utilization").reviewed = "August 
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").reviewed = "November 3, 2026";
 phaseTools.find(({ slug }) => slug === "pallet-height").reviewed = "November 10, 2026";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").example = "A 3 × 2 × 2 layout holds 12 finished 8 × 5 × 3 in packs. With 0.25 in between units and 0.5 in clearance at each wall: length = 8 × 3 + 0.25 × 2 + 2 × 0.5 = 25.5 in; width = 5 × 2 + 0.25 × 1 + 2 × 0.5 = 11.25 in; height = 3 × 2 + 0.25 × 1 + 2 × 0.5 = 7.25 in. These are minimum internal dimensions for the chosen layout, not external carton dimensions or a guarantee of physical fit.";
-phaseTools.find(({ slug }) => slug === "master-carton-weight").reviewed = "October 29, 2026";
+phaseTools.find(({ slug }) => slug === "master-carton-weight").reviewed = "November 18, 2026";
+phaseTools.find(({ slug }) => slug === "master-carton-weight").example = "Each finished retail pack weighs 1.8 lb, including its own packaging. For 12 packs: 12 × 1.8 = 21.6 lb. The outer carton, dividers, tape and other shared packing add 2.4 lb: 21.6 + 2.4 = 24 lb estimated packed weight. Against an entered 30 lb ceiling, 30 − 24 = 6 lb remaining allowance. Do not add the retail packaging again in the 2.4 lb tare.";
 phaseTools.find(({ slug }) => slug === "master-carton-dimensions").exampleNote = "Columns, rows, and layers must each be whole numbers from 1 to 10,000. Packed-unit dimensions, clearance, and gaps may use decimals.";
 phaseTools.find(({ slug }) => slug === "carton-count").reviewed = "October 23, 2026";
 phaseTools.find(({ slug }) => slug === "carton-count").example = "For 125 units at 24 units per carton, 5 full cartons hold 120 units and 1 partial carton holds the remaining 5. Plan 6 cartons in total, with 19 unused unit places in the final carton (144 total capacity minus 125 required). For an exact 48-unit run at the same case pack, plan 2 full cartons and 0 partial cartons: the final carton holds 24 units and has 0 unused capacity.";
@@ -785,11 +786,26 @@ const toolContent = {
   ),
   "master-carton-weight": profile(
     "Use Master Carton Weight to check product weight plus carton-and-packing tare against an internal planning maximum supplied by the user. It answers a weight question, not a dimensional capacity question. Master Carton Dimensions should establish the layout and unit count first.",
-    "Use the actual units per carton, a representative packed-unit weight in pounds, and tare measured from the carton, dividers, liners, labels, and closure. Set maximum planned weight from the applicable facility, customer, equipment, or service requirement rather than assuming a universal limit.",
-    "A result below the maximum reports remaining allowance, but that margin should cover normal product and material variation. A result close to the ceiling needs sample cartons weighed at the high end of tolerance. If the estimate exceeds the maximum, reduce case pack or redesign the pack.",
-    ["Using net product weight while forgetting retail or inner packaging.", "Omitting dividers, tape, and labels from tare.", "Treating a carrier limit as a safe manual-handling limit.", "Averaging unit weights when the upper tolerance controls compliance."],
-    "The tool adds weights linearly and does not evaluate weight distribution, lifting ergonomics, carton strength, pallet load, scale calibration, regulatory rules, or service-specific limits.",
-    ["Before: finalize unit count and measure unit and tare samples.", "After: weigh a completed carton and use the result in pallet load planning."]
+    "Choose one consistent counting level: finished eaches, retail packs, or inner packs. Weigh one complete unit at that level and count how many go into this carton. Then weigh only the outer carton and shared packing not included in those units. Convert measurements to pounds before entry; the lb fields do not automatically convert kilograms. Obtain the planning ceiling from the responsible operation’s current requirement.",
+    "Product weight includes the entered unit packaging when the unit was weighed as a finished pack; the output label does not mean bare-product net weight. Tare weight is the separately entered outer carton and shared packing. Their sum estimates the completed carton’s gross scale weight, not dimensional or billable weight. Remaining allowance is the difference from your entered ceiling, not extra goods authorized for loading. A result exactly at the ceiling has zero allowance; normal variation still needs a physical check. An over-limit error is a prompt to review the actual case pack and packaging, not to raise the ceiling to obtain a result.",
+    ["Multiplying a packed inner-case weight by the count of individual products.", "Counting retail packaging once in unit weight and again in outer-carton tare.", "Using kilograms in fields labelled lb or entering a packed-carton total as tare.", "Treating a carrier maximum, zero remaining allowance, or a calculated estimate as handling approval."],
+    "This linear model assumes identical units at the chosen counting level. It does not sum mixed item weights, prescribe a universal maximum, provide measurement uncertainty, or evaluate strength, weight distribution, lifting ergonomics, pallet loads, scale calibration or service rules. Weigh the finished carton before using the estimate in an operating record.",
+    ["Before: agree the counting level and document the unit-weight, outer-tare and maximum-weight sources.", "After: weigh the completed carton, reconcile any difference with the entered components, then use the verified weight for load planning."],
+    {
+      fieldAdvice: {
+        units: "Count the finished units actually going into this carton, from 1 to 1,000,000. If the unit weight is for one retail or inner pack, count those packs rather than the individual products inside them.",
+        unitWeight: "Weigh one complete finished unit at the chosen counting level in pounds, including packaging that travels with that unit. Do not use the entire master carton’s weight here.",
+        tareWeight: "Weigh the empty outer carton plus dividers, liners, tape, labels and other shared packing in pounds. Count each packaging component once: exclude anything already in the finished-unit weight. Enter 0 only when no additional tare is being represented.",
+        maxWeight: "Record a supplied ceiling, not a scale reading. Enter the maximum packed-carton weight in pounds from the applicable current requirement. The sample value of 30 lb is not a recommended or universal limit."
+      },
+      methodSteps: [
+        "<strong>Calculate the finished-unit subtotal:</strong> multiply the number of units by the measured weight of one finished unit at that same counting level.",
+        "<strong>Add outer-carton tare once:</strong> add the outer carton and shared packing that were excluded from the finished-unit measurement.",
+        "<strong>Compare with the recorded ceiling:</strong> subtract estimated packed weight from the supplied maximum. Review any excess against the actual pack method; do not replace the requirement with the calculated total."
+      ],
+      nextAction: "Weigh a fully packed sample and reconcile the finished-unit subtotal and outer-carton tare. Recheck the estimate if unit count, unit packaging, shared materials or the documented ceiling changes.",
+      caution: "<strong>Weight planning boundary:</strong> a calculated weight or positive remaining allowance does not approve handling, certify carton strength, establish billable weight, or replace weighing the finished carton."
+    }
   ),
   "carton-cube": profile(
     "Use Carton Cube to calculate the external space occupied by one or more identical cartons. CBM means cubic meters (m³); cubic feet are shown as ft³. The result gives both units per carton as well as shipment totals, so a carton specification and a batch space plan can use the same measurements. Box Volume can use internal dimensions for capacity; this tool uses finished external dimensions for occupied space.",

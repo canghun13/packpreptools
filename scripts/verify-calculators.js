@@ -393,6 +393,18 @@ for (const input of [
   checks += 1;
 }
 const weightNormalInput = { units: 12, unitWeight: 1.8, tareWeight: 2.4, maxWeight: 30 };
+// Different finished-unit counting levels keep shared outer tare separate.
+for (const [input, expected] of [
+  [{ units: 6, unitWeight: 2.5, tareWeight: 1.25, maxWeight: 20 },
+    { primary: "16.25 lb", values: { "Product weight": "15 lb", "Tare weight": "1.25 lb", "Remaining allowance": "3.75 lb" } }],
+  [{ units: 3, unitWeight: 4, tareWeight: 0.5, maxWeight: 12.5 },
+    { primary: "12.5 lb", values: { "Product weight": "12 lb", "Tare weight": "0.5 lb", "Remaining allowance": "0 lb" } }],
+  [{ units: 2, unitWeight: 1.5, tareWeight: 0, maxWeight: 3 },
+    { primary: "3 lb", values: { "Product weight": "3 lb", "Tare weight": "0 lb", "Remaining allowance": "0 lb" } }]
+]) {
+  assert.deepStrictEqual(calculators["master-carton-weight"](input), expected);
+  checks += 1;
+}
 assert.deepStrictEqual(calculators["master-carton-weight"](weightNormalInput), {
   primary: "24 lb", values: { "Product weight": "21.6 lb", "Tare weight": "2.4 lb", "Remaining allowance": "6 lb" }
 });

@@ -9,6 +9,10 @@ const SITE = "https://packpreptools.com";
 const EXPECTED_GA = "G-XR7JWJ36CD";
 const errors = [];
 const targetedCalculatorCopyRules = {
+  "tools/master-carton-weight.html": {
+    forbidden: [/Validate the .* manifest/i, /Weigh maximum planned weight/i],
+    required: ["Record a supplied ceiling, not a scale reading", "Count each packaging component once", "Product weight includes the entered unit packaging", "12 × 1.8 = 21.6 lb", "21.6 + 2.4 = 24 lb", "30 − 24 = 6 lb", "not dimensional or billable weight", "Convert measurements to pounds before entry"]
+  },
   "tools/master-carton-dimensions.html": {
     forbidden: [/Validate the .* manifest/i, /Next action:<\/strong>\s*After:/i],
     required: ["Calculate internal length", "Calculate internal width", "Calculate internal height", "An axis with one unit has no between-unit gap", "8 × 3 + 0.25 × 2 + 2 × 0.5 = 25.5 in", "external shipping cube", "exclude board thickness"]
