@@ -2831,3 +2831,10 @@ git status
 - actual local **1440/1280/1024/900/768/600/480/390** height900:default24lb/6,retail16.25/3.75,inner12.5/0,decimal0.47/0,actualexcess오류/staledetails삭제,fractional·blankcount오류,Resetidle/default/재실행PASS. overflow/escape/detectedclipping/headerH1overlap0,consoleerror/warning0. 모바일inputcard/desktop2열screenshot직접확인,menuopen-close정상.
 - regressions1440/390기존7CalculatorCalculate/Reset,Home/Tools/TrialGuide/HotMeltReference PASS. TrialGuide390cellblock/left11/width353보존. 사용자badge **5개** homepageGitcontentnormalizedexact동일/HTML·href·image·순서·footer직후위치보존,normalizedtrimblockSHA256 `d8d3f76a3cf30bda883237d3e48bf55d767c8a41dc7a8741ddc3325190a8326f`. generatorguardPASS.
 - Expansion considered **No — Priority B**. 새40family탐색/SERPscore/clusterGO·NO-GO주장없음,loworganic만으로향후공격적확장금지안함. HIGH변경범위미해결재현결함없음/MEDIUMsparseGoogle·Bing기간미상·GA4QA/LOW계산은실물검증대체아님. 다음최대3:Weight설명·ceiling회귀보존,기간일치기존검색관찰,Film발견→검색관찰및higherpriority없을때신규broad탐색. 구현commit/Pages/live는관측후closing기록.
+
+### 2026-11-18 — Weight guidance Git / Pages / production closing
+
+- 구현 **`8c5e069795900c6cf1f19c9c4c08df008f09e723`**,6files. origin/main정상push,직후local=origin/main=actualremote/ahead-behind0/0/main/clean확인.
+- Pages [44242355353](https://github.com/canghun13/packpreptools/actions/runs/44242355353) completed/success/구현SHA일치. 운영target200/selfcanonical/noindex·XRobots없음,전체HTMLgenerated와CRLF정규화후exact동일,reviewNov18/cache기존key보존확인.
+- actualproduction1440/390 target7cases·Resetidle/default/rerun·새copy/옛오안내제거PASS. overflow/escape/detectedclipping/headerH1overlap0,consoleerror/warning0. 운영390기존7Calculator/Home/Tools/TrialGuide/HotMeltReference/menuopen-closePASS. screenshot직접확인했으나영구저장은현재readonlyfilesystem의EPERM으로거부됨;저장/최종이미지첨부나권한우회를주장하지않음. 브라우저QA관측은완료.
+- 운영homepagebadge5HTML/href/image/order/footer직후위치normalizedexact보존,위SHA동일. viewportreset/ownedtab종료/loopbackserver종료. 이closing은docs만변경,최종closingSHA/Pages/세hash/clean은최종보고에서실측. 다음은최신main부터이어가되실제기능변경기준은구현SHA.

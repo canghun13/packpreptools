@@ -96,3 +96,12 @@ Next state, maximum3:
 1. Preserve completed Weight guidance and decimal-ceiling regression; investigate only a new reproducible failure.
 2. Compare date-aligned carton-search evidence when available; do not attribute this copy change to traffic without evidence.
 3. Observe Film discovery→index/search independently of QA views; if no higher priority gap remains, resume genuinely-new broad workflow discovery from retained exclusions.
+
+### Observed Git / Pages / production closing
+
+- Implementation **`8c5e069795900c6cf1f19c9c4c08df008f09e723`** — `Clarify packed-unit and tare weight planning`, six files. Normal `origin/main` push succeeded. Immediately afterwards local HEAD = origin/main = actual remote main, ahead/behind0/0, main and clean.
+- Pages [44242355353](https://github.com/canghun13/packpreptools/actions/runs/44242355353) **completed/success**, exact implementation SHA. Observed build success followed by deploy success; a transient waiting status was not treated as failure or completion.
+- Production target returned HTTPS200, self-canonical, no noindex or X-Robots-Tag. Entire HTML equals the generated file after CRLF normalization; review dateNov18 and unchanged calculator cache key confirmed.
+- Actual production **1440/390** repeated all seven target cases above, Reset/default/rerun, new copy presence and old misinstruction absence: PASS. Overflow/escaped elements/detected clipping/header-H1 overlap0. Actual390 regression seven calculators and Home/Tools/TrialGuide/HotMeltReference PASS; mobile Menu open/close PASS; console errors/warnings0. Screenshots visually inspected. Persisting the production screenshot was denied by the current read-only filesystem (EPERM); no saved image or permission workaround is claimed. This limits the final image attachment, not the observed browser QA.
+- Production homepage badge block equals the preserved local block exactly after line-ending normalization: five anchors, same HTML/href/images/order/post-footer position and SHA256 above. Browser viewport override reset, owned tab closed and temporary loopback server stopped.
+- This closing modifies documentation only; no further public code or asset change. Final closing commit, final Pages status, three hashes and clean working tree are verified in the final report rather than guessing a self-referential commit hash here.
